@@ -70,9 +70,13 @@
         <div id="hub-targets"></div>
         
         <hr style="border-color: #30363d; margin: 20px 0;">
-        <button class="btn-choix" onclick="calmerLeJeu()">☕ Calmer le jeu (Passe 6 mois, Baisse la tension)</button>
-        <button class="btn-choix" onclick="showScreen('screen-ville'); document.getElementById('titre-ville').innerText = 'Déménager';">✈️ Changer de ville (Risqué si recherché)</button>
+        <div style="display:flex; flex-wrap: wrap; gap:10px;">
+            <button class="btn-choix" style="width: 100%;" onclick="petitLarcin()">🤏 Petit larcin (Rapide, faible butin, risque de fichage si abus)</button>
+            <button class="btn-choix" style="width: 48%;" onclick="calmerLeJeu()">☕ Calmer le jeu (6 mois)</button>
+            <button class="btn-choix" style="width: 48%;" onclick="showScreen('screen-ville'); document.getElementById('titre-ville').innerText = 'Déménager';">✈️ Déménager</button>
+        </div>
     </div>
+
 
     <!-- PROFIL -->
     <div id="screen-profil" class="screen">
