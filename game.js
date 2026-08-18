@@ -313,7 +313,7 @@ function showScreen(screenId) {
     document.getElementById(screenId).classList.add('active');
     
     let statsBar = document.getElementById('global-stats');
-    if(['screen-start', 'screen-milieu', 'screen-ville', 'screen-story', 'screen-end', 'screen-event', 'screen-debrief'].includes(screenId)) {
+    if(['screen-start', 'screen-milieu', 'screen-classe', 'screen-ville', 'screen-story', 'screen-end', 'screen-event', 'screen-debrief'].includes(screenId)) {
         statsBar.style.display = 'none';
     } else {
         statsBar.style.display = 'grid';
@@ -352,19 +352,27 @@ function initJoueur(originType) {
     joueur.originType = originType;
     if(originType === 'Défavorisé') {
         joueur.milieu = "Quartiers Défavorisés";
-        joueur.stats.furtivite += 2;
+        joueur.stats.furtivite += 1;
         joueur.argent = 0;
     } else if(originType === 'Classique') {
         joueur.milieu = "Classe Moyenne";
-        joueur.stats.force += 2;
+        joueur.stats.force += 1;
         joueur.argent = 0;
     } else if(originType === 'Riche') {
         joueur.milieu = "Milieu Aisé";
-        joueur.stats.intel += 2;
+        joueur.stats.intel += 1;
         joueur.argent = 20000; 
         joueur.argentGagne += 20000;
     }
-    showScreen('screen-ville');
+    showScreen('screen-classe'); // On va vers le choix de classe
+}
+
+function setClasse(nomClasse) {
+    joueur.classe = nomClasse;
+    if(nomClasse === 'Fantôme') joueur.stats.furtivite += 2;
+    if(nomClasse === 'Hacker') joueur.stats.intel += 2;
+    if(nomClasse === 'Gros Bras') joueur.stats.force += 2;
+    showScreen('screen-ville'); // Ensuite on va vers le choix de la ville
 }
 
 function setVille(ville) {
@@ -381,9 +389,9 @@ function setVille(ville) {
 
 function genererStorytelling() {
     let histoires = {
-        "Paris": `Né dans les ${joueur.milieu}, vous débarquez à Paris. Votre planque est prête.`,
-        "New York": `Arrivé à New York (${joueur.milieu}). Prêt pour la Grosse Pomme.`,
-        "Los Angeles": `Sous le soleil de Los Angeles (${joueur.milieu}). Le jeu commence.`
+        "Paris": `Issu du ${joueur.milieu.toLowerCase()}, vous avez débarqué dans la grisaille parisienne avec une seule idée en tête : prendre ce qui vous est dû. Entre les ruelles étroites de Montmartre et les avenues bourgeoises, la capitale offre autant d'opportunités que de pièges. En tant que ${joueur.classe}, vos compétences sont votre seule assurance vie. Votre planque est modeste, l'air sent le renfermé, mais c'est le point de départ de votre empire. Le jeu commence.`,
+        "New York": `L'odeur de l'asphalte mouillé et le bruit constant des sirènes. Arrivé à New York depuis votre ${joueur.milieu.toLowerCase()}, vous avez vite compris que la Grosse Pomme broie les faibles. Mais vous n'êtes pas n'importe qui. Votre profil de ${joueur.classe} a déjà attiré l'attention de quelques receleurs locaux. Depuis votre planque de fortune à l'ombre des gratte-ciel, la ville qui ne dort jamais n'attend plus que d'être braquée.`,
+        "Los Angeles": `Sous le soleil brûlant de Los Angeles, le contraste entre votre ${joueur.milieu.toLowerCase()} et les villas opulentes est saisissant. Ici, tout n'est qu'illusion, paillettes et argent sale. Parfait pour un ${joueur.classe} comme vous, prêt à exploiter les failles de ce paradis artificiel. Vous avez sécurisé une planque discrète loin des palmiers et des regards indiscrets. Préparez votre matériel, et faites-vous un nom.`
     };
     document.getElementById('story-text').innerText = histoires[joueur.ville];
 }
@@ -429,7 +437,7 @@ function prochaineEtapeEvenement() {
     let liste = banqueEvenements[cat];
     let ev = liste[Math.floor(Math.random() * liste.length)];
 
-    document.getElementById('event-title').innerText = `[${cat.toUpperCase()}] ${ev.titre}`;
+    document.getElementById('event-title').innerText = ev.titre;
     document.getElementById('event-desc').innerText = ev.desc;
     
     let container = document.getElementById('event-choices');
@@ -457,7 +465,7 @@ function ouvrirProfil() {
     document.getElementById('contenu-profil').innerHTML = `
         <ul>
             <li><strong>Version :</strong> v0.0.7</li>
-            <li><strong>Origine :</strong> Milieu ${joueur.milieu}</li>
+            <li><strong>Profil :</strong> Milieu ${joueur.milieu} | <strong>Classe :</strong> ${joueur.classe}</li>
             <li><strong>Statut :</strong> <span style="color:#ff7b72">${getStatutCriminel()}</span> (${joueur.braquagesReussis} coups réussis)</li>
             <li><strong>Argent Gagné Total :</strong> ${joueur.argentGagne.toLocaleString()} €</li>
             <li><strong>Argent Perdu Total :</strong> ${joueur.argentPerdu.toLocaleString()} €</li>
