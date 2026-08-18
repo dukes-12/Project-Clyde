@@ -31,6 +31,13 @@ const catalogue = [
     { id: 'f_furt', type: 'Formation', nom: "Stage de Parkour", desc: "+3 Furtivité", prix: 15000, effet: () => joueur.stats.furtivite += 3 },
     { id: 'm_drone', type: 'Matériel', nom: "Mini-Drone", desc: "+1 Furtivité permanent", prix: 50000, effet: () => joueur.stats.furtivite += 1 },
     { id: 'm_c4', type: 'Matériel', nom: "Pain de C4", desc: "+1 Force permanent", prix: 50000, effet: () => joueur.stats.force += 1 },
+    { id: 'a_9mm', type: 'Armement', nom: "Pistolet 9mm", desc: "-3 de difficulté sur toute approche Frontale", prix: 40000, effet: () => joueur.bonusArmeForce = (joueur.bonusArmeForce || 0) + 3 },
+    { id: 'a_silencieux', type: 'Armement', nom: "Kit Silencieux", desc: "-2 de difficulté en Frontale, sans faire de bruit (aucune Tension supplémentaire)", prix: 55000, effet: () => joueur.bonusArmeForce = (joueur.bonusArmeForce || 0) + 2 },
+    { id: 'a_fusil', type: 'Armement', nom: "Fusil à Pompe Scié", desc: "-5 de difficulté en Frontale, mais une arme aussi voyante fait immédiatement monter la Tension (+10%)", prix: 90000, effet: () => { joueur.bonusArmeForce = (joueur.bonusArmeForce || 0) + 5; joueur.heat = Math.min(100, joueur.heat + 10); } },
+    { id: 'e_gilet', type: 'Équipement', nom: "Gilet Pare-Balles", desc: "Réduit fortement le risque de perdre un allié ou d'y laisser la vie lors d'un coup qui tourne mal", prix: 60000, effet: () => joueur.giletPareBalles = true },
+    { id: 'e_brouilleur', type: 'Équipement', nom: "Brouilleur de Fréquences", desc: "Réduit le risque d'alerte policière lors des approches Cyber", prix: 55000, effet: () => joueur.brouilleurFreq = true },
+    { id: 'e_papiers', type: 'Équipement', nom: "Faux Papiers", desc: "Supprime le risque de contrôle douanier lors des déplacements entre villes", prix: 45000, effet: () => joueur.fauxPapiers = true },
+    { id: 'e_kit', type: 'Équipement', nom: "Kit de Crochetage Pro", desc: "Supprime le malus lié à une Furtivité encore faible lors des approches discrètes", prix: 35000, effet: () => joueur.kitCrochetage = true },
     { id: 'v_moto', type: 'Véhicules', nom: "Moto Cross Rodée", desc: "Facilite les fuites", prix: 35000, effet: () => joueur.vehicule = "Moto" },
     { id: 'v_camion', type: 'Véhicules', nom: "Fourgon Blindé Volé", desc: "Protection et espace", prix: 120000, effet: () => joueur.vehicule = "Fourgon" },
     { id: 'i_planque', type: 'Immobilier', nom: "Planque Sécurisée", desc: "Baisse le risque de 30%", prix: 150000, effet: () => joueur.risquePrison = Math.max(0, joueur.risquePrison - 30) },
@@ -51,7 +58,7 @@ const banqueEvenements = {
             titre: "Panne de réveil", desc: "Vous ratez un rendez-vous matinal avec un contact mineur.", 
             choix: [
                 { txt: "Profiter de l'occasion pour dormir", action: () => { if (Math.random() > 0.4) { joueur.mental = Math.min(10, joueur.mental + 1); return "Une grasse matinée réparatrice qui vous remet d'aplomb (Mental +1)."; } else { joueur.respect = Math.max(0, joueur.respect - 1); return "Le contact a pris ce retard pour un affront délibéré (Respect -1)."; } } },
-                { txt: "Proposer un dédommagement financier", action: () => { if (joueur.argent >= 2000) { joueur.argent -= 2000; joueur.argentPerdu += 2000; if (Math.random() > 0.2) { joueur.respect += 1; return "L'enveloppe glissée fait oublier l'affront (Respect +1)."; } else { return "Il prend l'argent mais garde une dent contre vous."; } } else { joueur.respect = Math.max(0, joueur.respect - 1); return "Faute de fonds suffisants, votre tentative d'excuse tourne au ridicule (Respect -1)."; } } },
+                { txt: "Proposer un dédommagement financier (-2 000 €)", action: () => { if (joueur.argent >= 2000) { joueur.argent -= 2000; joueur.argentPerdu += 2000; if (Math.random() > 0.2) { joueur.respect += 1; return "L'enveloppe glissée fait oublier l'affront (Respect +1)."; } else { return "Il prend l'argent mais garde une dent contre vous."; } } else { joueur.respect = Math.max(0, joueur.respect - 1); return "Faute de fonds suffisants, votre tentative d'excuse tourne au ridicule (Respect -1)."; } } },
                 { txt: "Le menacer pour qu'il garde le silence", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 5) { joueur.crainte += 1; joueur.moralite = Math.max(0, joueur.moralite - 1); return "Le ton employé lui fait passer toute envie de se plaindre (Crainte +1)."; } else { joueur.heat += 10; return "Il ne s'est pas laissé impressionner et promet de vous griller (Tension +10%)."; } } }
             ] 
         },
@@ -91,7 +98,7 @@ const banqueEvenements = {
             titre: "Rumeur de quartier", desc: "Le commerçant du coin commente bruyamment votre dernier coup.", 
             choix: [
                 { txt: "Prendre l'information avec détachement", action: () => { if (Math.random() > 0.4) { joueur.mental = Math.min(10, joueur.mental + 1); return "Vous écoutez l'histoire avec délectation (Mental +1)."; } else { return "Le commerçant change de sujet sans faire attention à vous."; } } },
-                { txt: "Lui glisser un billet pour orienter la discussion", action: () => { if (joueur.argent >= 1000) { joueur.argent -= 1000; joueur.argentPerdu += 1000; if (Math.random() > 0.3) { joueur.heat = Math.max(0, joueur.heat - 10); return "Le commerçant promet d'égarer les curieux sur de fausses pistes (Tension -10%)."; } else { return "Il empoche l'argent mais reste bavard comme une pie."; } } else { joueur.heat += 5; return "Faute de moyens, votre proposition le rend suspicieux (Tension +5%)."; } } },
+                { txt: "Lui glisser un billet pour orienter la discussion (-1 000 €)", action: () => { if (joueur.argent >= 1000) { joueur.argent -= 1000; joueur.argentPerdu += 1000; if (Math.random() > 0.3) { joueur.heat = Math.max(0, joueur.heat - 10); return "Le commerçant promet d'égarer les curieux sur de fausses pistes (Tension -10%)."; } else { return "Il empoche l'argent mais reste bavard comme une pie."; } } else { joueur.heat += 5; return "Faute de moyens, votre proposition le rend suspicieux (Tension +5%)."; } } },
                 { txt: "Lui faire comprendre de se taire à l'écart", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 6) { joueur.crainte += 1; return "Un regard appuyé dans l'arrière-boutique scelle son silence (Crainte +1)."; } else { joueur.heat += 15; return "Paniqué par vos menaces, il prévient le commissariat de quartier (Tension +15%)."; } } }
             ] 
         },
@@ -100,14 +107,14 @@ const banqueEvenements = {
             choix: [
                 { txt: "Relancer manuellement le matériel", action: () => { if (Math.random() > 0.4) { return "Le matériel redémarre sans encombre."; } else { joueur.mental = Math.max(1, joueur.mental - 1); return "La panne persiste plusieurs heures et bloque vos opérations (Mental -1)."; } } },
                 { txt: "Détourner le signal du voisinage", action: () => { let score = joueur.stats.intel + Math.floor(Math.random() * 6); if (score >= 6) { return "Pont réseau établi en quelques secondes sur une ligne voisine."; } else { joueur.heat += 10; return "Le pare-feu voisin déclenche une alerte intrusion chez le fournisseur (Tension +10%)."; } } },
-                { txt: "Abandonner temporairement la planque", action: () => { if (joueur.argent >= 3000) { joueur.argent -= 3000; joueur.argentPerdu += 3000; if (Math.random() > 0.3) { return "Nuit passée dans un hôtel sécurisé."; } else { joueur.mental = Math.max(1, joueur.mental - 1); return "L'hôtel était surveillé par des patrouilles en civil (Mental -1)."; } } else { joueur.mental = Math.max(1, joueur.mental - 2); return "Sans fonds pour l'hôtel, vous passez une nuit blanche et nerveuse (Mental -2)."; } } }
+                { txt: "Abandonner temporairement la planque (-3 000 €)", action: () => { if (joueur.argent >= 3000) { joueur.argent -= 3000; joueur.argentPerdu += 3000; if (Math.random() > 0.3) { return "Nuit passée dans un hôtel sécurisé."; } else { joueur.mental = Math.max(1, joueur.mental - 1); return "L'hôtel était surveillé par des patrouilles en civil (Mental -1)."; } } else { joueur.mental = Math.max(1, joueur.mental - 2); return "Sans fonds pour l'hôtel, vous passez une nuit blanche et nerveuse (Mental -2)."; } } }
             ] 
         },
         { 
             titre: "Visite du bailleur", desc: "Le propriétaire exige d'inspecter les compteurs de la planque.", 
             choix: [
                 { txt: "Camoufler le matériel compromettant", action: () => { let score = joueur.stats.furtivite + Math.floor(Math.random() * 6); if (score >= 6) { return "Tout le matériel est dissimulé dans les faux plafonds à temps."; } else { joueur.risquePrison += 15; return "Il aperçoit des plans et des étuis suspects (Risque +15%)."; } } },
-                { txt: "Lui verser une avance en liquide pour écourter la visite", action: () => { if (joueur.argent >= 3000) { joueur.argent -= 3000; joueur.argentPerdu += 3000; if (Math.random() > 0.2) { return "Ravi du supplément, il repart immédiatement sans poser de questions."; } else { joueur.heat += 5; return "Il prend l'argent mais s'interroge sur l'origine de ces liasses (Tension +5%)."; } } else { joueur.risquePrison += 10; return "Votre refus de payer l'incite à faire une inspection méticuleuse (Risque +10%)."; } } },
+                { txt: "Lui verser une avance en liquide pour écourter la visite (-3 000 €)", action: () => { if (joueur.argent >= 3000) { joueur.argent -= 3000; joueur.argentPerdu += 3000; if (Math.random() > 0.2) { return "Ravi du supplément, il repart immédiatement sans poser de questions."; } else { joueur.heat += 5; return "Il prend l'argent mais s'interroge sur l'origine de ces liasses (Tension +5%)."; } } else { joueur.risquePrison += 10; return "Votre refus de payer l'incite à faire une inspection méticuleuse (Risque +10%)."; } } },
                 { txt: "Lui refuser fermement l'accès au domicile", action: () => { if (Math.random() > 0.5) { return "Vexé, il tourne les talons en marmonnant."; } else { joueur.heat += 15; return "Il contacte les forces de l'ordre pour signaler un locataire clandestin (Tension +15%)."; } } }
             ] 
         },
@@ -123,7 +130,7 @@ const banqueEvenements = {
             titre: "La fuite de gaz", desc: "Une forte odeur d'hydrocarbures envahit la cage d'escalier de la planque.", 
             choix: [
                 { txt: "Évacuer discrètement avec les caisses de matériel", action: () => { let score = joueur.stats.furtivite + Math.floor(Math.random() * 6); if (score >= 5) { return "Vous chargez le matériel dans le coffre sans attirer l'attention des voisins."; } else { joueur.heat += 10; return "Un voisin vous aide à porter une caisse particulièrement lourde et suspecte (Tension +10%)."; } } },
-                { txt: "Faire intervenir un artisan au noir", action: () => { if (joueur.argent >= 1500) { joueur.argent -= 1500; joueur.argentPerdu += 1500; if (Math.random() > 0.3) { return "La fuite est réparée en une heure dans la plus grande discrétion."; } else { joueur.crainte += 1; return "L'artisan a vu vos armes et promet de se taire par pure terreur (Crainte +1)."; } } else { joueur.mental = Math.max(1, joueur.mental - 1); return "Sans argent pour payer le dépanneur, vous coupez l'arrivée générale vous-même (Mental -1)."; } } },
+                { txt: "Faire intervenir un artisan au noir (-1 500 €)", action: () => { if (joueur.argent >= 1500) { joueur.argent -= 1500; joueur.argentPerdu += 1500; if (Math.random() > 0.3) { return "La fuite est réparée en une heure dans la plus grande discrétion."; } else { joueur.crainte += 1; return "L'artisan a vu vos armes et promet de se taire par pure terreur (Crainte +1)."; } } else { joueur.mental = Math.max(1, joueur.mental - 1); return "Sans argent pour payer le dépanneur, vous coupez l'arrivée générale vous-même (Mental -1)."; } } },
                 { txt: "Calfeutrer les portes et attendre la fin de l'alerte", action: () => { if (Math.random() > 0.5) { joueur.risquePrison += 10; return "Les pompiers inspectent le couloir sans toquer à votre porte (Risque +10%)."; } else { joueur.mental = Math.max(1, joueur.mental - 2); return "Les vapeurs toxiques vous causent d'atroces migraines (Mental -2)."; } } }
             ] 
         },
@@ -131,7 +138,7 @@ const banqueEvenements = {
             titre: "Pourboire suspect", desc: "Un livreur attarde son regard sur des armes posées sur votre meuble d'entrée.", 
             choix: [
                 { txt: "Le toiser froidement pour le dissuader d'ouvrir la bouche", action: () => { let score = joueur.crainte + Math.floor(Math.random() * 6); if (score >= 4) { joueur.crainte += 1; return "Pétrifié, il recule sans demander son reste (Crainte +1)."; } else { joueur.heat += 15; return "Dès la porte refermée, il compose le numéro de la police (Tension +15%)."; } } },
-                { txt: "Lui tendre un pourboire colossal pour acheter son silence", action: () => { if (joueur.argent >= 500) { joueur.argent -= 500; joueur.argentPerdu += 500; if (Math.random() > 0.3) { return "L'argent fait disparaître toute velléité de bavardage."; } else { joueur.heat += 5; return "Le montant extravagant renforce ses soupçons (Tension +5%)."; } } else { joueur.heat += 10; return "Faute de monnaie, le malaise s'installe et il s'enfuit en courant (Tension +10%)."; } } },
+                { txt: "Lui tendre un pourboire colossal pour acheter son silence (-500 €)", action: () => { if (joueur.argent >= 500) { joueur.argent -= 500; joueur.argentPerdu += 500; if (Math.random() > 0.3) { return "L'argent fait disparaître toute velléité de bavardage."; } else { joueur.heat += 5; return "Le montant extravagant renforce ses soupçons (Tension +5%)."; } } else { joueur.heat += 10; return "Faute de monnaie, le malaise s'installe et il s'enfuit en courant (Tension +10%)."; } } },
                 { txt: "L'empoigner brutalement avant qu'il ne quitte le palier", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 6) { joueur.moralite = Math.max(0, joueur.moralite - 1); joueur.crainte += 2; return "Secoué vigoureusement, il jure de ne rien avoir vu (Crainte +2, Moralité -1)."; } else { joueur.heat += 15; joueur.moralite = Math.max(0, joueur.moralite - 1); return "Il se débat bruyamment et ameute les résidents de l'étage (Tension +15%)."; } } }
             ] 
         },
@@ -148,7 +155,7 @@ const banqueEvenements = {
         { 
             titre: "Chantage au cliché", desc: "Un individu prétend détenir des photos de vos repérages récents.", 
             choix: [
-                { txt: "Acheter l'intégralité des négatifs", action: () => { if (joueur.argent >= 10000) { joueur.argent -= 10000; joueur.argentPerdu += 10000; if (Math.random() > 0.2) { return "Les clichés et cartes mémoire sont détruits devant vous."; } else { joueur.heat += 10; return "Il avait conservé un double et tente une nouvelle extorsion (Tension +10%)."; } } else { joueur.heat += 25; return "Incapable de payer, les clichés sont envoyés anonymement à la presse (Tension +25%)."; } } },
+                { txt: "Acheter l'intégralité des négatifs (-10 000 €)", action: () => { if (joueur.argent >= 10000) { joueur.argent -= 10000; joueur.argentPerdu += 10000; if (Math.random() > 0.2) { return "Les clichés et cartes mémoire sont détruits devant vous."; } else { joueur.heat += 10; return "Il avait conservé un double et tente une nouvelle extorsion (Tension +10%)."; } } else { joueur.heat += 25; return "Incapable de payer, les clichés sont envoyés anonymement à la presse (Tension +25%)."; } } },
                 { txt: "Localiser l'individu et détruire son matériel", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 7) { joueur.crainte += 2; return "L'appareil est brisé et le maître chanteur neutralisé (Crainte +2)."; } else { joueur.risquePrison += 20; return "L'agression échoue et l'homme court déposer plainte (Risque +20%)."; } } },
                 { txt: "Pirater son espace de stockage distant", action: () => { let score = joueur.stats.intel + Math.floor(Math.random() * 6); if (score >= 7) { return "Les serveurs du maître chanteur sont effacés sans laisser de trace."; } else { joueur.heat += 15; return "L'intrusion déclenche une sauvegarde automatique vers ses complices (Tension +15%)."; } } }
             ] 
@@ -157,14 +164,14 @@ const banqueEvenements = {
             titre: "Concurrence territoriale", desc: "Une bande rivale exige un droit de passage sur vos zones de repli.", 
             choix: [
                 { txt: "Organiser une expédition punitive", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 8) { joueur.respect += 3; joueur.crainte += 2; return "La bande rivale bat en retraite définitivement (Respect +3, Crainte +2)."; } else { joueur.mental = Math.max(1, joueur.mental - 2); joueur.heat += 20; return "L'affrontement tourne au désastre pour vos troupes (Mental -2, Tension +20%)."; } } },
-                { txt: "Négocier un accord financier temporaire", action: () => { if (joueur.argent >= 15000) { joueur.argent -= 15000; joueur.argentPerdu += 15000; if (Math.random() > 0.3) { return "Un pacte de non-agression est signé avec leur chef."; } else { joueur.respect = Math.max(0, joueur.respect - 1); return "Ils empochent la somme et vous considèrent désormais comme une proie facile (Respect -1)."; } } else { joueur.heat += 15; return "Faute de fonds, les négociations tournent court sous les menaces (Tension +15%)."; } } },
+                { txt: "Négocier un accord financier temporaire (-15 000 €)", action: () => { if (joueur.argent >= 15000) { joueur.argent -= 15000; joueur.argentPerdu += 15000; if (Math.random() > 0.3) { return "Un pacte de non-agression est signé avec leur chef."; } else { joueur.respect = Math.max(0, joueur.respect - 1); return "Ils empochent la somme et vous considèrent désormais comme une proie facile (Respect -1)."; } } else { joueur.heat += 15; return "Faute de fonds, les négociations tournent court sous les menaces (Tension +15%)."; } } },
                 { txt: "Transmettre un tuyau anonyme aux stups sur leurs planques", action: () => { let score = joueur.stats.intel + Math.floor(Math.random() * 6); if (score >= 7) { joueur.heat = Math.max(0, joueur.heat - 20); return "La brigade des stups démantèle vos rivaux au petit matin (Tension -20%)."; } else { joueur.crainte = Math.max(0, joueur.crainte - 2); return "Votre rôle d'indicateur fuite dans le milieu criminel (Crainte -2)."; } } }
             ] 
         },
         { 
             titre: "La lettre anonyme", desc: "Un courrier glissé sous la porte liste les immatriculations de vos véhicules.", 
             choix: [
-                { txt: "Changer immédiatement de planque et de véhicules", action: () => { if (joueur.argent >= 20000) { joueur.argent -= 20000; joueur.argentPerdu += 20000; if (Math.random() > 0.2) { joueur.risquePrison = Math.max(0, joueur.risquePrison - 15); return "Nouvelle planque sécurisée et plaques changées (Risque -15%)."; } else { return "Déménagement effectué mais les frais annexes ont été exorbitants."; } } else { joueur.risquePrison += 25; return "Fonds insuffisants pour déménager. L'étau se resserre (Risque +25%)."; } } },
+                { txt: "Changer immédiatement de planque et de véhicules (-20 000 €)", action: () => { if (joueur.argent >= 20000) { joueur.argent -= 20000; joueur.argentPerdu += 20000; if (Math.random() > 0.2) { joueur.risquePrison = Math.max(0, joueur.risquePrison - 15); return "Nouvelle planque sécurisée et plaques changées (Risque -15%)."; } else { return "Déménagement effectué mais les frais annexes ont été exorbitants."; } } else { joueur.risquePrison += 25; return "Fonds insuffisants pour déménager. L'étau se resserre (Risque +25%)."; } } },
                 { txt: "Tendre une embuscade au messager", action: () => { let score = joueur.stats.furtivite + Math.floor(Math.random() * 6); if (score >= 7) { joueur.crainte += 3; return "L'espion est intercepté et vous livre le nom de son commanditaire (Crainte +3)."; } else { joueur.mental = Math.max(1, joueur.mental - 2); return "Le guet-apens échoue et votre couverture locale est grillée (Mental -2)."; } } },
                 { txt: "Faire le choix d'ignorer la provocation", action: () => { if (Math.random() > 0.5) { joueur.mental = Math.min(10, joueur.mental + 1); return "C'était un coup de bluff. Rien ne se produit (Mental +1)."; } else { joueur.risquePrison += 20; return "Les surveillances policières se multiplient autour du bâtiment (Risque +20%)."; } } }
             ] 
@@ -180,7 +187,7 @@ const banqueEvenements = {
         { 
             titre: "Le vieux complice", desc: "Un ancien associé fraîchement sorti de détention réclame sa part oubliée.", 
             choix: [
-                { txt: "Régler la dette immédiatement", action: () => { if (joueur.argent >= 15000) { joueur.argent -= 15000; joueur.argentPerdu += 15000; if (Math.random() > 0.3) { joueur.respect += 2; return "Votre parole d'honneur est respectée. Le milieu salue le geste (Respect +2)."; } else { return "Il prend l'argent sans un mot de remerciement."; } } else { joueur.risquePrison += 15; return "Incapable de payer, il menace d'aller voir les autorités (Risque +15%)."; } } },
+                { txt: "Régler la dette immédiatement (-15 000 €)", action: () => { if (joueur.argent >= 15000) { joueur.argent -= 15000; joueur.argentPerdu += 15000; if (Math.random() > 0.3) { joueur.respect += 2; return "Votre parole d'honneur est respectée. Le milieu salue le geste (Respect +2)."; } else { return "Il prend l'argent sans un mot de remerciement."; } } else { joueur.risquePrison += 15; return "Incapable de payer, il menace d'aller voir les autorités (Risque +15%)."; } } },
                 { txt: "Lui proposer une place sur la prochaine opération", action: () => { if (Math.random() > 0.4) { return "Il accepte le partenariat avec enthousiasme."; } else { joueur.respect = Math.max(0, joueur.respect - 1); return "Il refuse l'offre et vous accuse de vouloir l'exploiter (Respect -1)."; } } },
                 { txt: "L'éconduire violemment et lui interdire le secteur", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 7) { joueur.crainte += 2; return "Battu à plate couture, il quitte la ville sans insister (Crainte +2)."; } else { joueur.mental = Math.max(1, joueur.mental - 2); return "L'affrontement tourne à son avantage devant vos recrues (Mental -2)."; } } }
             ] 
@@ -188,7 +195,7 @@ const banqueEvenements = {
         { 
             titre: "L'agent des télécoms", desc: "Un technicien réseau découvre par hasard un concentrateur pirate sur votre ligne.", 
             choix: [
-                { txt: "Le corrompre pour falsifier son rapport d'intervention", action: () => { if (joueur.argent >= 8000) { joueur.argent -= 8000; joueur.argentPerdu += 8000; if (Math.random() > 0.2) { return "Le rapport mentionne un simple défaut de ligne. Incident clos."; } else { joueur.heat += 5; return "Il accepte l'argent mais exige des versements récurrents (Tension +5%)."; } } else { joueur.risquePrison += 20; return "Sans fonds, le technicien envoie son rapport d'intrusion au parquet (Risque +20%)."; } } },
+                { txt: "Le corrompre pour falsifier son rapport d'intervention (-8 000 €)", action: () => { if (joueur.argent >= 8000) { joueur.argent -= 8000; joueur.argentPerdu += 8000; if (Math.random() > 0.2) { return "Le rapport mentionne un simple défaut de ligne. Incident clos."; } else { joueur.heat += 5; return "Il accepte l'argent mais exige des versements récurrents (Tension +5%)."; } } else { joueur.risquePrison += 20; return "Sans fonds, le technicien envoie son rapport d'intrusion au parquet (Risque +20%)."; } } },
                 { txt: "Pirater sa tablette pour effacer l'anomalie enregistrée", action: () => { let score = joueur.stats.intel + Math.floor(Math.random() * 6); if (score >= 7) { return "Les données de diagnostic sont corrompues à distance avec succès."; } else { joueur.heat += 15; return "L'intrusion logicielle alerte le service de sécurité de l'opérateur (Tension +15%)."; } } },
                 { txt: "Séquestrer l'agent et confisquer son matériel", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 7) { joueur.crainte += 2; joueur.moralite = Math.max(0, joueur.moralite - 2); return "Terrifié, il s'engage sous la contrainte à démissionner (Crainte +2, Moralité -2)."; } else { joueur.heat += 20; return "Il parvient à déclencher son alarme de détresse professionnelle (Tension +20%)."; } } }
             ] 
@@ -204,8 +211,8 @@ const banqueEvenements = {
         { 
             titre: "L'avocat d'affaires", desc: "Un juriste influent propose de faire disparaître une ancienne déposition vous concernant.", 
             choix: [
-                { txt: "Régler l'intégralité de ses honoraires occultes", action: () => { if (joueur.argent >= 20000) { joueur.argent -= 20000; joueur.argentPerdu += 20000; if (Math.random() > 0.2) { joueur.risquePrison = Math.max(0, joueur.risquePrison - 20); return "Le dossier d'instruction est détruit pour vice de forme (Risque -20%)."; } else { return "Le greffe traîne des pieds mais la procédure est ralentie."; } } else { joueur.risquePrison += 10; return "Faute de paiement, l'avocat transmet le dossier au magistrat (Risque +10%)."; } } },
-                { txt: "Négocier ses tarifs en échange d'informations financières", action: () => { let score = joueur.stats.intel + Math.floor(Math.random() * 6); if (score >= 7 && joueur.argent >= 10000) { joueur.argent -= 10000; joueur.argentPerdu += 10000; joueur.risquePrison = Math.max(0, joueur.risquePrison - 15); return "Accord conclu à moitié prix grâce à vos tuyaux financiers (Risque -15%)."; } else { joueur.mental = Math.max(1, joueur.mental - 1); return "L'avocat rejette vos propositions et rompt le contact (Mental -1)."; } } },
+                { txt: "Régler l'intégralité de ses honoraires occultes (-20 000 €)", action: () => { if (joueur.argent >= 20000) { joueur.argent -= 20000; joueur.argentPerdu += 20000; if (Math.random() > 0.2) { joueur.risquePrison = Math.max(0, joueur.risquePrison - 20); return "Le dossier d'instruction est détruit pour vice de forme (Risque -20%)."; } else { return "Le greffe traîne des pieds mais la procédure est ralentie."; } } else { joueur.risquePrison += 10; return "Faute de paiement, l'avocat transmet le dossier au magistrat (Risque +10%)."; } } },
+                { txt: "Négocier ses tarifs en échange d'informations financières (Intel 7, -10 000 €)", action: () => { let score = joueur.stats.intel + Math.floor(Math.random() * 6); if (score >= 7 && joueur.argent >= 10000) { joueur.argent -= 10000; joueur.argentPerdu += 10000; joueur.risquePrison = Math.max(0, joueur.risquePrison - 15); return "Accord conclu à moitié prix grâce à vos tuyaux financiers (Risque -15%)."; } else { joueur.mental = Math.max(1, joueur.mental - 1); return "L'avocat rejette vos propositions et rompt le contact (Mental -1)."; } } },
                 { txt: "Refuser l'offre et couper les communications", action: () => { if (Math.random() > 0.5) { return "L'avocat abandonne la piste sans donner suite."; } else { joueur.heat += 10; return "Il revend l'information à un cabinet rival (Tension +10%)."; } } }
             ] 
         },
@@ -220,7 +227,7 @@ const banqueEvenements = {
         { 
             titre: "L'ancien complice évincé", desc: "Une recrue récemment renvoyée cherche à vous faire chanter.", 
             choix: [
-                { txt: "Lui verser une prime de séparation", action: () => { if (joueur.argent >= 10000) { joueur.argent -= 10000; joueur.argentPerdu += 10000; if (Math.random() > 0.3) { joueur.respect += 1; return "Il prend la somme et quitte la région (Respect +1)."; } else { return "L'argent est empoché mais la rancune demeure."; } } else { joueur.risquePrison += 15; return "Faute de moyens, il commence à contacter des officiers de police (Risque +15%)."; } } },
+                { txt: "Lui verser une prime de séparation (-10 000 €)", action: () => { if (joueur.argent >= 10000) { joueur.argent -= 10000; joueur.argentPerdu += 10000; if (Math.random() > 0.3) { joueur.respect += 1; return "Il prend la somme et quitte la région (Respect +1)."; } else { return "L'argent est empoché mais la rancune demeure."; } } else { joueur.risquePrison += 15; return "Faute de moyens, il commence à contacter des officiers de police (Risque +15%)."; } } },
                 { txt: "Lui imposer le silence par la force", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 7) { joueur.crainte += 2; return "Une démonstration de force suffit à lui faire passer le message (Crainte +2)."; } else { joueur.heat += 20; return "La bagarre éclate sur la voie publique et attire des témoins (Tension +20%)."; } } },
                 { txt: "Changer d'adresse pour couper tout contact", action: () => { joueur.mois += 1; if (Math.random() > 0.4) { return "Vous vous installez ailleurs et semez définitivement sa trace."; } else { joueur.mental = Math.max(1, joueur.mental - 1); return "Le déménagement précipité désorganise vos affaires (Mental -1)."; } } }
             ] 
@@ -247,7 +254,7 @@ const banqueEvenements = {
             titre: "Le piège fédéral", desc: "Une proposition de braquage particulièrement lucrative présente toutes les marques d'un guet-apens.", 
             choix: [
                 { txt: "Analyser minutieusement les données de la cible", action: () => { let score = joueur.stats.intel + Math.floor(Math.random() * 6); if (score >= 9) { joueur.respect += 5; return "Vous mettez au jour les faux certificats du FBI et évitez le piège (Respect +5)."; } else { allerEnPrison("Guet-apens fédéral confirmé lors de la phase d'approche."); return "Les unités d'intervention vous cernent immédiatement."; } } },
-                { txt: "Sous-traiter le coup à une équipe concurrente", action: () => { if (joueur.argent >= 30000) { joueur.argent -= 30000; joueur.argentPerdu += 30000; if (Math.random() > 0.2) { joueur.heat = Math.max(0, joueur.heat - 30); return "L'équipe concurrente tombe dans le piège à votre place (Tension -30%)."; } else { return "L'équipe concurrente se méfie et refuse la proposition."; } } else { joueur.mental = Math.max(1, joueur.mental - 1); return "Fonds insuffisants pour monter l'opération de diversion (Mental -1)."; } } },
+                { txt: "Sous-traiter le coup à une équipe concurrente (-30 000 €)", action: () => { if (joueur.argent >= 30000) { joueur.argent -= 30000; joueur.argentPerdu += 30000; if (Math.random() > 0.2) { joueur.heat = Math.max(0, joueur.heat - 30); return "L'équipe concurrente tombe dans le piège à votre place (Tension -30%)."; } else { return "L'équipe concurrente se méfie et refuse la proposition."; } } else { joueur.mental = Math.max(1, joueur.mental - 1); return "Fonds insuffisants pour monter l'opération de diversion (Mental -1)."; } } },
                 { txt: "Classer l'affaire et doubler la sécurité de la planque", action: () => { if (Math.random() > 0.3) { joueur.mental = Math.min(10, joueur.mental + 1); return "La prudence vous évite une arrestation certaine (Mental +1)."; } else { joueur.risquePrison += 10; return "Des véhicules de surveillance banalisés patrouillent dans votre secteur (Risque +10%)."; } } }
             ] 
         },
@@ -271,14 +278,14 @@ const banqueEvenements = {
             titre: "L'avis de perquisition", desc: "Une source fiable vous avertit qu'un raid tactique est prévu à l'aube sur votre planque.", 
             choix: [
                 { txt: "Incendier les archives et s'évacuer immédiatement", action: () => { let score = joueur.stats.furtivite + Math.floor(Math.random() * 6); if (score >= 8) { return "Toutes les preuves partent en fumée avant l'arrivée du raid."; } else { joueur.risquePrison += 35; return "L'incendie prématuré attire les patrouilles avant votre départ (Risque +35%)."; } } },
-                { txt: "Faire appel à des nettoyeurs professionnels", action: () => { if (joueur.argent >= 40000) { joueur.argent -= 40000; joueur.argentPerdu += 40000; if (Math.random() > 0.2) { joueur.niveauSurveillance = 0; return "Les nettoyeurs stérilisent le lieu. Le raid ne trouve absolument rien."; } else { return "Le lieu est nettoyé mais les nettoyeurs ont gardé des copies d'assurance."; } } else { allerEnPrison("Fonds insuffisants pour payer les nettoyeurs. Pris au saut du lit par le SWAT."); return "Arrestation musclée."; } } },
+                { txt: "Faire appel à des nettoyeurs professionnels (-40 000 €)", action: () => { if (joueur.argent >= 40000) { joueur.argent -= 40000; joueur.argentPerdu += 40000; if (Math.random() > 0.2) { joueur.niveauSurveillance = 0; return "Les nettoyeurs stérilisent le lieu. Le raid ne trouve absolument rien."; } else { return "Le lieu est nettoyé mais les nettoyeurs ont gardé des copies d'assurance."; } } else { allerEnPrison("Fonds insuffisants pour payer les nettoyeurs. Pris au saut du lit par le SWAT."); return "Arrestation musclée."; } } },
                 { txt: "Préparer un dossier de vice de procédure avec vos juristes", action: () => { let score = joueur.stats.intel + Math.floor(Math.random() * 6); if (score >= 8) { joueur.risquePrison = 0; return "Le mandat est annulé par le juge d'instruction avant l'assaut."; } else { allerEnPrison("Le vice de forme est rejeté. Vous êtes appréhendé sans délai."); return "Direction la maison d'arrêt."; } } }
             ] 
         },
         { 
             titre: "La prise d'otage", desc: "Un cartel rival a capturé votre contact principal et réclame rançon.", 
             choix: [
-                { txt: "Payer la rançon demandée", action: () => { if (joueur.argent >= 50000) { joueur.argent -= 50000; joueur.argentPerdu += 50000; if (Math.random() > 0.2) { joueur.respect += 2; return "Votre contact est libéré sain et sauf (Respect +2)."; } else { return "Le contact est libéré mais reste profondément marqué psychologiquement."; } } else { joueur.mental = Math.max(1, joueur.mental - 2); return "Fonds insuffisants. Vous apprenez son exécution le lendemain (Mental -2)."; } } },
+                { txt: "Payer la rançon demandée (-50 000 €)", action: () => { if (joueur.argent >= 50000) { joueur.argent -= 50000; joueur.argentPerdu += 50000; if (Math.random() > 0.2) { joueur.respect += 2; return "Votre contact est libéré sain et sauf (Respect +2)."; } else { return "Le contact est libéré mais reste profondément marqué psychologiquement."; } } else { joueur.mental = Math.max(1, joueur.mental - 2); return "Fonds insuffisants. Vous apprenez son exécution le lendemain (Mental -2)."; } } },
                 { txt: "Lancer un raid armé pour le libérer", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 9) { joueur.crainte += 5; joueur.moralite = Math.max(0, joueur.moralite - 2); return "L'assaut fait des ravages mais l'otage est extrait vivant (Crainte +5)."; } else { joueur.mental = Math.max(1, joueur.mental - 4); return "L'opération échoue et l'otage périt sous les tirs croisés (Mental -4)."; } } },
                 { txt: "Refuser toute négociation publiquement", action: () => { let score = joueur.mental + Math.floor(Math.random() * 6); if (score >= 8) { joueur.crainte += 5; joueur.moralite = Math.max(0, joueur.moralite - 3); return "Votre détermination sans faille impressionne le cartel qui relâche l'otage sans conditions (Crainte +5)."; } else { joueur.mental = Math.max(1, joueur.mental - 3); joueur.moralite = Math.max(0, joueur.moralite - 3); return "Le cartel exécute l'otage et la culpabilité vous hante (Mental -3, Moralité -3)."; } } }
             ] 
@@ -286,7 +293,7 @@ const banqueEvenements = {
         { 
             titre: "Les coupures tracées", desc: "Le produit de votre dernier coup comporte des traceurs de la banque centrale.", 
             choix: [
-                { txt: "Faire appel à un circuit de blanchiment express", action: () => { if (joueur.argent >= 15000) { joueur.argent -= 15000; joueur.argentPerdu += 15000; if (Math.random() > 0.2) { return "Les coupures sont remplacées par des devises étrangères propres."; } else { joueur.heat += 10; return "Le blanchisseur a pris une commission exorbitante sur l'échange (Tension +10%)."; } } else { allerEnPrison("Interpellé en tentant d'écouler les coupures marquées."); return "Menottes immédiates."; } } },
+                { txt: "Faire appel à un circuit de blanchiment express (-15 000 €)", action: () => { if (joueur.argent >= 15000) { joueur.argent -= 15000; joueur.argentPerdu += 15000; if (Math.random() > 0.2) { return "Les coupures sont remplacées par des devises étrangères propres."; } else { joueur.heat += 10; return "Le blanchisseur a pris une commission exorbitante sur l'échange (Tension +10%)."; } } else { allerEnPrison("Interpellé en tentant d'écouler les coupures marquées."); return "Menottes immédiates."; } } },
                 { txt: "Détruire la totalité des liasses suspectes", action: () => { let part = Math.floor(joueur.argent * 0.2); joueur.argent -= part; joueur.argentPerdu += part; if (Math.random() > 0.3) { joueur.moralite = Math.max(0, joueur.moralite - 1); return `Vous réduisez en cendres ${part.toLocaleString()} € pour couper court à toute enquête.`; } else { joueur.mental = Math.max(1, joueur.mental - 1); return `La destruction de ${part.toLocaleString()} € affecte lourdement votre moral (Mental -1).`; } } },
                 { txt: "Tenter d'écouler les billets malgré le risque", action: () => { if (Math.random() > 0.6) { return "Les commerçants ne remarquent aucune anomalie sur les billets."; } else { joueur.risquePrison += 25; return "Plusieurs commerces signalent les numéros de série à la banque de France (Risque +25%)."; } } }
             ] 
@@ -298,14 +305,14 @@ const banqueEvenements = {
             choix: [
                 { txt: "Prendre l'initiative et frapper en premier", action: () => { let score = joueur.stats.force + Math.floor(Math.random() * 6); if (score >= 7) { joueur.crainte += 3; return "Vous mettez leur meneur hors de combat devant les surveillants (Crainte +3)."; } else { joueur.mental = Math.max(1, joueur.mental - 2); return "Submergé par le nombre, vous vous réveillez à l'infirmerie (Mental -2)."; } } },
                 { txt: "Esquiver le groupe et alerter discrètement la garde", action: () => { let score = joueur.stats.furtivite + Math.floor(Math.random() * 6); if (score >= 6) { return "Vous vous extirpez du piège sans essuyer le moindre coup."; } else { joueur.mental = Math.max(1, joueur.mental - 1); return "Rattrapé près de la grille, vous encaissez plusieurs coups (Mental -1)."; } } },
-                { txt: "Acheter la protection des caïds du pavillon", action: () => { if (joueur.argent >= 5000) { joueur.argent -= 5000; joueur.argentPerdu += 5000; if (Math.random() > 0.2) { return "Les caïds interviennent et dispersent le groupe immédiatement."; } else { return "Votre argent est pris mais vos protecteurs restent distants."; } } else { joueur.mental = Math.max(1, joueur.mental - 2); return "Sans argent pour payer la taxe, l'agression est inévitable (Mental -2)."; } } }
+                { txt: "Acheter la protection des caïds du pavillon (-5 000 €)", action: () => { if (joueur.argent >= 5000) { joueur.argent -= 5000; joueur.argentPerdu += 5000; if (Math.random() > 0.2) { return "Les caïds interviennent et dispersent le groupe immédiatement."; } else { return "Votre argent est pris mais vos protecteurs restent distants."; } } else { joueur.mental = Math.max(1, joueur.mental - 2); return "Sans argent pour payer la taxe, l'agression est inévitable (Mental -2)."; } } }
             ] 
         },
         { 
             titre: "Le trafic de coursive", desc: "Un surveillant propose d'introduire du matériel prohibé dans votre cellule.", 
             choix: [
-                { txt: "Acheter un terminal mobile crypté", action: () => { if (joueur.argent >= 8000) { joueur.argent -= 8000; joueur.argentPerdu += 8000; if (Math.random() > 0.2) { joueur.stats.intel += 1; return "Le terminal vous permet de piloter vos réseaux extérieurs (+1 Intel)."; } else { return "Le téléphone fonctionne par intermittence mais reste utile."; } } else { return "Fonds insuffisants pour conclure la transaction."; } } },
-                { txt: "Acquérir des stéroïdes et du matériel d'entraînement", action: () => { if (joueur.argent >= 5000) { joueur.argent -= 5000; joueur.argentPerdu += 5000; if (Math.random() > 0.2) { joueur.stats.force += 1; return "Programme d'entraînement intensif en cellule (+1 Force)."; } else { return "Produits de qualité médiocre mais l'exercice physique porte ses fruits."; } } else { return "Fonds insuffisants pour acquérir le lot."; } } },
+                { txt: "Acheter un terminal mobile crypté (-8 000 €)", action: () => { if (joueur.argent >= 8000) { joueur.argent -= 8000; joueur.argentPerdu += 8000; if (Math.random() > 0.2) { joueur.stats.intel += 1; return "Le terminal vous permet de piloter vos réseaux extérieurs (+1 Intel)."; } else { return "Le téléphone fonctionne par intermittence mais reste utile."; } } else { return "Fonds insuffisants pour conclure la transaction."; } } },
+                { txt: "Acquérir des stéroïdes et du matériel d'entraînement (-5 000 €)", action: () => { if (joueur.argent >= 5000) { joueur.argent -= 5000; joueur.argentPerdu += 5000; if (Math.random() > 0.2) { joueur.stats.force += 1; return "Programme d'entraînement intensif en cellule (+1 Force)."; } else { return "Produits de qualité médiocre mais l'exercice physique porte ses fruits."; } } else { return "Fonds insuffisants pour acquérir le lot."; } } },
                 { txt: "Rejeter la proposition et garder un profil bas", action: () => { if (Math.random() > 0.4) { joueur.mental = Math.min(10, joueur.mental + 1); return "Votre discipline exemplaire vous évite toute fouille inopinée (Mental +1)."; } else { return "Le surveillant s'éloigne sans insister."; } } }
             ] 
         },
@@ -328,7 +335,7 @@ const banqueEvenements = {
         { 
             titre: "L'avis de transfert disciplinaire", desc: "La direction pénitentiaire ordonne votre transfert vers une maison centrale ultra-sécurisée.", 
             choix: [
-                { txt: "Soudoyer le directeur adjoint", action: () => { if (joueur.argent >= 30000) { joueur.argent -= 30000; joueur.argentPerdu += 30000; if (Math.random() > 0.2) { return "Votre dossier est reclassé. Le transfert est annulé."; } else { return "Le transfert est reporté de quelques mois seulement."; } } else { joueur.crainte += 2; return "Fonds insuffisants. Vous partez sous escorte lourde (Crainte +2)."; } } },
+                { txt: "Soudoyer le directeur adjoint (-30 000 €)", action: () => { if (joueur.argent >= 30000) { joueur.argent -= 30000; joueur.argentPerdu += 30000; if (Math.random() > 0.2) { return "Votre dossier est reclassé. Le transfert est annulé."; } else { return "Le transfert est reporté de quelques mois seulement."; } } else { joueur.crainte += 2; return "Fonds insuffisants. Vous partez sous escorte lourde (Crainte +2)."; } } },
                 { txt: "Simuler une urgence médicale grave", action: () => { let score = joueur.mental + Math.floor(Math.random() * 6); if (score >= 7) { return "Le médecin suspend le transfert pour observation clinique."; } else { joueur.mental = Math.max(1, joueur.mental - 2); return "La supercherie est découverte et vous êtes placé à l'isolement (Mental -2)."; } } },
                 { txt: "Accepter le régime de haute sécurité sans protester", action: () => { joueur.peineActuelle += 1; if (Math.random() > 0.4) { joueur.crainte += 3; return "Votre séjour en quartier d'isolement forge votre réputation (Crainte +3, Peine +1 an)."; } else { joueur.mental = Math.max(1, joueur.mental - 2); return "L'isolement strict entame sévèrement vos facultés (Mental -2, Peine +1 an)."; } } }
             ] 
@@ -352,6 +359,7 @@ let joueur = {
     crainte: 0,
     stats: { force: 3, intel: 3, furtivite: 3 },
     buffs: { force: 0, intel: 0, furtivite: 0, sangfroid: 0, contacts: 0 },
+    competences: { forceT2: false, forceT3: false, intelT2: false, intelT3: false, furtiviteT2: false, furtiviteT3: false, disciplineT2: false },
     pointsCompetence: 0, possessions: [], equipe: [],
     journal: []
 };
@@ -384,20 +392,23 @@ function updateStats() {
 
     document.getElementById('global-stats').innerHTML = `
         <div class="stat-id">
-            <span class="stat-id-item">${getAvatarEmoji()} <strong>${joueur.age} ans</strong><span class="stat-sub">(mois ${joueur.mois})</span></span>
+            <span class="stat-id-item"><strong>${joueur.age} ans</strong><span class="stat-sub">(mois ${joueur.mois})</span></span>
             <span class="stat-id-item stat-id-money">💰 <strong>${joueur.argent.toLocaleString()} €</strong></span>
         </div>
+        <div class="stat-subline">${joueur.classe || '—'} · ${getStatutCriminel()}</div>
         <div class="stat-id stat-id-secondary">
             <span class="stat-id-item">🧼 Blanchi <strong>${joueur.cashBlanchi.toLocaleString()} €</strong></span>
         </div>
 
-        <div class="stat-grid">
-            <div class="stat-cell"><span class="stat-label" title="Force">💪</span><span class="stat-value">${joueur.stats.force}</span></div>
-            <div class="stat-cell"><span class="stat-label">👑 Respect</span><span class="stat-value">${joueur.respect}</span></div>
-            <div class="stat-cell"><span class="stat-label" title="Intelligence">🧠</span><span class="stat-value">${joueur.stats.intel}</span></div>
-            <div class="stat-cell"><span class="stat-label">💀 Crainte</span><span class="stat-value">${joueur.crainte}</span></div>
-            <div class="stat-cell"><span class="stat-label" title="Furtivité">🥷</span><span class="stat-value">${joueur.stats.furtivite}</span></div>
-            <div class="stat-cell"><span class="stat-label">💭 Mental</span><span class="stat-value">${joueur.mental}/10</span></div>
+        <div class="stat-row3">
+            <div class="stat-cell3"><span class="stat-label" title="Force">💪</span><span class="stat-value">${joueur.stats.force}</span></div>
+            <div class="stat-cell3"><span class="stat-label" title="Intelligence">🧠</span><span class="stat-value">${joueur.stats.intel}</span></div>
+            <div class="stat-cell3"><span class="stat-label" title="Furtivité">🥷</span><span class="stat-value">${joueur.stats.furtivite}</span></div>
+        </div>
+        <div class="stat-row3">
+            <div class="stat-cell3"><span class="stat-label">👑 Respect</span><span class="stat-value">${joueur.respect}</span></div>
+            <div class="stat-cell3"><span class="stat-label">💀 Crainte</span><span class="stat-value">${joueur.crainte}</span></div>
+            <div class="stat-cell3"><span class="stat-label">💭 Mental</span><span class="stat-value">${joueur.mental}/10</span></div>
         </div>
 
         <div class="stat-gauges">
@@ -519,7 +530,7 @@ function setClasse(nomClasse) {
 }
 
 function setVille(ville) {
-    if (joueur.ville !== "" && joueur.risquePrison > 0) {
+    if (joueur.ville !== "" && joueur.risquePrison > 0 && !joueur.fauxPapiers) {
         if (Math.random() * 100 < joueur.risquePrison) {
             allerEnPrison("La douane vous a intercepté à l'aéroport.");
             return;
@@ -786,6 +797,7 @@ function ouvrirRecrutement() {
         if(!dejaEquipe) {
             let coutReel = Math.max(2000, r.cout - (joueur.respect * 500));
             coutReel = Math.floor(coutReel * (1 - (joueur.buffs.contacts || 0) / 100));
+            if (joueur.competences.intelT2) coutReel = Math.floor(coutReel * 0.9);
             let peutPayer = joueur.argent >= coutReel;
             html += `<div class="recrue-card">
                 <strong>${r.nom}</strong> <span style="color:var(--paper-dim); font-size:12px;">| Spé : ${r.role} (-${r.bonus} difficulté)</span>
@@ -867,32 +879,110 @@ function executerRecrue(index) {
 }
 
 
-function ouvrirArbre() {
-    document.getElementById('pts-comp').innerText = joueur.pointsCompetence;
-    showScreen('screen-arbre');
-}
+const arbreBranches = [
+    { stat: 'force', nomT1: 'Musculation & Tir', icon: '💪',
+      t2: { id: 'forceT2', nom: 'Frappe Chirurgicale', desc: "Vos approches Frontale ne blessent plus jamais de civils par accident.", cout: 2 },
+      t3: { id: 'forceT3', nom: 'Poigne de Fer', desc: "Réduit de moitié le risque de perdre un allié ou d'y laisser la vie lors d'un coup qui tourne mal.", cout: 3 } },
+    { stat: 'intel', nomT1: 'Laboratoire Cyber', icon: '🧠',
+      t2: { id: 'intelT2', nom: 'Ingénierie Sociale', desc: "Réduit encore le coût de recrutement de nouvelles recrues (-10% supplémentaire).", cout: 2 },
+      t3: { id: 'intelT3', nom: 'Fantôme du Réseau', desc: "Le niveau de surveillance n'affecte plus vos approches Cyber.", cout: 3 } },
+    { stat: 'furtivite', nomT1: 'Parkour & Ombres', icon: '🥷',
+      t2: { id: 'furtiviteT2', nom: 'Pas Feutrés', desc: "Supprime le malus de discrétion tant que votre Furtivité est faible.", cout: 2 },
+      t3: { id: 'furtiviteT3', nom: 'Ombre Insaisissable', desc: "Une seconde chance automatique si une fuite discrète tourne mal.", cout: 3 } }
+];
 
 const libellesCompetence = {
     force: "Force", intel: "Intelligence", furtivite: "Furtivité",
-    sangfroid: "Sang-Froid (réduit la Tension gagnée en casse)",
-    contacts: "Réseau de Contacts (réduit le coût de recrutement)"
+    sangfroid: "Sang-Froid", contacts: "Réseau de Contacts"
 };
+
+function ouvrirArbre() {
+    rafraichirArbre();
+    showScreen('screen-arbre');
+}
+
+function rafraichirArbre() {
+    document.getElementById('pts-comp').innerText = joueur.pointsCompetence;
+    document.getElementById('arbre-content').innerHTML = genererArbreHTML();
+}
+
+function genererArbreHTML() {
+    let html = "";
+    arbreBranches.forEach(b => {
+        let palier = Math.round(joueur.buffs[b.stat] / 10);
+        html += `<div class="arbre-branche">
+            <h3>${b.icon} ${b.nomT1.toUpperCase()} <span class="arbre-palier">Palier ${palier}/3</span></h3>
+            <button class="btn-choix btn-action" ${palier >= 3 ? 'disabled' : ''} onclick="ameliorerArbre('${b.stat}')">+10% réussite — Coût : 1 PC</button>
+            ${rendreTierPerk(b.t2, palier >= 2, joueur.competences[b.t2.id])}
+            ${rendreTierPerk(b.t3, palier >= 3 && joueur.competences[b.t2.id], joueur.competences[b.t3.id], palier < 3 ? "débloqué au palier 3, après " + b.t2.nom : null)}
+        </div>`;
+    });
+
+    let palierSF = Math.round(joueur.buffs.sangfroid / 10);
+    let palierCT = Math.round(joueur.buffs.contacts / 10);
+    let disciplinePerk = { nom: "Instinct de Survie", desc: "Réduit de 25% le Risque de prison encaissé lors des casses.", cout: 3 };
+    html += `<div class="arbre-branche">
+        <h3>🧭 DISCIPLINE</h3>
+        <p class="arbre-sub">Sang-Froid (-10% Tension gagnée) — Palier ${palierSF}/3</p>
+        <button class="btn-choix btn-action" ${palierSF >= 3 ? 'disabled' : ''} onclick="ameliorerArbre('sangfroid')">Sang-Froid — Coût : 1 PC</button>
+        <p class="arbre-sub">Réseau de Contacts (-10% coût recrutement) — Palier ${palierCT}/3</p>
+        <button class="btn-choix btn-action" ${palierCT >= 3 ? 'disabled' : ''} onclick="ameliorerArbre('contacts')">Réseau de Contacts — Coût : 1 PC</button>
+        ${rendreTierPerk({ id: 'disciplineT2', ...disciplinePerk }, palierSF >= 2 && palierCT >= 2, joueur.competences.disciplineT2, "débloqué au palier 2 dans les deux disciplines")}
+    </div>`;
+
+    return html;
+}
+
+function rendreTierPerk(perk, debloque, acquis, texteVerrouille) {
+    if (acquis) {
+        return `<div class="perk-acquis">✅ <strong>${perk.nom}</strong> — ${perk.desc}</div>`;
+    }
+    if (debloque) {
+        return `<button class="btn-choix perk-btn" onclick="acheterPerk('${perk.id}', ${perk.cout})">🔓 <strong>${perk.nom}</strong> — ${perk.desc} (Coût : ${perk.cout} PC)</button>`;
+    }
+    return `<div class="perk-locked">🔒 ${perk.nom} — ${texteVerrouille || "débloqué au palier 2"}</div>`;
+}
 
 function ameliorerArbre(stat) {
     let msgBox = document.getElementById('msg-arbre');
+    if (joueur.buffs[stat] >= 30) {
+        msgBox.style.display = 'block';
+        msgBox.style.background = '#a4453a';
+        msgBox.innerText = "Palier maximum déjà atteint pour cette branche.";
+        return;
+    }
     if (joueur.pointsCompetence > 0) {
         joueur.pointsCompetence -= 1;
         joueur.buffs[stat] += 10;
         msgBox.style.display = 'block';
         msgBox.style.background = '#3d7a52';
         msgBox.innerText = `Succès ! ${libellesCompetence[stat] || stat} : +${joueur.buffs[stat]}% de bonus.`;
-        document.getElementById('pts-comp').innerText = joueur.pointsCompetence;
         updateStats();
-        genererMissionsHub(); 
+        genererMissionsHub();
+        rafraichirArbre();
     } else {
         msgBox.style.display = 'block';
         msgBox.style.background = '#a4453a';
         msgBox.innerText = "Pas de Points de Compétence (PC).";
+    }
+}
+
+function acheterPerk(id, cout) {
+    let msgBox = document.getElementById('msg-arbre');
+    if (joueur.competences[id]) return;
+    if (joueur.pointsCompetence >= cout) {
+        joueur.pointsCompetence -= cout;
+        joueur.competences[id] = true;
+        msgBox.style.display = 'block';
+        msgBox.style.background = '#3d7a52';
+        msgBox.innerText = "Compétence maîtresse débloquée !";
+        updateStats();
+        genererMissionsHub();
+        rafraichirArbre();
+    } else {
+        msgBox.style.display = 'block';
+        msgBox.style.background = '#a4453a';
+        msgBox.innerText = `Pas assez de PC (requis : ${cout}).`;
     }
 }
 
@@ -1010,11 +1100,14 @@ function lancerMiniScenarioAction(stat) {
             contexteCasse.texteAction = "Vous glissez comme un fantôme à travers les conduits. Personne ne soupçonne votre présence.";
         }
     } else if (stat === 'intel') {
-        if (Math.random() > 0.7) {
+        let seuilAlerte = joueur.brouilleurFreq ? 0.88 : 0.7;
+        if (Math.random() > seuilAlerte) {
             contexteCasse.texteAction = "Le pare-feu contre-attaque ! Les portes se verrouillent et le réseau s'affole. La police est en route, il faut forcer le système.";
             contexteCasse.flicsPresents = true;
         } else {
-            contexteCasse.texteAction = "Vous bouclez les caméras. Votre équipe entre, déguisée en techniciens de maintenance.";
+            contexteCasse.texteAction = joueur.brouilleurFreq
+                ? "Le brouilleur étouffe toute alerte. Vous bouclez les caméras sans le moindre accroc."
+                : "Vous bouclez les caméras. Votre équipe entre, déguisée en techniciens de maintenance.";
         }
     }
 
@@ -1037,13 +1130,15 @@ function resoudreAction(stat) {
     if (joueur.originType === 'Défavorisé') difficulte += 1;
     if (joueur.originType === 'Riche') difficulte -= 1;
     if (cibleActuelle.repere) difficulte -= 2;
+    if (stat === 'force') difficulte -= (joueur.bonusArmeForce || 0);
     joueur.equipe.forEach(r => { if(r.role === stat) difficulte -= r.bonus; });
 
     let jet = Math.floor(Math.random() * 10) + 1;
-    let scoreFinal = (joueur.stats[stat] + jet) - joueur.niveauSurveillance;
+    let ignoreSurveillance = (stat === 'intel' && joueur.competences.intelT3);
+    let scoreFinal = (joueur.stats[stat] + jet) - (ignoreSurveillance ? 0 : joueur.niveauSurveillance);
     scoreFinal = scoreFinal * (1 + (joueur.buffs[stat] / 100));
 
-    if(stat === 'furtivite' && joueur.stats.furtivite < 5) scoreFinal -= 3;
+    if(stat === 'furtivite' && joueur.stats.furtivite < 5 && !joueur.competences.furtiviteT2 && !joueur.kitCrochetage) scoreFinal -= 3;
     if(joueur.heat > 50) scoreFinal -= 2;
 
     let reussi = (scoreFinal >= difficulte + 4);
@@ -1061,14 +1156,16 @@ function resoudreAction(stat) {
         if(estViolent || !reussi) {
             contexteCasse.blesseFlics = Math.floor(Math.random() * 3);
             if(Math.random() > 0.7) contexteCasse.mortFlics = 1;
-            contexteCasse.blesseCivils += Math.floor(Math.random() * 2);
+            contexteCasse.blesseCivils += (estViolent && joueur.competences.forceT2) ? 0 : Math.floor(Math.random() * 2);
         }
-        if(!reussi && Math.random() < 0.15 && joueur.equipe.length > 0) {
+        let chanceMortAllie = joueur.competences.forceT3 ? 0.075 : 0.15;
+        if(!reussi && Math.random() < chanceMortAllie && joueur.equipe.length > 0 && !(joueur.giletPareBalles && Math.random() < 0.5)) {
             let idx = Math.floor(Math.random() * joueur.equipe.length);
             let mort = joueur.equipe.splice(idx, 1)[0];
             mortAllie = 1; contexteCasse.nomAllieMort = mort.nom;
         }
-        if(!reussi && Math.random() < 0.03) {
+        let chanceMortJoueur = joueur.competences.forceT3 ? 0.015 : 0.03;
+        if(!reussi && Math.random() < chanceMortJoueur && !joueur.giletPareBalles) {
             afficherEcranFin("Mort en Intervention", "La police a ouvert le feu. Vous n'avez pas survécu."); return;
         }
     }
@@ -1085,13 +1182,17 @@ function resoudreAction(stat) {
         joueur.pointsCompetence += 1; joueur.braquagesReussis += 1;
         let gainHeat = 20 - Math.floor(20 * (joueur.buffs.sangfroid / 100));
         joueur.heat += Math.max(5, gainHeat); 
-        if (stat === 'force') joueur.risquePrison += 20;
+        if (stat === 'force') ajouterRisque(20);
         indexCible[cibleActuelle.niveau]++; 
     }
 
     if (verifierTrahisonEquipe()) return;
 
     lancerExfiltration(reussi, butinJoueur, mortAllie, estViolent);
+}
+
+function ajouterRisque(montant) {
+    joueur.risquePrison += joueur.competences.disciplineT2 ? Math.round(montant * 0.75) : montant;
 }
 
 function verifierTrahisonEquipe() {
@@ -1139,6 +1240,11 @@ function resoudreExfiltration(mode) {
     let jet = Math.floor(Math.random() * 10) + 1;
     let exfilReussie = (scoreBase + jet) >= 11;
 
+    if (!exfilReussie && mode === 'discrete' && joueur.competences.furtiviteT3) {
+        let jet2 = Math.floor(Math.random() * 10) + 1;
+        if ((scoreBase + jet2) >= 11) exfilReussie = true;
+    }
+
     let msgExfil;
     if (exfilReussie) {
         joueur.heat += (mode === 'force') ? 15 : 5;
@@ -1147,7 +1253,7 @@ function resoudreExfiltration(mode) {
             : "Vous forcez le passage sans ménagement, mais vous êtes dehors.";
         afficherDebrief(reussi, butin, mortAllie, msgExfil, false);
     } else {
-        joueur.heat += 30; joueur.risquePrison += 20;
+        joueur.heat += 30; ajouterRisque(20);
         msgExfil = "La fuite tourne mal : une patrouille vous prend en chasse dans les rues adjacentes.";
         if (Math.random() < 0.35) {
             afficherDebrief(reussi, butin, mortAllie, msgExfil, true);

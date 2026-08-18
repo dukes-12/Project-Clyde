@@ -196,37 +196,48 @@ h3 { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
 .stat-id {
     display: flex; justify-content: space-between; align-items: baseline;
     color: var(--blue-bright, #8fb4d1);
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 10px; margin-bottom: 12px;
     font-size: 15px;
+    margin-bottom: 4px;
 }
 .stat-id-item strong { color: var(--paper); font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; }
 .stat-sub { font-size: 11px; color: var(--paper-dim); margin-left: 4px; }
 .stat-id-money { color: var(--gold); }
 
+.stat-subline {
+    font-size: 12px;
+    color: var(--paper-dim);
+    text-align: left;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .stat-id-secondary {
     justify-content: flex-end;
-    border-bottom: none;
-    padding-bottom: 0;
-    margin-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
+    margin-bottom: 12px;
     font-size: 12px;
     color: var(--paper-dim);
 }
 .stat-id-secondary strong { color: var(--blue-bright); font-family: 'Oswald', sans-serif; }
 
-/* --- Grille des 6 statistiques --- */
-.stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 18px;
-    margin-bottom: 12px;
+/* --- Statistiques sur une ligne (3 colonnes) --- */
+.stat-row3 {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 2px;
 }
-.stat-cell {
-    display: flex; justify-content: space-between; align-items: center;
+.stat-cell3 {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    flex: 1; min-width: 0;
     padding: 6px 0;
     border-bottom: 1px dotted var(--line);
     font-size: 13px;
 }
+.stat-cell3 .stat-label { white-space: nowrap; }
+.stat-cell3 .stat-value { white-space: nowrap; }
 .stat-label { color: var(--paper-dim); white-space: nowrap; }
 .stat-value { color: var(--paper); font-weight: 700; font-variant-numeric: tabular-nums; }
 
@@ -447,6 +458,56 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 20px 0; }
 .loyalty-label.loyalty-low { color: var(--rust); }
 .loyalty-label.loyalty-critical { color: var(--rust-bright); animation: pulse-critical 1.6s infinite; }
 @keyframes pulse-critical { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* --- Arbre de compétences --- */
+.arbre-branche {
+    background: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 2px;
+    padding: 14px;
+    margin-bottom: 14px;
+    text-align: left;
+}
+.arbre-branche h3 {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px; font-size: 14px;
+}
+.arbre-palier {
+    font-size: 11px; color: var(--paper-dim); text-transform: none;
+    letter-spacing: 0; font-family: 'JetBrains Mono', monospace; font-weight: 400;
+}
+.arbre-sub { font-size: 12px; color: var(--paper-dim); margin: 10px 0 4px; }
+.perk-btn {
+    background: var(--void);
+    border: 1px dashed var(--gold);
+    color: var(--paper);
+    font-size: 12px;
+    line-height: 1.4;
+}
+.perk-btn:hover:not(:disabled) { background: #14181f; }
+.perk-capstone { border-color: var(--rust-bright); }
+.perk-acquis {
+    background: rgba(79, 153, 103, 0.12);
+    border: 1px solid var(--ok);
+    color: var(--ok-bright);
+    border-radius: 2px;
+    padding: 10px;
+    margin: 8px 0;
+    font-size: 12px;
+    line-height: 1.4;
+}
+.perk-acquis strong { color: var(--paper); }
+.perk-locked {
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed var(--line);
+    color: var(--paper-dim);
+    border-radius: 2px;
+    padding: 10px;
+    margin: 8px 0;
+    font-size: 12px;
+    font-style: italic;
+}
 
 @media (max-width: 600px) {
     #game-container { padding: 26px 18px 20px; }
