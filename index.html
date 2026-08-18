@@ -3,67 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Braquage - Le Jeu (v4)</title>
-    <style>
-        body {
-            background-color: #0d1117; color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            margin: 0; padding: 20px;
-            display: flex; justify-content: center; align-items: center; min-height: 90vh;
-        }
-        #game-container {
-            width: 100%; max-width: 750px;
-            background-color: #161b22;
-            padding: 30px; border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.8);
-            border: 1px solid #30363d; text-align: center;
-        }
-        .screen { display: none; }
-        .active { display: block; }
-        h1, h2, h3 { color: #ff7b72; margin-bottom: 15px; }
-        
-        .btn-choix {
-            background-color: #21262d; color: #c9d1d9;
-            border: 1px solid #30363d; padding: 15px; margin: 8px 0;
-            font-size: 15px; border-radius: 6px; cursor: pointer;
-            width: 100%; transition: 0.2s; font-weight: bold;
-        }
-        .btn-choix:hover:not(:disabled) { background-color: #30363d; border-color: #8b949e; }
-        .btn-choix:disabled { opacity: 0.5; cursor: not-allowed; text-decoration: line-through; }
-        
-        .btn-action { background-color: #da3633; color: white; border: none; }
-        .btn-action:hover { background-color: #b32d2a; }
-        .btn-boutique { background-color: #d29922; color: #000; border: none; }
-        .btn-boutique:hover { background-color: #a37113; }
-        .btn-retraite { background-color: #238636; color: white; border: none; }
-        .btn-retraite:hover { background-color: #2ea043; }
-        
-        .stats-bar {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-            background: #0d1117; padding: 15px; border-radius: 8px;
-            margin-bottom: 20px; font-weight: bold; font-size: 14px;
-            border: 1px solid #30363d; text-align: left;
-        }
-        .danger-text { color: #ff7b72; }
-        .taule-text { color: #8b949e; text-decoration: line-through; }
-        .surveillance-text { color: #d29922; font-style: italic; }
-        
-        /* Design Boutique */
-        .shop-item {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #21262d; padding: 15px; margin: 10px 0;
-            border-radius: 6px; border: 1px solid #30363d; text-align: left;
-        }
-        .shop-info { flex: 1; }
-        .shop-info h4 { margin: 0 0 5px 0; color: #79c0ff; }
-        .shop-info p { margin: 0; font-size: 13px; color: #8b949e; }
-        .btn-achat {
-            background: #238636; color: white; border: none;
-            padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;
-        }
-        .btn-achat:hover:not(:disabled) { background: #2ea043; }
-        .btn-achat:disabled { background: #30363d; color: #8b949e; cursor: not-allowed; }
-    </style>
+    <title>Braquage - Le Jeu</title>
+    <!-- C'est ici qu'on appelle ton fichier CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -74,17 +16,17 @@
     <!-- ACCUEIL -->
     <div id="screen-start" class="screen active">
         <h1>HEIST: THE CHOICE</h1>
-        <p>Achetez du matériel, formez-vous et devenez le roi de la pègre.</p>
-        <button class="btn-choix btn-action" onclick="showScreen('screen-origin')">Nouvelle Partie</button>
+        <p>Bâtissez un empire, gérez votre tension et prenez votre retraite au sommet.</p>
+        <button class="btn-choix btn-action" onclick="showScreen('screen-milieu')">Nouvelle Partie</button>
     </div>
 
-    <!-- ORIGINE -->
-    <div id="screen-origin" class="screen">
-        <h2>Profil du Criminel</h2>
-        <!-- On baisse les stats non-principales pour forcer l'achat de formations -->
-        <button class="btn-choix" onclick="initJoueur('Hacker', 2, 7, 3)">Hacker (Force: 2, Intel: 7, Furtivité: 3)</button>
-        <button class="btn-choix" onclick="initJoueur('Militaire', 7, 2, 3)">Ancien Militaire (Force: 7, Intel: 2, Furtivité: 3)</button>
-        <button class="btn-choix" onclick="initJoueur('Fantôme', 3, 3, 7)">Voleur Fantôme (Force: 3, Intel: 3, Furtivité: 7)</button>
+    <!-- LE MILIEU SOCIAL -->
+    <div id="screen-milieu" class="screen">
+        <h2>Vos Origines</h2>
+        <p>Votre milieu social d'origine influence votre parcours.</p>
+        <button class="btn-choix" onclick="initJoueur('Défavorisé')">Quartiers Défavorisés (Discret, mais ciblé par la police)</button>
+        <button class="btn-choix" onclick="initJoueur('Classique')">Classe Moyenne (Aucun bonus/malus)</button>
+        <button class="btn-choix" onclick="initJoueur('Riche')">Milieu Aisé (Peines réduites, mais couverture médiatique)</button>
     </div>
 
     <!-- VILLE -->
@@ -101,52 +43,40 @@
         <div id="hub-notification" style="color:#79c0ff; margin-bottom:15px; min-height: 20px;"></div>
         
         <div style="display:flex; flex-wrap: wrap; gap:10px; margin-bottom: 20px;">
+            <button class="btn-choix btn-profil" style="width: 100%;" onclick="ouvrirProfil()">👤 Ouvrir le Dossier Profil</button>
             <button class="btn-choix btn-boutique" style="width: 48%;" onclick="ouvrirBoutique()">🛒 Marché Noir</button>
             <button class="btn-choix btn-action" style="width: 48%;" onclick="ouvrirRecrutement()">👥 Recrutement</button>
             <button class="btn-choix btn-boutique" style="width: 48%;" onclick="ouvrirArbre()">🧠 Compétences</button>
             <button class="btn-choix btn-retraite" style="width: 48%;" onclick="terminerJeu('retraite')">🌴 Se Ranger</button>
         </div>
+
+        <h3 style="margin-top: 30px;">Cibles Disponibles</h3>
+        <p style="font-size: 12px; color: #8b949e; margin-top: -10px;">Le [XX %] indique vos chances globales de succès selon vos meilleures stats.</p>
         <div id="hub-targets"></div>
+        
         <hr style="border-color: #30363d; margin: 20px 0;">
+        <button class="btn-choix" onclick="calmerLeJeu()">☕ Calmer le jeu (Passe 6 mois, Baisse la tension)</button>
         <button class="btn-choix" onclick="showScreen('screen-ville'); document.getElementById('titre-ville').innerText = 'Déménager';">✈️ Changer de ville (Risqué si recherché)</button>
+    </div>
+
+    <!-- PROFIL -->
+    <div id="screen-profil" class="screen">
+        <h2>Dossier du Personnage</h2>
+        <div class="carte-profil" id="contenu-profil"></div>
+        <button class="btn-choix" onclick="showScreen('screen-hub')">Fermer le dossier</button>
     </div>
 
     <!-- LA BOUTIQUE -->
     <div id="screen-boutique" class="screen">
         <h2>Le Marché Noir</h2>
-        <p>Investissez votre butin pour faciliter vos futurs coups.</p>
         <div id="boutique-liste" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div>
         <button class="btn-choix" onclick="showScreen('screen-hub')">Retourner à la planque</button>
-    </div>
-
-    <!-- PRÉPARATION -->
-    <div id="screen-prep" class="screen">
-        <h2>Préparation du Casse</h2>
-        <p id="prep-desc"></p>
-        <p><em>Butin estimé : <span id="prep-butin"></span> €</em></p>
-        <button class="btn-choix btn-action" onclick="validerPrep()">Aller sur les lieux</button>
-        <button class="btn-choix" onclick="showScreen('screen-hub')">Annuler</button>
-    </div>
-
-    <!-- L'ACTION -->
-    <div id="screen-action" class="screen">
-        <h2 id="action-title">Le Braquage</h2>
-        <p>Nécessite au moins 4 dans une compétence pour l'utiliser.</p>
-        <div id="action-choices"></div>
-    </div>
-    <!-- LE MILIEU SOCIAL -->
-    <div id="screen-milieu" class="screen">
-        <h2>Vos Origines</h2>
-        <p>Votre milieu social d'origine influence votre parcours.</p>
-        <button class="btn-choix" onclick="setMilieu('Défavorisé')">Quartiers Défavorisés (Discret, mais ciblé par la police)</button>
-        <button class="btn-choix" onclick="setMilieu('Classique')">Classe Moyenne (Aucun bonus/malus)</button>
-        <button class="btn-choix" onclick="setMilieu('Riche')">Milieu Aisé (Peines réduites, mais couverture médiatique)</button>
     </div>
 
     <!-- LE RECRUTEMENT -->
     <div id="screen-recrutement" class="screen">
         <h2>Le Bar des Truands</h2>
-        <p>Ils prennent une prime à l'embauche et 15% du butin chacun.</p>
+        <p>Ils prennent une prime et 15% du butin chacun. Ils augmentent vos chances.</p>
         <div id="liste-recrues" style="text-align: left; margin-bottom: 20px;"></div>
         <button class="btn-choix" onclick="showScreen('screen-hub')">Retour</button>
     </div>
@@ -154,14 +84,31 @@
     <!-- ARBRE DE COMPÉTENCES -->
     <div id="screen-arbre" class="screen">
         <h2>Planque - Entraînement</h2>
-        <p>Points de Compétence (PC) disponibles : <span id="pts-comp" style="color:#ff7b72; font-weight:bold;"></span></p>
+        <div id="msg-arbre"></div>
+        <p>Points de Compétence (PC) : <span id="pts-comp" style="color:#ff7b72; font-weight:bold;"></span></p>
         <div style="text-align:left; background:#21262d; padding:15px; border-radius:6px; margin-bottom:15px;">
-            <button class="btn-choix btn-action" onclick="ameliorerArbre('force')">Améliorer Force (+10% réussite) - Coût: 1 PC</button>
-            <button class="btn-choix btn-action" onclick="ameliorerArbre('intel')">Améliorer Intel (+10% réussite) - Coût: 1 PC</button>
-            <button class="btn-choix btn-action" onclick="ameliorerArbre('furtivite')">Améliorer Furtivité (+10% réussite) - Coût: 1 PC</button>
+            <button class="btn-choix btn-action" onclick="ameliorerArbre('force')">Musculation & Tir (+10% réussite Force) - Coût: 1 PC</button>
+            <button class="btn-choix btn-action" onclick="ameliorerArbre('intel')">Laboratoire Cyber (+10% réussite Intel) - Coût: 1 PC</button>
+            <button class="btn-choix btn-action" onclick="ameliorerArbre('furtivite')">Parkour & Ombres (+10% réussite Furtivité) - Coût: 1 PC</button>
         </div>
         <button class="btn-choix" onclick="showScreen('screen-hub')">Retour</button>
     </div>
+
+    <!-- PRÉPARATION -->
+    <div id="screen-prep" class="screen">
+        <h2>Préparation du Casse</h2>
+        <p id="prep-desc"></p>
+        <p><em>Butin estimé : <span id="prep-butin"></span> €</em></p>
+        <button class="btn-choix btn-action" onclick="validerPrep()">Lancer l'opération</button>
+        <button class="btn-choix" onclick="showScreen('screen-hub')">Annuler</button>
+    </div>
+
+    <!-- L'ACTION -->
+    <div id="screen-action" class="screen">
+        <h2 id="action-title">Le Braquage</h2>
+        <div id="action-choices"></div>
+    </div>
+
     <!-- LA PRISON -->
     <div id="screen-prison" class="screen">
         <h2>Incarcération</h2>
@@ -169,334 +116,17 @@
         <button class="btn-choix" onclick="purgerPeine()">Purger sa peine</button>
     </div>
 
+    <!-- ÉCRAN DE FIN -->
+    <div id="screen-end" class="screen">
+        <h2>Bilan de Carrière</h2>
+        <div id="end-text" style="background:#21262d; padding:20px; border-radius:8px; margin-bottom:20px; line-height: 1.6; text-align: left;"></div>
+        <button class="btn-choix btn-action" onclick="location.reload()">Recommencer une partie</button>
+    </div>
+
 </div>
 
-<script>
-    // DONNÉES DU JEU
-    const monde = {
-        "Paris": {
-            faible: [{ nom: "Tabac-Presse", diff: 3, butin: 15000 }, { nom: "Pharmacie de garde", diff: 4, butin: 18000 }],
-            modere: [{ nom: "Bijouterie Vendôme", diff: 6, butin: 250000 }, { nom: "Fourgon de fonds", diff: 7, butin: 300000 }],
-            eleve: [{ nom: "Musée du Louvre", diff: 9, butin: 4000000 }, { nom: "Vente aux enchères", diff: 10, butin: 5000000 }]
-        },
-        "New York": {
-            faible: [{ nom: "Prêteur sur gages", diff: 4, butin: 25000 }, { nom: "Supérette", diff: 4, butin: 20000 }],
-            modere: [{ nom: "Fourgon Blindé", diff: 7, butin: 400000 }, { nom: "Boutique de luxe", diff: 6, butin: 350000 }],
-            eleve: [{ nom: "Réserve Fédérale", diff: 10, butin: 8000000 }, { nom: "Banque de Manhattan", diff: 9, butin: 6000000 }]
-        },
-        "Los Angeles": {
-            faible: [{ nom: "Dispensaire local", diff: 3, butin: 20000 }, { nom: "Station service", diff: 3, butin: 15000 }],
-            modere: [{ nom: "Manoir à Beverly Hills", diff: 5, butin: 180000 }, { nom: "Bijoutier d'Hollywood", diff: 6, butin: 220000 }],
-            eleve: [{ nom: "Casino Clandestin", diff: 8, butin: 3000000 }, { nom: "Dépôt d'or", diff: 9, butin: 4000000 }]
-        }
-    };
-
-    const recruesDispo = [
-        { id: 'r1', nom: 'Gueule d\'Ange', role: 'Furtivité', bonus: 2, cout: 5000 },
-        { id: 'r2', nom: 'Le Bulldozer', role: 'Force', bonus: 3, cout: 8000 },
-        { id: 'r3', nom: 'Neo', role: 'Intel', bonus: 2, cout: 6000 }
-    ];
-
-    let joueur = {
-        origine: "", milieu: "", age: 20, 
-        argent: 0, // Commence à 0
-        ville: "", risquePrison: 0, enPrison: false, niveauSurveillance: 0,
-        stats: { force: 0, intel: 0, furtivite: 0 },
-        buffs: { force: 0, intel: 0, furtivite: 0 },
-        pointsCompetence: 0, possessions: [], equipe: []
-    };
-
-    let cibleActuelle = null;
-    let indexCible = { faible: 0, modere: 0, eleve: 0 };
-
-    // FONCTIONS UI
-    function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-        
-        let statsBar = document.getElementById('global-stats');
-        if(['screen-start', 'screen-origin'].includes(screenId)) {
-            statsBar.style.display = 'none';
-        } else {
-            statsBar.style.display = 'grid';
-            updateStats();
-        }
-    }
-
-    function updateStats() {
-        let textRisque = joueur.enPrison ? `<span class="taule-text">EN TAULE</span>` : `${joueur.risquePrison} %`;
-        let textSurv = joueur.niveauSurveillance > 0 ? `<div class="surveillance-text">👁️ Fiché S (Malus : -${joueur.niveauSurveillance} au braquage)</div>` : "";
-        
-        document.getElementById('global-stats').innerHTML = `
-            <div>👤 Âge: ${joueur.age} ans</div>
-            <div>💰 Cash: ${joueur.argent.toLocaleString()} €</div>
-            <div>💪 ${joueur.stats.force} | 🧠 ${joueur.stats.intel} | 🥷 ${joueur.stats.furtivite}</div>
-            <div class="danger-text">🚨 Risque pénal : ${textRisque}</div>
-            ${textSurv}
-        `;
-    }
-
-    function notify(msg) {
-        document.getElementById('hub-notification').innerText = msg;
-    }
-
-    function initJoueur(origine, f, i, fu) {
-        joueur.origine = origine;
-        joueur.stats.force = f; joueur.stats.intel = i; joueur.stats.furtivite = fu;
-        showScreen('screen-milieu');
-    }
-
-    function setMilieu(milieu) {
-        joueur.milieu = milieu;
-        showScreen('screen-ville');
-    }
-
-    function setVille(ville) {
-        if (joueur.ville !== "" && joueur.risquePrison > 0) {
-            let chance = joueur.risquePrison;
-            if (Math.random() * 100 < chance) {
-                allerEnPrison("La douane a reconnu votre visage à l'aéroport.");
-                return;
-            }
-        }
-        joueur.ville = ville;
-        document.getElementById('hub-ville-nom').innerText = ville;
-        genererMissionsHub();
-        notify(`Bienvenue à ${ville}.`);
-        showScreen('screen-hub');
-    }
-
-    function genererMissionsHub() {
-        let v = monde[joueur.ville];
-        let cF = v.faible[Math.min(indexCible.faible, v.faible.length - 1)];
-        let cM = v.modere[Math.min(indexCible.modere, v.modere.length - 1)];
-        let cE = v.eleve[Math.min(indexCible.eleve, v.eleve.length - 1)];
-
-        document.getElementById('hub-targets').innerHTML = `
-            <button class="btn-choix" onclick="preparerCasse('faible', ${cF.diff}, ${cF.butin}, '${cF.nom}')">🟢 Cible Facile: ${cF.nom}</button>
-            <button class="btn-choix" onclick="preparerCasse('modere', ${cM.diff}, ${cM.butin}, '${cM.nom}')">🟠 Cible Moyenne: ${cM.nom}</button>
-            <button class="btn-choix" onclick="preparerCasse('eleve', ${cE.diff}, ${cE.butin}, '${cE.nom}')">🔴 Cible Complexe: ${cE.nom}</button>
-        `;
-    }
-
-    // BRAQUAGE
-    function preparerCasse(niveau, diff, butin, nom) {
-        cibleActuelle = { niveau: niveau, nom: nom, diff: diff, butin: butin };
-        document.getElementById('prep-desc').innerText = `Lieu : ${nom}`;
-        document.getElementById('prep-butin').innerText = butin.toLocaleString();
-        showScreen('screen-prep');
-    }
-
-    // BOUTIQUE
-    function ouvrirBoutique() {
-        let html = "";
-        let types = [...new Set(catalogue.map(item => item.type))];
-        
-        types.forEach(type => {
-            html += `<h3 style="color:#d29922; border-bottom:1px solid #30363d; padding-bottom:5px;">${type}</h3>`;
-            catalogue.filter(i => i.type === type).forEach(item => {
-                let possede = joueur.possessions.includes(item.id);
-                let asseyArgent = joueur.argent >= item.prix;
-                let btn = possede ? "Acquis" : (asseyArgent ? `Acheter (${item.prix.toLocaleString()} €)` : "Fonds insuffisants");
-                let disabled = (possede || !asseyArgent) ? "disabled" : "";
-
-                html += `<div class="shop-item">
-                    <div class="shop-info">
-                        <h4>${item.nom}</h4><p>${item.desc}</p>
-                    </div>
-                    <button class="btn-achat" ${disabled} onclick="acheterItem('${item.id}')">${btn}</button>
-                </div>`;
-            });
-        });
-        document.getElementById('boutique-liste').innerHTML = html;
-        showScreen('screen-boutique');
-    }
-
-    function acheterItem(id) {
-        let item = catalogue.find(i => i.id === id);
-        if (joueur.argent >= item.prix && !joueur.possessions.includes(id)) {
-            joueur.argent -= item.prix;
-            joueur.possessions.push(id);
-            item.effet();
-            updateStats();
-            ouvrirBoutique(); // Rafraîchir les boutons
-        }
-    }
-
-    
-    function validerPrep() {
-        document.getElementById('action-title').innerText = cibleActuelle.nom;
-        let choices = document.getElementById('action-choices');
-        
-        // CONTRAINTE DE COMPÉTENCE : Désactive les boutons si la stat est < 4
-        let req = 4;
-        let cFurt = joueur.stats.furtivite >= req ? "" : `disabled`;
-        let cIntel = joueur.stats.intel >= req ? "" : `disabled`;
-        let cForce = joueur.stats.force >= req ? "" : `disabled`;
-
-        let txtFurt = cFurt ? "(Furtivité insuffisante)" : "🥷 Approche Fantôme (Requiert le calme absolu)";
-        let txtIntel = cIntel ? "(Hacking insuffisant)" : "🧠 Approche Cyber (Pirater les systèmes)";
-        let txtForce = cForce ? "(Force insuffisante)" : "💪 Approche Frontale (Armes lourdes et otages)";
-
-        choices.innerHTML = `
-            <button class="btn-choix" ${cFurt} onclick="resoudreAction('furtivite')">${txtFurt}</button>
-            <button class="btn-choix" ${cIntel} onclick="resoudreAction('intel')">${txtIntel}</button>
-            <button class="btn-choix" ${cForce} onclick="resoudreAction('force')">${txtForce}</button>
-        `;
-        showScreen('screen-action');
-    }
-
-    function resoudreAction(stat) {
-        joueur.age += 1;
-        let difficulte = cibleActuelle.diff;
-        
-        if (joueur.milieu === 'Défavorisé') difficulte += 1;
-        if (joueur.milieu === 'Riche') difficulte -= 1;
-
-        joueur.equipe.forEach(recrue => {
-            if(recrue.role.toLowerCase() === stat) difficulte -= recrue.bonus;
-        });
-
-        let jet = Math.floor(Math.random() * 10) + 1;
-        let scoreFinal = (joueur.stats[stat] + jet) - joueur.niveauSurveillance;
-        
-        let multiplicateurBuff = 1 + (joueur.buffs[stat] / 100);
-        scoreFinal = scoreFinal * multiplicateurBuff;
-
-        if (scoreFinal >= difficulte + 4) {
-            let partEquipe = cibleActuelle.butin * (0.15 * joueur.equipe.length);
-            let butinJoueur = cibleActuelle.butin - partEquipe;
-            
-            joueur.argent += butinJoueur;
-            joueur.pointsCompetence += 1;
-            if (stat === 'force') joueur.risquePrison += 20;
-            if (joueur.milieu === 'Riche') joueur.risquePrison += 5;
-
-            indexCible[cibleActuelle.niveau]++; 
-            
-            notify(`Coup réussi ! Butin net : ${butinJoueur.toLocaleString()} € (+1 PC)`);
-            genererMissionsHub();
-            showScreen('screen-hub');
-        } else {
-            allerEnPrison("L'opération a foiré.");
-        }
-    }
-
-    // PRISON ET RETRAITE
-    function allerEnPrison(raison) {
-        joueur.enPrison = true;
-        let annees = Math.floor(Math.random() * 4) + 2 + Math.floor(joueur.risquePrison / 15);
-        if (joueur.milieu === 'Riche') annees = Math.max(1, annees - 2);
-        joueur.peineActuelle = annees;
-        
-        let amende = annees * 10000;
-        let texteArgent = "";
-        if (joueur.argent >= amende) {
-            joueur.argent -= amende;
-            texteArgent = `L'État saisit ${amende.toLocaleString()} € d'amende.`;
-        } else {
-            joueur.argent = 0;
-            texteArgent = `Vous êtes ruiné, la justice a tout saisi.`;
-        }
-        
-        document.getElementById('prison-text').innerText = `${raison} Le tribunal vous condamne à ${annees} ans. ${texteArgent}`;
-        showScreen('screen-prison');
-    }
-
-    function purgerPeine() {
-        joueur.age += joueur.peineActuelle;
-        joueur.risquePrison = 0; 
-        joueur.enPrison = false;
-        
-        // Le joueur est désormais surveillé de près
-        joueur.niveauSurveillance += 1; 
-
-        if (joueur.age >= 65) {
-            alert("Vous décédez de vieillesse ou d'une maladie en cellule.");
-            location.reload();
-        } else {
-            notify(`Vous sortez après ${joueur.peineActuelle} ans. Les forces de l'ordre ont l'œil sur vous.`);
-            showScreen('screen-hub');
-        }
-    }
-
-    function terminerJeu(raison) {
-        if (raison === 'retraite') {
-            if (joueur.argent < 100000) {
-                alert(`Vous vous rangez avec ${joueur.argent.toLocaleString()} €. Vous finissez par faire un petit boulot mal payé jusqu'à la fin de vos jours. Fin de la partie.`);
-            } else if (joueur.argent < 2000000) {
-                alert(`Retraite confortable avec ${joueur.argent.toLocaleString()} €. Vous disparaissez de la circulation. Fin de la partie.`);
-            } else {
-                alert(`LÉGENDE VIVANTE. Vous prenez votre retraite avec ${joueur.argent.toLocaleString()} €. Vous achetez une île paradisiaque. Fin de la partie.`);
-            }
-            location.reload();
-        }
-    }
-    // RECRUTEMENT
-    function ouvrirRecrutement() {
-        let html = "";
-        if(joueur.equipe.length > 0) {
-            html += `<h3 style="color:#79c0ff">Votre Équipe Actuelle</h3>`;
-            joueur.equipe.forEach((eq, index) => {
-                html += `<div style="background:#0d1117; padding:10px; margin-bottom:10px; border:1px solid #30363d; border-radius:4px;">
-                    <strong>${eq.nom}</strong> (Spé: ${eq.role}) 
-                    <button class="btn-action" style="padding:5px 10px; margin-left:10px; border-radius:4px;" onclick="virerRecrue(${index})">Virer</button>
-                </div>`;
-            });
-            html += `<hr style="border-color:#30363d">`;
-        }
-
-        html += `<h3 style="color:#2ea043">À Embaucher</h3>`;
-        recruesDispo.forEach(r => {
-            let dejaEquipe = joueur.equipe.find(e => e.id === r.id);
-            if(!dejaEquipe) {
-                let peutPayer = joueur.argent >= r.cout;
-                html += `<div style="background:#21262d; padding:10px; margin-bottom:10px; border:1px solid #30363d; border-radius:4px;">
-                    <strong>${r.nom}</strong> | Spé: ${r.role} (-${r.bonus} difficulté)<br>
-                    <small>Prime: ${r.cout.toLocaleString()} € + 15% du butin</small><br>
-                    <button class="btn-choix" ${!peutPayer ? 'disabled' : ''} style="padding:8px; margin-top:5px" 
-                    onclick="embaucher('${r.id}')">Engager</button>
-                </div>`;
-            }
-        });
-        document.getElementById('liste-recrues').innerHTML = html;
-        showScreen('screen-recrutement');
-    }
-
-    function embaucher(id) {
-        let recrue = recruesDispo.find(r => r.id === id);
-        if(joueur.argent >= recrue.cout) {
-            joueur.argent -= recrue.cout;
-            joueur.equipe.push(recrue);
-            updateStats();
-            ouvrirRecrutement();
-        }
-    }
-
-    function virerRecrue(index) {
-        joueur.equipe.splice(index, 1);
-        updateStats();
-        ouvrirRecrutement();
-    }
-
-    // ARBRE DE COMPÉTENCES
-    function ouvrirArbre() {
-        document.getElementById('pts-comp').innerText = joueur.pointsCompetence;
-        showScreen('screen-arbre');
-    }
-
-    function ameliorerArbre(stat) {
-        if (joueur.pointsCompetence > 0) {
-            joueur.pointsCompetence -= 1;
-            joueur.buffs[stat] += 10;
-            alert(`Compétence améliorée ! L'approche [${stat}] bénéficie de +${joueur.buffs[stat]}% de bonus de réussite.`);
-            ouvrirArbre();
-            updateStats();
-        } else {
-            alert("Vous n'avez pas de Points de Compétence. Réussissez des braquages pour en gagner.");
-        }
-    }
-</script>
+<!-- C'est ici qu'on appelle ton fichier JS (toujours à la fin du body) -->
+<script src="game.js"></script>
 
 </body>
 </html>
