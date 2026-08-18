@@ -346,12 +346,12 @@ const banqueEvenements = {
 
 
 let joueur = {
-    milieu: "", originType: "", age: 20, mois: 0,
+    milieu: "", classe: "", originType: "", age: 20, mois: 0,
     argent: 0, argentGagne: 0, argentPerdu: 0,
     cashBlanchi: 0, ville: "", 
     risquePrison: 0, enPrison: false, niveauSurveillance: 0,
     heat: 0, 
-    braquagesReussis: 0,
+    braquagesReussis: 0, cptLarcin: 0,
     blanchisserie: false,
     vehicule: "Aucun",
     mental: 8, 
@@ -362,6 +362,7 @@ let joueur = {
     buffs: { force: 0, intel: 0, furtivite: 0 },
     pointsCompetence: 0, possessions: [], equipe: []
 };
+
 
 let cibleActuelle = null;
 let indexCible = { faible: 0, modere: 0, eleve: 0 };
@@ -384,6 +385,7 @@ function showScreen(screenId) {
 
 function updateStats() {
     let textRisque = joueur.enPrison ? `<span style="color:#8b949e;text-decoration:line-through;">EN TAULE</span>` : `${joueur.risquePrison} %`;
+    let texteSurveillance = joueur.niveauSurveillance > 0 ? `<div style="color:#da3633; grid-column: span 2; text-align:center;">👁️ Vous êtes fiché (Malus global réussite : -${joueur.niveauSurveillance * 10}%)</div>` : "";
     
     document.getElementById('global-stats').innerHTML = `
         <div>👤 ${joueur.age} ans (M: ${joueur.mois})</div>
@@ -392,8 +394,10 @@ function updateStats() {
         <div>👑 Respect: ${joueur.respect} | 💀 Crainte: ${joueur.crainte}</div>
         <div>🧠 Mental: ${joueur.mental}/10 | ⚖️ Moral: ${joueur.moralite}</div>
         <div class="danger-text">🚨 Risque : ${textRisque} | 🔥 Heat : ${joueur.heat}%</div>
+        ${texteSurveillance}
     `;
 }
+
 
 
 function notify(msg) {
@@ -464,15 +468,47 @@ function entrerDansLaPlanque() {
     showScreen('screen-hub');
 }
 
+function petitLarcin() {
+    joueur.mois += 1;
+    if(joueur.mois >= 12) { joueur.age++; joueur.mois -= 12; }
+    joueur.cptLarcin++; // Plus on en fait, plus le risque monte
+    
+    let butin = Math.floor(Math.random() * 1500) + 500;
+    let risqueFichage = joueur.cptLarcin * 15; // +15% de risque à chaque larcin consécutif
+    
+    if (Math.random() * 100 < 90) { // 90% de réussite de base
+        joueur.argent += butin;
+        joueur.argentGagne += butin;
+        
+        let msg = `Vous avez fait les poches d'un passant ou braqué une petite caisse. Butin : ${butin}€.`;
+        
+        if (Math.random() * 100 < risqueFichage) {
+            joueur.niveauSurveillance++;
+            msg += `\n\nCependant, une caméra vous a grillé en pleine action. La police vous a mis dans ses registres ! (Surveillance +1).`;
+            joueur.cptLarcin = 0; // Le compteur retombe
+        }
+        
+        afficherResultatEvenement(msg);
+    } else {
+        joueur.heat += 10;
+        afficherResultatEvenement("Le larcin a foiré. La cible s'est défendue et vous avez dû fuir les mains vides. (Heat +10)");
+    }
+}
+
 function calmerLeJeu() {
     joueur.mois += 6;
     if(joueur.mois >= 12) { joueur.age++; joueur.mois -= 12; }
     joueur.heat = Math.max(0, joueur.heat - 30);
     joueur.mental = Math.min(10, joueur.mental + 1);
-    notify("Profil bas pendant 6 mois. Tension en baisse.");
-    genererMissionsHub(); 
-    updateStats();
+    joueur.cptLarcin = 0; // Se reposer annule la frénésie des larcins
+    
+    notify("Vous faites profil bas. La tension redescend.");
+    
+    // Déclenche 1 à 2 événements aléatoires pour simuler les 6 mois qui passent
+    eventsRestantsAfaire = Math.floor(Math.random() * 2) + 1;
+    prochaineEtapeEvenement();
 }
+
 
 // --- GESTION DES ÉVÉNEMENTS POST-BRAQUAGE ---
 function lancerSequenceEvenements() {
@@ -559,17 +595,19 @@ function purgerPeine() {
     joueur.risquePrison = 0; 
     joueur.heat = 0; 
     joueur.enPrison = false;
-    joueur.niveauSurveillance += 1; 
+    joueur.cptLarcin = 0;
+    joueur.niveauSurveillance += 1; // La prison fiche automatiquement le joueur
     joueur.mental = Math.min(10, joueur.mental + 2); 
 
     if (joueur.age >= 65) {
         afficherEcranFin("Mort en Cellule", `Vous vous éteignez en prison à l'âge de ${joueur.age} ans.`);
     } else {
-        notify(`Libéré. Retour à la réalité.`);
+        notify(`Libéré. Attention : vous êtes désormais fiché. Vos prochains casses subiront un malus.`);
         genererMissionsHub();
         showScreen('screen-hub');
     }
 }
+
 // --- SYSTÈMES ET ONGLETS ---
 function ouvrirProfil() {
     let poss = joueur.possessions.length > 0 ? joueur.possessions.map(id => catalogue.find(c => c.id === id).nom).join(", ") : "Aucune";
