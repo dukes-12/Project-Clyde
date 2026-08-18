@@ -1,2 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braquage - Le Jeu</title>
+    <!-- C'est ici qu'on appelle ton fichier CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="game-container">
+    
+    <div id="global-stats" class="stats-bar" style="display: none;"></div>
+
+    <!-- ACCUEIL -->
+    <div id="screen-start" class="screen active">
+        <h1>HEIST: THE CHOICE</h1>
+        <p>Bâtissez un empire, gérez votre tension et prenez votre retraite au sommet.</p>
+        <button class="btn-choix btn-action" onclick="showScreen('screen-milieu')">Nouvelle Partie</button>
+    </div>
+
+    <!-- LE MILIEU SOCIAL -->
+    <div id="screen-milieu" class="screen">
+        <h2>Vos Origines</h2>
+        <p>Votre milieu social d'origine influence votre parcours.</p>
+        <button class="btn-choix" onclick="initJoueur('Défavorisé')">Quartiers Défavorisés (Discret, mais ciblé par la police)</button>
+        <button class="btn-choix" onclick="initJoueur('Classique')">Classe Moyenne (Aucun bonus/malus)</button>
+        <button class="btn-choix" onclick="initJoueur('Riche')">Milieu Aisé (Peines réduites, mais couverture médiatique)</button>
+    </div>
+
+    <!-- VILLE -->
+    <div id="screen-ville" class="screen">
+        <h2 id="titre-ville">Où commencer ?</h2>
+        <button class="btn-choix" onclick="setVille('Paris')">🇫🇷 Paris</button>
+        <button class="btn-choix" onclick="setVille('New York')">🇺🇸 New York</button>
+        <button class="btn-choix" onclick="setVille('Los Angeles')">🌴 Los Angeles</button>
+    </div>
+
+    <!-- LE HUB -->
+    <div id="screen-hub" class="screen">
+        <h2>La Planque (<span id="hub-ville-nom"></span>)</h2>
+        <div id="hub-notification" style="color:#79c0ff; margin-bottom:15px; min-height: 20px;"></div>
+        
+        <div style="display:flex; flex-wrap: wrap; gap:10px; margin-bottom: 20px;">
+            <button class="btn-choix btn-profil" style="width: 100%;" onclick="ouvrirProfil()">👤 Ouvrir le Dossier Profil</button>
+            <button class="btn-choix btn-boutique" style="width: 48%;" onclick="ouvrirBoutique()">🛒 Marché Noir</button>
+            <button class="btn-choix btn-action" style="width: 48%;" onclick="ouvrirRecrutement()">👥 Recrutement</button>
+            <button class="btn-choix btn-boutique" style="width: 48%;" onclick="ouvrirArbre()">🧠 Compétences</button>
+            <button class="btn-choix btn-retraite" style="width: 48%;" onclick="terminerJeu('retraite')">🌴 Se Ranger</button>
+        </div>
+
+        <h3 style="margin-top: 30px;">Cibles Disponibles</h3>
+        <p style="font-size: 12px; color: #8b949e; margin-top: -10px;">Le [XX %] indique vos chances globales de succès selon vos meilleures stats.</p>
+        <div id="hub-targets"></div>
+        
+        <hr style="border-color: #30363d; margin: 20px 0;">
+        <button class="btn-choix" onclick="calmerLeJeu()">☕ Calmer le jeu (Passe 6 mois, Baisse la tension)</button>
+        <button class="btn-choix" onclick="showScreen('screen-ville'); document.getElementById('titre-ville').innerText = 'Déménager';">✈️ Changer de ville (Risqué si recherché)</button>
+    </div>
+
+    <!-- PROFIL -->
+    <div id="screen-profil" class="screen">
+        <h2>Dossier du Personnage</h2>
+        <div class="carte-profil" id="contenu-profil"></div>
+        <button class="btn-choix" onclick="showScreen('screen-hub')">Fermer le dossier</button>
+    </div>
+
+    <!-- LA BOUTIQUE -->
+    <div id="screen-boutique" class="screen">
+        <h2>Le Marché Noir</h2>
+        <div id="boutique-liste" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div>
+        <button class="btn-choix" onclick="showScreen('screen-hub')">Retourner à la planque</button>
+    </div>
+
+    <!-- LE RECRUTEMENT -->
+    <div id="screen-recrutement" class="screen">
+        <h2>Le Bar des Truands</h2>
+        <p>Ils prennent une prime et 15% du butin chacun. Ils augmentent vos chances.</p>
+        <div id="liste-recrues" style="text-align: left; margin-bottom: 20px;"></div>
+        <button class="btn-choix" onclick="showScreen('screen-hub')">Retour</button>
+    </div>
+
+    <!-- ARBRE DE COMPÉTENCES -->
+    <div id="screen-arbre" class="screen">
+        <h2>Planque - Entraînement</h2>
+        <div id="msg-arbre"></div>
+        <p>Points de Compétence (PC) : <span id="pts-comp" style="color:#ff7b72; font-weight:bold;"></span></p>
+        <div style="text-align:left; background:#21262d; padding:15px; border-radius:6px; margin-bottom:15px;">
+            <button class="btn-choix btn-action" onclick="ameliorerArbre('force')">Musculation & Tir (+10% réussite Force) - Coût: 1 PC</button>
+            <button class="btn-choix btn-action" onclick="ameliorerArbre('intel')">Laboratoire Cyber (+10% réussite Intel) - Coût: 1 PC</button>
+            <button class="btn-choix btn-action" onclick="ameliorerArbre('furtivite')">Parkour & Ombres (+10% réussite Furtivité) - Coût: 1 PC</button>
+        </div>
+        <button class="btn-choix" onclick="showScreen('screen-hub')">Retour</button>
+    </div>
+
+    <!-- PRÉPARATION -->
+    <div id="screen-prep" class="screen">
+        <h2>Préparation du Casse</h2>
+        <p id="prep-desc"></p>
+        <p><em>Butin estimé : <span id="prep-butin"></span> €</em></p>
+        <button class="btn-choix btn-action" onclick="validerPrep()">Lancer l'opération</button>
+        <button class="btn-choix" onclick="showScreen('screen-hub')">Annuler</button>
+    </div>
+
+    <!-- L'ACTION -->
+    <div id="screen-action" class="screen">
+        <h2 id="action-title">Le Braquage</h2>
+        <div id="action-choices"></div>
+    </div>
+
+    <!-- LA PRISON -->
+    <div id="screen-prison" class="screen">
+        <h2>Incarcération</h2>
+        <p id="prison-text"></p>
+        <button class="btn-choix" onclick="purgerPeine()">Purger sa peine</button>
+    </div>
+
+    <!-- ÉCRAN DE FIN -->
+    <div id="screen-end" class="screen">
+        <h2>Bilan de Carrière</h2>
+        <div id="end-text" style="background:#21262d; padding:20px; border-radius:8px; margin-bottom:20px; line-height: 1.6; text-align: left;"></div>
+        <button class="btn-choix btn-action" onclick="location.reload()">Recommencer une partie</button>
+    </div>
+
+</div>
+
+<!-- C'est ici qu'on appelle ton fichier JS (toujours à la fin du body) -->
 <script src="game.js"></script>
-<link rel="stylesheet" href="style.css">
+
+</body>
+</html>
