@@ -1,22 +1,21 @@
-// --- DONNÉES DU JEU (v0.0.7) ---
+// --- DONNÉES DU JEU (v0.0.8) ---
 const monde = {
     "Paris": {
-        faible: [{ nom: "Tabac-Presse", diff: 4, butin: 12000 }, { nom: "Pharmacie de garde", diff: 5, butin: 15000 }],
-        modere: [{ nom: "Bijouterie Vendôme", diff: 7, butin: 200000 }, { nom: "Fourgon de fonds", diff: 8, butin: 250000 }],
-        eleve: [{ nom: "Musée du Louvre", diff: 10, butin: 3500000 }, { nom: "Vente aux enchères", diff: 11, butin: 4500000 }]
+        faible: [{ nom: "Tabac-Presse", diff: 4, butin: 12000, desc: "La boutique est mal éclairée. Trois clients patientent, le gérant écoute la radio, distrait." }, { nom: "Pharmacie de garde", diff: 5, butin: 15000, desc: "Seule la croix verte éclaire la rue. Le pharmacien est seul, somnolant derrière le comptoir." }],
+        modere: [{ nom: "Bijouterie Vendôme", diff: 7, butin: 200000, desc: "L'endroit est luxueux. 4 clients fortunés essaient des parures, gardés par deux vigiles armés." }, { nom: "Fourgon de fonds", diff: 8, butin: 250000, desc: "Le fourgon est à l'arrêt devant une banque. Deux convoyeurs lourdement armés font le transfert." }],
+        eleve: [{ nom: "Musée du Louvre", diff: 10, butin: 3500000, desc: "Une forteresse culturelle. Rondes de nuit constantes, lasers croisés et vitrines blindées." }, { nom: "Vente aux enchères", diff: 11, butin: 4500000, desc: "Le tout-Paris est là. Sécurité maximale, caméras biométriques et police en civil dans la salle." }]
     },
     "New York": {
-        faible: [{ nom: "Prêteur sur gages", diff: 5, butin: 20000 }, { nom: "Supérette", diff: 5, butin: 18000 }],
-        modere: [{ nom: "Fourgon Blindé", diff: 8, butin: 350000 }, { nom: "Boutique de luxe", diff: 7, butin: 300000 }],
-        eleve: [{ nom: "Réserve Fédérale", diff: 11, butin: 7000000 }, { nom: "Banque de Manhattan", diff: 10, butin: 5500000 }]
+        faible: [{ nom: "Prêteur sur gages", diff: 5, butin: 20000, desc: "Boutique crasseuse dans le Bronx. Le patron garde un fusil à pompe sous le comptoir." }, { nom: "Supérette", diff: 5, butin: 18000, desc: "Un caissier fatigué et quelques ivrognes traînent dans les rayons." }],
+        modere: [{ nom: "Fourgon Blindé", diff: 8, butin: 350000, desc: "Pris dans les embouteillages de Manhattan. Les convoyeurs sont sur les nerfs." }, { nom: "Boutique de luxe", diff: 7, butin: 300000, desc: "Sur la 5ème Avenue. Vigiles en costard, portes magnétiques et clientèle snob." }],
+        eleve: [{ nom: "Réserve Fédérale", diff: 11, butin: 7000000, desc: "La cible ultime. Gardes d'élite, coffre-fort de 10 tonnes et caméras à reconnaissance faciale." }, { nom: "Banque de Manhattan", diff: 10, butin: 5500000, desc: "Un hall gigantesque grouillant de monde. Le SWAT n'est jamais loin dans ce quartier." }]
     },
     "Los Angeles": {
-        faible: [{ nom: "Dispensaire local", diff: 4, butin: 18000 }, { nom: "Station service", diff: 4, butin: 14000 }],
-        modere: [{ nom: "Manoir à Beverly Hills", diff: 6, butin: 150000 }, { nom: "Bijoutier d'Hollywood", diff: 7, butin: 200000 }],
-        eleve: [{ nom: "Casino Clandestin", diff: 9, butin: 2800000 }, { nom: "Dépôt d'or", diff: 10, butin: 3500000 }]
+        faible: [{ nom: "Dispensaire local", diff: 4, butin: 18000, desc: "Forte odeur d'herbe. Le vigile regarde son téléphone, la caisse est pleine d'argent liquide." }, { nom: "Station service", diff: 4, butin: 14000, desc: "Isolée sur une route désertique. Un seul employé s'ennuie derrière une vitre pare-balles." }],
+        modere: [{ nom: "Manoir a Beverly Hills", diff: 6, butin: 150000, desc: "Les propriétaires sont à une fête. Il reste le personnel de maison et des chiens de garde." }, { nom: "Joaillier VIP", diff: 7, butin: 200000, desc: "Un salon privé sur rendez-vous. Verre blindé et alarmes reliées directement au poste local." }],
+        eleve: [{ nom: "Casino Clandestin", diff: 9, butin: 2800000, desc: "Géré par la mafia. Les gardes ont la gâchette facile et l'argent coule à flots." }, { nom: "Reserve de Lingots", diff: 10, butin: 3500000, desc: "Un entrepôt banalisé lourdement gardé par des mercenaires privés." }]
     }
 };
-
 const recruesDispo = [
     { id: 'r1', nom: 'Gueule d\'Ange', role: 'furtivite', bonus: 2, cout: 5000, moralite: 5, affection: 50 },
     { id: 'r2', nom: 'Le Bulldozer', role: 'force', bonus: 3, cout: 8000, moralite: 3, affection: 50 },
@@ -282,6 +281,32 @@ const banqueEvenements = {
                 {txt: "Abandonner (50000€)", action:()=>{if(joueur.argent>=50000){joueur.argent-=50000; joueur.heat+=20; notify("Fuite à pied.");}else{allerEnPrison("Rattrapé.");}}}
             ] 
         }
+    ],
+    prison: [
+        { 
+            titre: "Douches froides", desc: "Un gang rival vous coince dans les douches.", 
+            choix: [
+                {txt: "Se battre (Force 7)", action:()=>{if(joueur.stats.force>=7){joueur.crainte+=3; return "Vous avez couché le chef. Crainte +3.";}else{joueur.mental-=2; return "Vous avez fini à l'infirmerie. Mental -2.";}}},
+                {txt: "Esquiver (Furtivité 6)", action:()=>{if(joueur.stats.furtivite>=6){return "Vous vous êtes glissé hors du piège intact.";}else{joueur.mental--; return "Ils vous ont attrapé. Humiliation.";}}},
+                {txt: "Payer les caïds (5000€)", action:()=>{if(joueur.argent>=5000){joueur.argent-=5000; joueur.argentPerdu+=5000; return "Protection achetée. Cash perdu.";}else{joueur.mental-=2; return "Pas d'argent. Passage à tabac.";}}}
+            ] 
+        },
+        { 
+            titre: "Le Marché Noir", desc: "Un maton corrompu propose ses services.", 
+            choix: [
+                {txt: "Acheter un tel crypté (8000€)", action:()=>{if(joueur.argent>=8000){joueur.argent-=8000; joueur.argentPerdu+=8000; joueur.stats.intel++; return "Vous gérez vos affaires. Intel +1.";}else{return "Fonds insuffisants.";}}},
+                {txt: "Acheter des stéroïdes (5000€)", action:()=>{if(joueur.argent>=5000){joueur.argent-=5000; joueur.argentPerdu+=5000; joueur.stats.force++; return "Entraînement hardcore. Force +1.";}else{return "Fonds insuffisants.";}}},
+                {txt: "Refuser pour faire profil bas", action:()=>{joueur.mental++; return "Moins on se fait remarquer, mieux c'est. Mental +1.";}}
+            ] 
+        },
+        { 
+            titre: "Projet d'évasion", desc: "Des détenus creusent un tunnel.", 
+            choix: [
+                {txt: "Tenter l'évasion (Furtivité 8)", action:()=>{if(joueur.stats.furtivite>=8){joueur.peineActuelle=0; return "Évasion réussie ! Vous êtes libre.";}else{joueur.peineActuelle+=3; return "Pris en flagrant délit. +3 ans de peine.";}}},
+                {txt: "Les dénoncer", action:()=>{joueur.peineActuelle=Math.max(1, joueur.peineActuelle-2); joueur.respect-=5; return "Remise de peine (-2 ans), mais vous êtes une balance. Respect -5.";}},
+                {txt: "Laisser faire", action:()=>{return "Vous ne vous mêlez pas de ça.";}}
+            ] 
+        }
     ]
 };
 
@@ -419,21 +444,17 @@ function lancerSequenceEvenements() {
     prochaineEtapeEvenement();
 }
 
+let modePrison = false;
+
 function prochaineEtapeEvenement() {
     if(eventsRestantsAfaire <= 0) {
-        genererMissionsHub();
-        showScreen('screen-hub');
+        if(modePrison) { purgerPeine(); } 
+        else { genererMissionsHub(); showScreen('screen-hub'); }
         return;
     }
     eventsRestantsAfaire--;
 
-    let cat = "simple";
-    if(joueur.heat > 50 || joueur.niveauSurveillance > 1) {
-        cat = Math.random() > 0.4 ? "complique" : "moyen";
-    } else if(joueur.heat > 20) {
-        cat = Math.random() > 0.5 ? "moyen" : "simple";
-    }
-
+    let cat = modePrison ? "prison" : (joueur.heat > 50 || joueur.niveauSurveillance > 1 ? (Math.random() > 0.4 ? "complique" : "moyen") : (joueur.heat > 20 ? (Math.random() > 0.5 ? "moyen" : "simple") : "simple"));
     let liste = banqueEvenements[cat];
     let ev = liste[Math.floor(Math.random() * liste.length)];
 
@@ -442,21 +463,77 @@ function prochaineEtapeEvenement() {
     
     let container = document.getElementById('event-choices');
     container.innerHTML = "";
-    
     ev.choix.forEach(c => {
         let btn = document.createElement('button');
-        btn.className = "btn-choix";
-        btn.innerText = c.txt;
+        btn.className = "btn-choix"; btn.innerText = c.txt;
         btn.onclick = () => {
-            c.action();
-            prochaineEtapeEvenement();
+            let msgResultat = c.action();
+            afficherResultatEvenement(msgResultat);
         };
         container.appendChild(btn);
     });
-    
     showScreen('screen-event');
 }
 
+function afficherResultatEvenement(msg) {
+    document.getElementById('event-result-text').innerText = msg || "Le temps passe...";
+    let btnNext = document.getElementById('btn-event-next');
+    
+    btnNext.onclick = () => {
+        if(modePrison && joueur.peineActuelle === 0) { purgerPeine(); } // Cas de l'évasion réussie
+        else { prochaineEtapeEvenement(); }
+    };
+    showScreen('screen-event-result');
+}
+
+function allerEnPrison(raison) {
+    joueur.enPrison = true;
+    modePrison = true;
+    let annees = Math.floor(Math.random() * 4) + 2 + Math.floor(joueur.risquePrison / 15);
+    if (joueur.originType === 'Riche') annees = Math.max(1, annees - 2);
+    if (joueur.crainte > 10) { annees += 2; joueur.mental = Math.max(1, joueur.mental - 3); }
+    joueur.peineActuelle = annees;
+    
+    let cashNonBlanchi = Math.max(0, joueur.argent - joueur.cashBlanchi);
+    let amendeBase = annees * 15000;
+    let montantSaisi = Math.min(cashNonBlanchi, amendeBase);
+    
+    joueur.argent -= montantSaisi;
+    joueur.argentPerdu += montantSaisi;
+
+    let texteDecouvert = joueur.argent < 0 ? ` Vous êtes à DÉCOUVERT de ${Math.abs(joueur.argent).toLocaleString()} € !` : "";
+    let texteArgent = `L'État a saisi ${montantSaisi.toLocaleString()} € sur vos fonds non blanchis.${texteDecouvert} Vos ${joueur.cashBlanchi.toLocaleString()} € blanchis sont intouchables.`;
+    
+    document.getElementById('prison-text').innerText = `${raison} Verdict : ${annees} ans fermes.\n\n${texteArgent}`;
+    
+    // Modifier le bouton de la prison pour lancer les événements au lieu de sortir direct
+    let btn = document.querySelector('#screen-prison button');
+    btn.innerText = "Entrer dans le quartier de haute sécurité...";
+    btn.onclick = () => { 
+        eventsRestantsAfaire = Math.floor(Math.random() * 2) + 1; // 1 ou 2 événements en prison
+        prochaineEtapeEvenement(); 
+    };
+    
+    showScreen('screen-prison');
+}
+
+function purgerPeine() {
+    modePrison = false;
+    joueur.age += joueur.peineActuelle;
+    joueur.risquePrison = 0; 
+    joueur.heat = 0; 
+    joueur.enPrison = false;
+    joueur.niveauSurveillance += 1; 
+    joueur.mental = Math.min(10, joueur.mental + 2); 
+
+    if (joueur.age >= 65) {
+        afficherEcranFin("Mort en Cellule", `Vous vous éteignez en prison à l'âge de ${joueur.age} ans.`);
+    } else {
+        notify(`Libéré. Retour à la réalité.`);
+        genererMissionsHub();
+        showScreen('screen-hub');
+    }
+}
 // --- SYSTÈMES ET ONGLETS ---
 function ouvrirProfil() {
     let poss = joueur.possessions.length > 0 ? joueur.possessions.map(id => catalogue.find(c => c.id === id).nom).join(", ") : "Aucune";
@@ -612,22 +689,26 @@ function genererMissionsHub() {
     let cM = v.modere[Math.min(indexCible.modere, v.modere.length - 1)];
     let cE = v.eleve[Math.min(indexCible.eleve, v.eleve.length - 1)];
 
+    let getTx = (diff) => Math.max(estimerReussite(diff, 'furtivite'), estimerReussite(diff, 'intel'), estimerReussite(diff, 'force'));
+
     document.getElementById('hub-targets').innerHTML = `
-        <button class="btn-choix" onclick="preparerCasse('faible', ${cF.diff}, ${cF.butin}, '${cF.nom}')">
-            🟢 [Fantôme ~${estimerReussite(cF.diff, 'furtivite')}% | Intel ~${estimerReussite(cF.diff, 'intel')}%] ${cF.nom}
+        <button class="btn-choix" style="padding:10px;" onclick="preparerCasse('faible', ${cF.diff}, ${cF.butin}, '${cF.nom}', \`${cF.desc}\`)">
+            🟢 ${cF.nom}<br><span style="font-size:12px; color:#8b949e; font-style:italic;">Chance de réussite estimée : ~${getTx(cF.diff)}%</span>
         </button>
-        <button class="btn-choix" onclick="preparerCasse('modere', ${cM.diff}, ${cM.butin}, '${cM.nom}')">
-            🟠 [Fantôme ~${estimerReussite(cM.diff, 'furtivite')}% | Intel ~${estimerReussite(cM.diff, 'intel')}%] ${cM.nom}
+        <button class="btn-choix" style="padding:10px;" onclick="preparerCasse('modere', ${cM.diff}, ${cM.butin}, '${cM.nom}', \`${cM.desc}\`)">
+            🟠 ${cM.nom}<br><span style="font-size:12px; color:#8b949e; font-style:italic;">Chance de réussite estimée : ~${getTx(cM.diff)}%</span>
         </button>
-        <button class="btn-choix" onclick="preparerCasse('eleve', ${cE.diff}, ${cE.butin}, '${cE.nom}')">
-            🔴 [Fantôme ~${estimerReussite(cE.diff, 'furtivite')}% | Intel ~${estimerReussite(cE.diff, 'intel')}%] ${cE.nom}
+        <button class="btn-choix" style="padding:10px;" onclick="preparerCasse('eleve', ${cE.diff}, ${cE.butin}, '${cE.nom}', \`${cE.desc}\`)">
+            🔴 ${cE.nom}<br><span style="font-size:12px; color:#8b949e; font-style:italic;">Chance de réussite estimée : ~${getTx(cE.diff)}%</span>
         </button>
     `;
 }
 
-function preparerCasse(niveau, diff, butin, nom) {
-    cibleActuelle = { niveau: niveau, nom: nom, diff: diff, butin: butin };
-    document.getElementById('prep-desc').innerText = `Cible : ${nom}`;
+let contexteCasse = { blesseFlics: 0, mortFlics: 0, blesseCivils: 0, mortCivils: 0, flicsPresents: false, texteAction: "" };
+
+function preparerCasse(niveau, diff, butin, nom, desc) {
+    cibleActuelle = { niveau: niveau, nom: nom, diff: diff, butin: butin, desc: desc };
+    document.getElementById('prep-desc').innerText = `Repérage : ${desc}`;
     document.getElementById('prep-butin').innerText = butin.toLocaleString();
     showScreen('screen-prep');
 }
@@ -635,128 +716,134 @@ function preparerCasse(niveau, diff, butin, nom) {
 function validerPrep() {
     document.getElementById('action-title').innerText = cibleActuelle.nom;
     
-    // Contraintes de Hacking (Intel) : 5 pour simple, 10 moyen, 15 dur
-    let niveauCibleReq = cibleActuelle.niveau === 'faible' ? 5 : (cibleActuelle.niveau === 'modere' ? 10 : 15);
-    let disabledIntel = joueur.stats.intel < niveauCibleReq ? `disabled style="opacity:0.5; cursor:not-allowed;"` : ``;
-    let texteIntel = joueur.stats.intel < niveauCibleReq ? `🧠 Approche Cyber (Requis : ${niveauCibleReq} Intel - Insuffisant)` : `🧠 Approche Cyber (Hacking validé)`;
+    let reqHacking = cibleActuelle.niveau === 'faible' ? 5 : (cibleActuelle.niveau === 'modere' ? 10 : 15);
+    let disabledIntel = joueur.stats.intel < reqHacking ? `disabled` : ``;
+    let texteIntel = joueur.stats.intel < reqHacking ? `🧠 Approche Cyber (Requis : ${reqHacking} Intel)` : `🧠 Approche Cyber`;
 
     document.getElementById('action-choices').innerHTML = `
-        <button class="btn-choix" onclick="lancerMiniScenarioAction('furtivite', false)">🥷 Approche Fantôme (Risqué si bas)</button>
-        <button class="btn-choix" ${disabledIntel} onclick="${joueur.stats.intel >= niveauCibleReq ? "lancerMiniScenarioAction('intel', false)" : ""}"> ${texteIntel}</button>
-        <button class="btn-choix" onclick="lancerMiniScenarioAction('force', true)">💪 Approche Frontale (Risques accrus)</button>
+        <button class="btn-choix" onclick="lancerMiniScenarioAction('furtivite')">🥷 Approche Fantôme</button>
+        <button class="btn-choix" ${disabledIntel} onclick="lancerMiniScenarioAction('intel')">${texteIntel}</button>
+        <button class="btn-choix" onclick="lancerMiniScenarioAction('force')">💪 Approche Frontale</button>
     `;
     showScreen('screen-action');
 }
 
-function lancerMiniScenarioAction(stat, estViolent) {
-    let scnes = [
-        "Les caméras de surveillance pivotent. Le cœur bat la chamade...",
-        "Un vigile fait une ronde inattendue tout près de votre position exacte.",
-        "Le système central émet un signal d'alerte temporaire. Il faut improviser."
-    ];
-    let texteStory = scnes[Math.floor(Math.random() * scnes.length)];
+function lancerMiniScenarioAction(stat) {
+    // On génère le contexte du braquage selon l'approche
+    contexteCasse = { blesseFlics: 0, mortFlics: 0, blesseCivils: 0, mortCivils: 0, flicsPresents: false, texteAction: "" };
+    
+    if (stat === 'force') {
+        if (Math.random() > 0.5) {
+            contexteCasse.texteAction = "Vous entrez avec fracas. L'alarme hurle immédiatement, et une patrouille de police qui passait par là freine net devant l'entrée ! Affrontement inévitable.";
+            contexteCasse.flicsPresents = true;
+        } else {
+            contexteCasse.texteAction = "Vous braquez tout le monde en hurlant. Les civils se jettent au sol dans la panique. La tension est électrique.";
+            if (Math.random() > 0.7) contexteCasse.blesseCivils = 1; // Risque de blesser un civil dans la panique
+        }
+    } else if (stat === 'furtivite') {
+        if (Math.random() > 0.6) {
+            contexteCasse.texteAction = "Vous vous faufilez dans l'ombre, mais vous faites tomber un objet. Un vigile s'approche, l'arme à la main...";
+        } else {
+            contexteCasse.texteAction = "Vous glissez comme un fantôme à travers les conduits. Personne ne soupçonne votre présence.";
+        }
+    } else if (stat === 'intel') {
+        if (Math.random() > 0.7) {
+            contexteCasse.texteAction = "Le pare-feu contre-attaque ! Les portes se verrouillent et le réseau s'affole. La police est en route, il faut forcer le système.";
+            contexteCasse.flicsPresents = true;
+        } else {
+            contexteCasse.texteAction = "Vous bouclez les caméras. Votre équipe entre, déguisée en techniciens de maintenance.";
+        }
+    }
 
-    document.getElementById('action-title').innerText = "Imprévu sur place !";
+    document.getElementById('action-title').innerText = "Sur les lieux...";
     document.getElementById('action-choices').innerHTML = `
-        <p style="background:#21262d; padding:15px; border-radius:6px; text-align:left; border-left:4px solid #da3633;">${texteStory}</p>
-        <button class="btn-choix btn-action" onclick="resoudreAction('${stat}', ${estViolent})">Foncer et exécuter le plan</button>
+        <p style="background:#21262d; padding:15px; border-radius:6px; text-align:left; border-left:4px solid #da3633; line-height:1.5;">${contexteCasse.texteAction}</p>
+        <button class="btn-choix btn-action" onclick="resoudreAction('${stat}')">Exécuter le plan</button>
     `;
 }
 
-function resoudreAction(stat, estViolent) {
+function resoudreAction(stat) {
     joueur.mois += 2; 
     if(joueur.mois >= 12) { joueur.age++; joueur.mois -= 12; }
     
-    if(estViolent) {
-        joueur.moralite = Math.max(0, joueur.moralite - 2);
-        joueur.mental = Math.max(1, joueur.mental - 1);
-        joueur.crainte += 3;
-    } else {
-        joueur.moralite = Math.min(10, joueur.moralite + 1);
-        joueur.respect += 2;
-    }
+    let estViolent = (stat === 'force');
+    if(estViolent) { joueur.moralite = Math.max(0, joueur.moralite - 2); joueur.mental = Math.max(1, joueur.mental - 1); joueur.crainte += 3; } 
+    else { joueur.moralite = Math.min(10, joueur.moralite + 1); joueur.respect += 2; }
 
     let difficulte = cibleActuelle.diff;
     if (joueur.originType === 'Défavorisé') difficulte += 1;
     if (joueur.originType === 'Riche') difficulte -= 1;
-
     joueur.equipe.forEach(r => { if(r.role === stat) difficulte -= r.bonus; });
 
     let jet = Math.floor(Math.random() * 10) + 1;
     let scoreFinal = (joueur.stats[stat] + jet) - joueur.niveauSurveillance;
-    let mult = 1 + (joueur.buffs[stat] / 100);
-    scoreFinal = scoreFinal * mult;
+    scoreFinal = scoreFinal * (1 + (joueur.buffs[stat] / 100));
 
     if(stat === 'furtivite' && joueur.stats.furtivite < 5) scoreFinal -= 3;
     if(joueur.heat > 50) scoreFinal -= 2;
 
-    let blesseFlics = estViolent ? Math.floor(Math.random() * 3) : 0;
-    let mortFlics = estViolent && Math.random() > 0.7 ? 1 : 0;
-    let blesseCivils = estViolent ? Math.floor(Math.random() * 2) : 0;
+    let reussi = (scoreFinal >= difficulte + 4);
     let mortAllie = 0;
-    let mortJoueur = false;
+    
+    // Conséquences selon le contexte généré
+    if(contexteCasse.flicsPresents || !reussi) {
+        if(estViolent || !reussi) {
+            contexteCasse.blesseFlics = Math.floor(Math.random() * 3);
+            if(Math.random() > 0.7) contexteCasse.mortFlics = 1;
+            contexteCasse.blesseCivils += Math.floor(Math.random() * 2);
+        }
+        if(!reussi && Math.random() < 0.15 && joueur.equipe.length > 0) {
+            mortAllie = 1; joueur.equipe.pop();
+        }
+        if(!reussi && Math.random() < 0.03) {
+            afficherEcranFin("Mort en Intervention", "La police a ouvert le feu. Vous n'avez pas survécu."); return;
+        }
+    }
 
-    if (scoreFinal >= difficulte + 4) {
-        // SUCCÈS
+    if (reussi) {
         let partEquipe = cibleActuelle.butin * (0.15 * joueur.equipe.length);
         let butinJoueur = Math.floor(cibleActuelle.butin - partEquipe);
         
-        joueur.argent += butinJoueur;
-        joueur.argentGagne += butinJoueur;
-        
-        if(joueur.blanchisserie) {
-            let partBlanchie = Math.floor(butinJoueur * 0.7);
-            joueur.cashBlanchi += partBlanchie;
-        }
+        joueur.argent += butinJoueur; joueur.argentGagne += butinJoueur;
+        if(joueur.blanchisserie) { joueur.cashBlanchi += Math.floor(butinJoueur * 0.7); }
 
-        joueur.pointsCompetence += 1;
-        joueur.braquagesReussis += 1;
+        joueur.pointsCompetence += 1; joueur.braquagesReussis += 1;
         joueur.heat += 20; 
         if (stat === 'force') joueur.risquePrison += 20;
-
         indexCible[cibleActuelle.niveau]++; 
-        afficherDebrief(true, butinJoueur, 0, blesseFlics, mortFlics, blesseCivils, 0, false);
+        
+        afficherDebrief(true, butinJoueur, mortAllie);
     } else {
-        // ÉCHEC / POLICE
-        if(Math.random() < 0.15 && joueur.equipe.length > 0) {
-            mortAllie = 1;
-            joueur.equipe.pop();
-        }
-        if(Math.random() < 0.03) mortJoueur = true;
-
-        if(mortJoueur) {
-            afficherEcranFin("Mort en Intervention", "La police a ouvert le feu. Vous n'avez pas survécu.");
-            return;
-        }
-
-        afficherDebrief(false, 0, mortAllie, blesseFlics, mortFlics, blesseCivils, 0, true);
+        afficherDebrief(false, 0, mortAllie);
     }
 }
 
-// --- ÉCRAN DE DÉBRIEFING POST-BRAQUAGE ---
-function afficherDebrief(reussi, butin, mortAllie, blesseFlics, mortFlics, blesseCivils, mortCivils, arrete) {
+function afficherDebrief(reussi, butin, mortAllie) {
+    let msgAmbiance = reussi 
+        ? (cibleActuelle.niveau === 'faible' ? "Le braquage s'est déroulé sans accroc majeur, de l'argent de poche facile." : "Un coup magistral qui fera la une des journaux demain.")
+        : "Le plan a totalement déraillé. Les forces de l'ordre vous ont pris en tenaille.";
+
     let html = `
         <h3 style="color:${reussi ? '#2ea043' : '#da3633'}">${reussi ? 'Coup Réussi avec Succès' : 'Opération Compromise'}</h3>
+        <p style="font-style:italic; color:#8b949e;">${msgAmbiance}</p>
         <p><strong>Butin net empoché :</strong> ${butin.toLocaleString()} €</p>
         <hr style="border-color:#30363d">
         <h4>Bilan Humain :</h4>
-        <ul>
-            <li>Policiers blessés : ${blesseFlics}</li>
-            <li>Policiers tués : ${mortFlics}</li>
-            <li>Civils blessés : ${blesseCivils}</li>
-            <li>Civils tués : ${mortCivils}</li>
-            <li>Alliés perdus (morts) : ${mortAllie}</li>
+        <ul style="color:#ff7b72;">
+            <li>Policiers blessés : ${contexteCasse.blesseFlics} | tués : ${contexteCasse.mortFlics}</li>
+            <li>Civils blessés : ${contexteCasse.blesseCivils} | tués : ${contexteCasse.mortCivils}</li>
+            <li>Alliés perdus : ${mortAllie}</li>
         </ul>
     `;
     document.getElementById('debrief-content').innerHTML = html;
     
     let btnSuite = document.getElementById('debrief-btn');
-    if(arrete) {
+    if(!reussi) {
         btnSuite.innerText = "Aller en case prison...";
-        btnSuite.onclick = () => { allerEnPrison("Arrêté suite au fiasco de l'opération."); };
+        btnSuite.onclick = () => { allerEnPrison("Arrêté sur les lieux."); };
     } else {
         btnSuite.innerText = "Gérer les conséquences (Événements)";
-        btnSuite.onclick = () => { lancerSequenceEvenements(); };
+        btnSuite.onclick = () => { eventsRestantsAfaire = Math.floor(Math.random() * 3) + 1; prochaineEtapeEvenement(); };
     }
     showScreen('screen-debrief');
 }
