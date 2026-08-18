@@ -35,43 +35,253 @@ const catalogue = [
     { id: 'i_blanchisseur', type: 'Économie', nom: "Réseau de Blanchisserie", desc: "Crée du Cash Blanchi (Insaisissable)", prix: 100000, effet: () => joueur.blanchisserie = true }
 ];
 
-// 30 ÉVÉNEMENTS (10 Simples, 10 Moyens, 10 Compliqués)
+// 30 ÉVÉNEMENTS (10 Simples, 10 Moyens, 10 Compliqués) - 3 CHOIX CHACUN
 const banqueEvenements = {
     simple: [
-        { titre: "Rencontre fortuite", desc: "Vous croisez un ancien camarade peu regardant sur la légalité.", choix: [{txt: "Discuter affaires (+5000€)", action:()=>{joueur.argent+=5000; joueur.argentGagne+=5000; notify("Petit tuyau lucratif.");}}, {txt: "L'ignorer", action:()=>{notify("Rien de spécial.");}}] },
-        { titre: "Panne de réveil", desc: "Vous ratez un rendez-vous matinal sans conséquence.", choix: [{txt: "Profiter pour dormir", action:()=>{joueur.mental=Math.min(10,joueur.mental+1); notify("Repos bienvenu.");}}] },
-        { titre: "Contrôle de routine", desc: "Un agent patrouille près de votre planque.", choix: [{txt: "Se faire discret", action:()=>{notify("Il est parti sans insister.");}}] },
-        { titre: "Colis égaré", desc: "Un colis non réclamé traîne sur votre palier.", choix: [{txt: "L'ouvrir (+2000€ de revente)", action:()=>{joueur.argent+=2000; joueur.argentGagne+=2000; notify("Revendu au marché noir.");}}, {txt: "Ignorer", action:()=>{notify("Laissé sur place.");}}] },
-        { titre: "Coup de fil anonyme", desc: "Quelqu'un respire lourdement au téléphone.", choix: [{txt: "Raccrocher", action:()=>{notify("Simple blague.");}}] },
-        { titre: "Verre renversé", desc: "Bousculade dans un troquet.", choix: [{txt: "S'excuser poliment", action:()=>{notify("Affaire classée.");}}] },
-        { titre: "Rumeur de quartier", desc: "On chuchote qu'un braqueur sévit en ville.", choix: [{txt: "Sourire en coin", action:()=>{notify("Votre ego apprécie.");}}] },
-        { titre: "Panne de Wi-Fi", desc: "Votre réseau sécurisé saute.", choix: [{txt: "Réinitialiser le routeur", action:()=>{notify("Connexion rétablie.");}}] },
-        { titre: "Visite du propriétaire", desc: "Le logeur inspecte les lieux.", choix: [{txt: "Dissimuler le matériel", action:()=>{notify("Rien vu, rien su.");}}] },
-        { titre: "Trouvaille dans la rue", desc: "Un portefeuille égaré sur un banc.", choix: [{txt: "Le fouiller (+1000€)", action:()=>{joueur.argent+=1000; joueur.argentGagne+=1000; notify("Cash récupéré.");}}, {txt: "Le déposer au poste", action:()=>{joueur.moralite=Math.min(10,joueur.moralite+1); notify("Bon citoyen.");}}] }
+        { 
+            titre: "Rencontre fortuite", desc: "Vous croisez un ancien camarade peu regardant sur la légalité.", 
+            choix: [
+                {txt: "Discuter affaires (+5000€)", action:()=>{joueur.argent+=5000; joueur.argentGagne+=5000; notify("Petit tuyau lucratif exploité.");}}, 
+                {txt: "L'ignorer superbement", action:()=>{joueur.respect++; notify("Vous snobez le menu fretin. Respect +1.");}},
+                {txt: "L'intimider pour son cash (Force 5)", action:()=>{if(joueur.stats.force>=5){joueur.argent+=2000; joueur.moralite--; notify("Vous lui avez fait les poches.");}else{joueur.heat+=10; notify("Il s'est débattu et a hurlé. Heat +10.");}}}
+            ] 
+        },
+        { 
+            titre: "Panne de réveil", desc: "Vous ratez un rendez-vous matinal avec un contact mineur.", 
+            choix: [
+                {txt: "Profiter pour dormir (Mental +1)", action:()=>{joueur.mental=Math.min(10,joueur.mental+1); notify("Un repos bienvenu.");}},
+                {txt: "S'excuser avec un pot-de-vin (2000€)", action:()=>{if(joueur.argent>=2000){joueur.argent-=2000; joueur.respect++; notify("Contact apaisé.");}else{joueur.respect--; notify("Pas d'argent, contact vexé.");}}},
+                {txt: "Le menacer pour qu'il la ferme", action:()=>{joueur.crainte++; joueur.moralite--; notify("Il ne mouftera pas. Crainte +1.");}}
+            ] 
+        },
+        { 
+            titre: "Contrôle de routine", desc: "Un agent patrouille près de votre planque.", 
+            choix: [
+                {txt: "Se cacher dans l'ombre (Furtivité 4)", action:()=>{if(joueur.stats.furtivite>=4){notify("Vous êtes une ombre.");}else{joueur.heat+=15; notify("Il vous a aperçu de loin. Heat +15.");}}},
+                {txt: "Garder son calme et dire bonjour (Mental 6)", action:()=>{if(joueur.mental>=6){notify("Le flic vous a salué en retour.");}else{joueur.heat+=10; notify("Vous avez bégayé, il est suspicieux.");}}},
+                {txt: "Fuir par la ruelle (Heat +20)", action:()=>{joueur.heat+=20; notify("Fuite paniquée. La tension monte !");}}
+            ] 
+        },
+        { 
+            titre: "Colis égaré", desc: "Un colis non réclamé traîne sur votre palier.", 
+            choix: [
+                {txt: "L'ouvrir pour le revendre (+2000€)", action:()=>{joueur.argent+=2000; joueur.argentGagne+=2000; notify("Revendu au marché noir.");}}, 
+                {txt: "Chercher le vrai destinataire (Moralité +1)", action:()=>{joueur.moralite=Math.min(10,joueur.moralite+1); notify("Bonne action effectuée.");}},
+                {txt: "Le détruire par paranoïa", action:()=>{joueur.mental--; notify("La paranoïa vous ronge. Mental -1.");}}
+            ] 
+        },
+        { 
+            titre: "Coup de fil anonyme", desc: "Quelqu'un respire lourdement au téléphone.", 
+            choix: [
+                {txt: "Raccrocher calmement", action:()=>{notify("Sûrement une erreur.");}},
+                {txt: "Tracer l'appel (Intel 5)", action:()=>{if(joueur.stats.intel>=5){joueur.respect++; notify("C'était un rival. Il est terrifié de vous avoir sous-estimé.");}else{joueur.mental--; notify("Impossible de tracer. L'angoisse monte.");}}},
+                {txt: "Hurler des menaces de mort", action:()=>{joueur.crainte++; joueur.moralite--; notify("Le mystérieux appelant a raccroché illico.");}}
+            ] 
+        },
+        { 
+            titre: "Verre renversé", desc: "Dans un bar, un gamin bouscule votre verre.", 
+            choix: [
+                {txt: "S'excuser poliment (Moralité +1)", action:()=>{joueur.moralite=Math.min(10,joueur.moralite+1); notify("Vous restez digne.");}},
+                {txt: "Vérifier ses poches direct (Furtivité 5)", action:()=>{if(joueur.stats.furtivite>=5){notify("Portefeuille intact, tout va bien.");}else{joueur.heat+=10; notify("Le gamin a crié au pervers. Heat +10.");}}},
+                {txt: "Le gifler (Crainte +2)", action:()=>{joueur.crainte+=2; joueur.moralite-=2; notify("Tout le bar vous fixe avec effroi.");}}
+            ] 
+        },
+        { 
+            titre: "Rumeur de quartier", desc: "Le buraliste discute d'un braquage récent (le vôtre).", 
+            choix: [
+                {txt: "Sourire en coin (Mental +1)", action:()=>{joueur.mental=Math.min(10,joueur.mental+1); notify("L'ego est flatté.");}},
+                {txt: "Lui glisser 1000€ pour qu'il se taise", action:()=>{if(joueur.argent>=1000){joueur.argent-=1000; joueur.heat-=10; notify("Il a compris le message. Heat -10.");}else{notify("Vous n'avez pas l'argent.");}}},
+                {txt: "Le corriger à l'abri des regards", action:()=>{joueur.crainte+=2; joueur.moralite-=2; notify("Il bégayera la prochaine fois.");}}
+            ] 
+        },
+        { 
+            titre: "Panne de Wi-Fi", desc: "Votre réseau sécurisé saute en pleine nuit.", 
+            choix: [
+                {txt: "Réinitialiser le routeur", action:()=>{notify("Juste une panne serveur.");}},
+                {txt: "Pirater le réseau du voisin (Intel 4)", action:()=>{if(joueur.stats.intel>=4){notify("Wi-Fi de secours établi.");}else{joueur.mental--; notify("Impossible de se connecter.");}}},
+                {txt: "Fuir la planque par sécurité (Perd 5000€)", action:()=>{joueur.argent-=5000; joueur.argentPerdu+=5000; notify("Nuit à l'hôtel par précaution.");}}
+            ] 
+        },
+        { 
+            titre: "Visite du propriétaire", desc: "Le logeur veut inspecter les lieux.", 
+            choix: [
+                {txt: "Dissimuler le matériel (Furtivité 5)", action:()=>{if(joueur.stats.furtivite>=5){notify("Rien vu, rien su.");}else{joueur.risquePrison+=15; notify("Il a vu des choses louches ! Risque +15.");}}},
+                {txt: "Le corrompre (3000€)", action:()=>{if(joueur.argent>=3000){joueur.argent-=3000; notify("Il ferme les yeux pour un an.");}else{notify("Fonds insuffisants.");}}},
+                {txt: "Refuser de lui ouvrir", action:()=>{joueur.heat+=15; notify("Il a appelé la police pour tapage. Heat +15.");}}
+            ] 
+        },
+        { 
+            titre: "Trouvaille dans la rue", desc: "Un portefeuille égaré sur un banc.", 
+            choix: [
+                {txt: "Le fouiller (+1000€)", action:()=>{joueur.argent+=1000; joueur.argentGagne+=1000; notify("Cash récupéré.");}}, 
+                {txt: "Le déposer au poste (Moralité +2, Heat -10)", action:()=>{joueur.moralite=Math.min(10,joueur.moralite+2); joueur.heat=Math.max(0,joueur.heat-10); notify("Bon citoyen accompli.");}},
+                {txt: "Utiliser la carte (Intel 6)", action:()=>{if(joueur.stats.intel>=6){joueur.argent+=5000; notify("Achat en ligne intraçable (+5000€).");}else{joueur.risquePrison+=20; notify("Fraude signalée ! Risque +20.");}}}
+            ] 
+        }
     ],
     moyen: [
-        { titre: "Chantage au flash", desc: "Un automobiliste possède une photo de vous près d'une cible.", choix: [{txt: "Payer (5000€)", action:()=>{if(joueur.argent>=5000){joueur.argent-=5000;joueur.argentPerdu+=5000;}else{joueur.argent-=5000;joueur.argentPerdu+=5000;joueur.heat+=15;} notify("Silence acheté.");}}, {txt: "Ignorer", action:()=>{joueur.heat+=10; notify("Heat en hausse.");}}] },
-        { titre: "Concurrence déloyale", desc: "Un autre gang revendique votre territoire.", choix: [{txt: "Affirmer son autorité (Force 5)", action:()=>{if(joueur.stats.force>=5){joueur.respect+=3;notify("Ils ont reculé.");}else{joueur.heat+=20;notify("Affrontement difficile.");}}] },
-        { titre: "Le corbeau", desc: "Une lettre détaille vos derniers déplacements.", choix: [{txt: "Changer de planque", action:()=>{joueur.argent-=10000;joueur.argentPerdu+=10000;notify("Déménagement d'urgence.");}}] },
-        { titre: "Interrogatoire subtil", desc: "Un inspecteur en civil vous aborde.", choix: [{txt: "Garder son sang-froid", action:()=>{notify("Aucune info lâchée.");}}] },
-        { titre: "Dette de comparses", desc: "Un ancien complice réclame de l'aide.", choix: [{txt: "Aider (8000€)", action:()=>{if(joueur.argent>=8000){joueur.argent-=8000;joueur.argentPerdu+=8000;joueur.moralite++;}else{joueur.argent-=8000;joueur.argentPerdu+=8000;}}}, {txt: "Refuser", action:()=>{joueur.crainte++;}}] },
-        { titre: "Fuite d'informations", desc: "Des rumeurs circulent sur les forums underground.", choix: [{txt: "Piratage préventif (Intel 5)", action:()=>{if(joueur.stats.intel>=5){notify("Traces effacées.");}else{joueur.niveauSurveillance++;}}] },
-        { titre: "Contrôle fiscal surprise", desc: "L'État s'intéresse à votre train de vie.", choix: [{txt: "Graisser une patte (15000€)", action:()=>{if(joueur.argent>=15000){joueur.argent-=15000;joueur.argentPerdu+=15000;}else{joueur.argent-=15000;joueur.argentPerdu+=15000;joueur.risquePrison+=15;}}] }],
-        { titre: "Matériel défectueux", desc: "Vos outils de piratage lâchent.", choix: [{txt: "Racheter du matos (10000€)", action:()=>{joueur.argent-=10000;joueur.argentPerdu+=10000;}}] },
-        { titre: "Course-poursuite urbaine", desc: "Vous pensez être filé.", choix: [{txt: "Semer les ombres (Furtivité 5)", action:()=>{if(joueur.stats.furtivite>=5){notify("Semés.");}else{joueur.heat+=20;}}] }],
-        { titre: "Voisinage curieux", desc: "Un voisin insiste pour tout savoir.", choix: [{txt: "Déménager discrètement", action:()=>{joueur.argent-=5000;joueur.argentPerdu+=5000;}}] }
+        { 
+            titre: "Chantage au flash", desc: "Un automobiliste possède une photo de vous près d'une cible.", 
+            choix: [
+                {txt: "Payer le maître chanteur (10000€)", action:()=>{if(joueur.argent>=10000){joueur.argent-=10000;joueur.argentPerdu+=10000; notify("Silence acheté.");}else{joueur.heat+=25; notify("Photo publiée ! Heat +25.");}}}, 
+                {txt: "Le traquer et détruire son téléphone (Force 6)", action:()=>{if(joueur.stats.force>=6){notify("Problème réglé violemment.");}else{joueur.risquePrison+=20; notify("Il s'est enfui et a tout balancé.");}}},
+                {txt: "Pirater son Cloud (Intel 7)", action:()=>{if(joueur.stats.intel>=7){notify("Photo supprimée à distance.");}else{joueur.heat+=15; notify("Piratage échoué.");}}}
+            ] 
+        },
+        { 
+            titre: "Concurrence déloyale", desc: "Un autre gang revendique votre territoire.", 
+            choix: [
+                {txt: "Affirmer son autorité (Force 7)", action:()=>{if(joueur.stats.force>=7){joueur.respect+=3;notify("Ils ont reculé en tremblant.");}else{joueur.mental-=2; joueur.heat+=20; notify("Passage à tabac. Mental en berne.");}}},
+                {txt: "Proposer un partage des gains (15000€)", action:()=>{if(joueur.argent>=15000){joueur.argent-=15000; notify("Accord conclu dans le sang.");}else{notify("Vous n'avez pas l'argent.");}}},
+                {txt: "Les balancer anonymement (Intel 6)", action:()=>{if(joueur.stats.intel>=6){joueur.heat-=20; notify("Vos rivaux sont arrêtés.");}else{joueur.crainte-=2; notify("Ils ont découvert la balance.");}}}
+            ] 
+        },
+        { 
+            titre: "Le corbeau", desc: "Une lettre détaille vos derniers déplacements mystérieusement.", 
+            choix: [
+                {txt: "Changer de planque en urgence (20000€)", action:()=>{if(joueur.argent>=20000){joueur.argent-=20000;joueur.argentPerdu+=20000;notify("Déménagement réussi.");}else{joueur.risquePrison+=25;notify("Vous restez, la peur au ventre.");}}},
+                {txt: "Tendre un guet-apens (Furtivité 7)", action:()=>{if(joueur.stats.furtivite>=7){joueur.crainte+=3; notify("Vous avez attrapé le fouineur.");}else{joueur.mental-=2; notify("Il ne s'est jamais montré.");}}},
+                {txt: "Ignorer superbement la menace", action:()=>{joueur.risquePrison+=15; joueur.mental++; notify("Nerfs d'acier, mais risqué.");}}
+            ] 
+        },
+        { 
+            titre: "Interrogatoire subtil", desc: "Un inspecteur en civil vous aborde au café.", 
+            choix: [
+                {txt: "Garder son sang-froid absolu (Mental 7)", action:()=>{if(joueur.mental>=7){joueur.heat-=10; notify("Il n'a rien vu.");}else{joueur.risquePrison+=20; notify("Vous avez transpiré !");}}},
+                {txt: "Se faire passer pour un indic (Intel 6)", action:()=>{if(joueur.stats.intel>=6){joueur.respect++; notify("Il vous croit de son côté.");}else{joueur.heat+=20; notify("Mensonge grossier.");}}},
+                {txt: "L'envoyer balader sèchement", action:()=>{joueur.crainte++; joueur.heat+=15; notify("Sur liste rouge.");}}
+            ] 
+        },
+        { 
+            titre: "Dette de comparses", desc: "Un ancien complice libéré réclame sa part oubliée.", 
+            choix: [
+                {txt: "Lui donner son dû (15000€)", action:()=>{if(joueur.argent>=15000){joueur.argent-=15000;joueur.argentPerdu+=15000;joueur.respect+=2;notify("La loyauté paie.");}else{joueur.risquePrison+=15;notify("Il va se venger.");}}},
+                {txt: "Lui offrir un job en compensation", action:()=>{notify("Il intègre temporairement vos équipes.");}},
+                {txt: "Le chasser avec perte et fracas (Force 6)", action:()=>{if(joueur.stats.force>=6){joueur.crainte+=2; notify("Il a fui.");}else{joueur.mental-=2; notify("Bagarre perdue.");}}}
+            ] 
+        },
+        { 
+            titre: "Contrôle fiscal surprise", desc: "L'État s'étonne de votre train de vie.", 
+            choix: [
+                {txt: "Graisser la patte de l'auditeur (25000€)", action:()=>{if(joueur.argent>=25000){joueur.argent-=25000;joueur.argentPerdu+=25000;notify("Dossier classé.");}else{joueur.risquePrison+=30;notify("Redressement judiciaire !");}}},
+                {txt: "Falsifier les documents (Intel 8)", action:()=>{if(joueur.stats.intel>=8){notify("Vous passez pour un employé.");}else{joueur.risquePrison+=25;notify("Fraude découverte.");}}},
+                {txt: "Fuir le pays (Perd 1 mois)", action:()=>{joueur.mois+=1; joueur.heat-=20; notify("Vous êtes sauf.");}}
+            ] 
+        },
+        { 
+            titre: "Matériel défectueux", desc: "Vos outils achetés lâchent en pleine rue.", 
+            choix: [
+                {txt: "Racheter du matos (15000€)", action:()=>{if(joueur.argent>=15000){joueur.argent-=15000;joueur.argentPerdu+=15000;notify("Outils réparés.");}else{notify("Fonds insuffisants.");}}},
+                {txt: "Réparer soi-même (Intel 6)", action:()=>{if(joueur.stats.intel>=6){notify("Système D.");}else{joueur.stats.intel--; notify("Matos flingué. Intel -1.");}}},
+                {txt: "Aller casser la figure du vendeur (Force 7)", action:()=>{if(joueur.stats.force>=7){joueur.argent+=5000; notify("Remboursement forcé.");}else{joueur.heat+=15; notify("Il a appelé la sécurité.");}}}
+            ] 
+        },
+        { 
+            titre: "Course-poursuite urbaine", desc: "Vous êtes filé par deux hommes en trench-case.", 
+            choix: [
+                {txt: "Semer les ombres (Furtivité 7)", action:()=>{if(joueur.stats.furtivite>=7){notify("Vous disparaissez.");}else{joueur.heat+=25; notify("Planque repérée !");}}},
+                {txt: "Les affronter dans une ruelle (Force 8)", action:()=>{if(joueur.stats.force>=8){joueur.crainte+=3; notify("Deux flics sur le carreau.");}else{joueur.risquePrison+=30; notify("C'était les stups.");}}},
+                {txt: "Jeter des liasses pour une émeute (10000€)", action:()=>{if(joueur.argent>=10000){joueur.argent-=10000; notify("Fuite parfaite.");}else{notify("Pas assez d'argent.");}}}
+            ] 
+        },
+        { 
+            titre: "Voisinage curieux", desc: "Un voisin insiste pour tout savoir sur vos nuits.", 
+            choix: [
+                {txt: "L'embrouiller (Mental 6)", action:()=>{if(joueur.mental>=6){notify("Il vous prend pour un trader.");}else{joueur.risquePrison+=15; notify("Il n'a pas cru.");}}},
+                {txt: "Déménager discrètement (10000€)", action:()=>{if(joueur.argent>=10000){joueur.argent-=10000; notify("Tranquillité achetée.");}else{notify("Impossible.");}}},
+                {txt: "Le terrifier (Crainte +2, Moralité -1)", action:()=>{joueur.crainte+=2; joueur.moralite--; notify("Il baisse les yeux.");}}
+            ] 
+        },
+        { 
+            titre: "Fuite d'informations", desc: "Des rumeurs circulent sur vous.", 
+            choix: [
+                {txt: "Piratage préventif (Intel 7)", action:()=>{if(joueur.stats.intel>=7){notify("Traces effacées.");}else{joueur.niveauSurveillance++; notify("Surveillance +1.");}}},
+                {txt: "Fausse piste (10000€)", action:()=>{if(joueur.argent>=10000){joueur.argent-=10000; joueur.heat-=15; notify("Police égarée.");}else{notify("Pas d'argent.");}}},
+                {txt: "Ne rien faire", action:()=>{joueur.heat+=20; notify("La rumeur enfle.");}}
+            ] 
+        }
     ],
     complique: [
-        { titre: "Piège du FBI", desc: "Un indic propose un faux plan d'attaque.", choix: [{txt: "Analyser le piège (Intel 7)", action:()=>{if(joueur.stats.intel>=7){notify("Piège évité !");}else{allerEnPrison("C'était un guet-apens fédéral !");}}] },
-        { titre: "Fusillade interlope", desc: "Règlement de comptes sous vos fenêtres.", choix: [{txt: "Riposter", action:()=>{joueur.moralite=Math.max(0,joueur.moralite-2);joueur.crainte+=5;}}] },
-        { titre: "Infiltration de la planque", desc: "Votre serrure a été crochetée.", choix: [{txt: "Sécuriser (20000€)", action:()=>{joueur.argent-=20000;joueur.argentPerdu+=20000;}}] },
-        { titre: "Traîtrise de haut vol", desc: "Un proche réseau a parlé.", choix: [{txt: "S'enfuir à l'étranger", action:()=>{joueur.argent-=50000;joueur.argentPerdu+=50000;joueur.ville="Paris";}}] },
-        { titre: "Saccage par un parrain", desc: "Le syndicat réclame sa part.", choix: [{txt: "Payer tribut (40000€)", action:()=>{joueur.argent-=40000;joueur.argentPerdu+=40000;}}] },
-        { titre: "Mandat imminent", desc: "Perquisition prévue à l'aube.", choix: [{txt: "Cacher le magot", action:()=>{joueur.risquePrison+=30;}}] },
-        { titre: "Enlèvement d'un proche", desc: "Un rival demande rançon.", choix: [{txt: "Payer (30000€)", action:()=>{joueur.argent-=30000;joueur.argentPerdu+=30000;}}] },
-        { titre: "Piratage de comptes", desc: "Fonds en partie siphonnés.", choix: [{txt: "Contrer l'attaque", action:()=>{joueur.argent-=25000;joueur.argentPerdu+=25000;}}] },
-        { titre: "Témoin clé", desc: "Un gardien vous a reconnu.", choix: [{txt: "Discrétion totale (Furtivité 8)", action:()=>{if(joueur.stats.furtivite>=8){notify("Témoin neutralisé pacifiquement.");}else{allerEnPrison("Dénoncé par le gardien.");}}] },
-        { titre: "Embuscade routière", desc: "Route bloquée par des véhicules banalisés.", choix: [{txt: "Forcer le barrage (Force 8)", action:()=>{if(joueur.stats.force>=8){notify("Passage en force réussi !");}else{allerEnPrison("Arrêté lors de l'embuscade.");}}] }]
+        { 
+            titre: "Piège du FBI", desc: "Un indic propose un faux plan d'attaque juteux.", 
+            choix: [
+                {txt: "Analyser le piège (Intel 9)", action:()=>{if(joueur.stats.intel>=9){notify("Piège évité !");}else{allerEnPrison("C'était un guet-apens fédéral !");}}},
+                {txt: "Payer un autre gang (30000€)", action:()=>{if(joueur.argent>=30000){joueur.argent-=30000; joueur.heat-=30; notify("Ils se sont fait prendre.");}else{notify("Impossible.");}}},
+                {txt: "L'ignorer sagement", action:()=>{joueur.mental++; notify("Prudence est mère de sûreté.");}}
+            ] 
+        },
+        { 
+            titre: "Fusillade interlope", desc: "Un règlement de comptes éclate au bas de l'immeuble.", 
+            choix: [
+                {txt: "Tirer (Force 9)", action:()=>{if(joueur.stats.force>=9){joueur.crainte+=5; notify("Rue nettoyée.");}else{joueur.mental-=3; notify("Traumatisme.");}}},
+                {txt: "Fuite toits (Furtivité 9)", action:()=>{if(joueur.stats.furtivite>=9){notify("Fuite spectaculaire.");}else{joueur.risquePrison+=30; notify("Repéré par les hélicos.");}}},
+                {txt: "Faire le mort", action:()=>{joueur.mental-=2; notify("Lâche mais vivant.");}}
+            ] 
+        },
+        { 
+            titre: "Infiltration de la planque", desc: "Votre serrure a été subtilement crochetée.", 
+            choix: [
+                {txt: "Mercenaires (40000€)", action:()=>{if(joueur.argent>=40000){joueur.argent-=40000; notify("Planque bunkerisée.");}else{notify("Pas d'argent.");}}},
+                {txt: "Poser des pièges (Intel 8)", action:()=>{if(joueur.stats.intel>=8){notify("Défenses activées.");}else{joueur.risquePrison+=20; notify("Caméras vous incriminent.");}}},
+                {txt: "Attendre le cambrioleur (Force 8)", action:()=>{if(joueur.stats.force>=8){joueur.crainte+=4; notify("Voleur neutralisé.");}else{joueur.argentPerdu+=20000; joueur.argent-=20000; notify("Il vous a volé 20 000€.");}}}
+            ] 
+        },
+        { 
+            titre: "Traîtrise de haut vol", desc: "Un associé de longue date va témoigner.", 
+            choix: [
+                {txt: "Acheter son avocat (50000€)", action:()=>{if(joueur.argent>=50000){joueur.argent-=50000; notify("Témoignage annulé.");}else{allerEnPrison("Il a tout balancé.");}}},
+                {txt: "Le neutraliser (Furtivité 9)", action:()=>{if(joueur.stats.furtivite>=9){joueur.moralite-=3; notify("Disparition mystérieuse.");}else{allerEnPrison("Pris en flagrant délit.");}}},
+                {txt: "Fuir à l'étranger (Reset Risque, -50% cash)", action:()=>{joueur.argent = Math.floor(joueur.argent/2); joueur.heat=0; joueur.risquePrison=0; notify("Nouvelle vie.");}}
+            ] 
+        },
+        { 
+            titre: "Saccage par un parrain", desc: "Le syndicat réclame 30% de vos gains.", 
+            choix: [
+                {txt: "Payer la dîme (Perd 30% cash)", action:()=>{let tax=Math.floor(joueur.argent*0.3); joueur.argent-=tax; joueur.argentPerdu+=tax; notify("Vous baissez la tête.");}},
+                {txt: "Décapiter l'orga (Force 10)", action:()=>{if(joueur.stats.force>=10){joueur.respect+=10; joueur.crainte+=10; notify("Nouveau boss en ville.");}else{allerEnPrison("Vendetta ratée.");}}},
+                {txt: "Pirater leurs comptes (Intel 9)", action:()=>{if(joueur.stats.intel>=9){joueur.argent+=100000; notify("+100 000€.");}else{joueur.mental-=4; notify("Contrat sur votre tête.");}}}
+            ] 
+        },
+        { 
+            titre: "Mandat imminent", desc: "Le SWAT arrive à l'aube.", 
+            choix: [
+                {txt: "Brûler et fuir (Furtivité 8)", action:()=>{if(joueur.stats.furtivite>=8){notify("Il ne reste que des cendres.");}else{joueur.risquePrison+=40; notify("Fumée repérée !");}}},
+                {txt: "Nettoyeur pro (40000€)", action:()=>{if(joueur.argent>=40000){joueur.argent-=40000; joueur.niveauSurveillance=0; notify("Lieu propre.");}else{allerEnPrison("Impossible d'effacer.");}}},
+                {txt: "Négocier (Intel 8)", action:()=>{if(joueur.stats.intel>=8){joueur.risquePrison=0; notify("Vice de procédure.");}else{allerEnPrison("Pas de négociation.");}}}
+            ] 
+        },
+        { 
+            titre: "Enlèvement d'un proche", desc: "Un cartel rival a kidnappé un contact.", 
+            choix: [
+                {txt: "Payer rançon (50000€)", action:()=>{if(joueur.argent>=50000){joueur.argent-=50000; joueur.respect++; notify("Il est libre.");}else{notify("Pas l'argent.");}}},
+                {txt: "Assaut (Force 9, Moralité -2)", action:()=>{if(joueur.stats.force>=9){joueur.crainte+=5; joueur.moralite-=2; notify("Bain de sang. Sauvé.");}else{joueur.mental-=5; notify("Il est mort dans les tirs.");}}},
+                {txt: "Sacrifier froidement (Mental 8)", action:()=>{if(joueur.mental>=8){joueur.crainte+=5; joueur.moralite-=4; notify("Cartel impressionné.");}else{joueur.mental-=4; notify("Culpabilité.");}}}
+            ] 
+        },
+        { 
+            titre: "Piratage de comptes", desc: "Un hacker siphonne vos fonds non blanchis.", 
+            choix: [
+                {txt: "Contre-attaque (Intel 10)", action:()=>{if(joueur.stats.intel>=10){joueur.argent+=50000; notify("Hacké en retour ! +50 000€");}else{joueur.argent=Math.floor(joueur.argent*0.8); notify("20% volatilisé !");}}},
+                {txt: "Firme cybersécu (30000€)", action:()=>{if(joueur.argent>=30000){joueur.argent-=30000; notify("Fonds sécurisés.");}else{joueur.argent=Math.floor(joueur.argent*0.5); notify("Moitié perdue.");}}},
+                {txt: "Rien faire", action:()=>{joueur.argent=Math.floor(joueur.argent*0.7); joueur.mental-=2; notify("30% perdus.");}}
+            ] 
+        },
+        { 
+            titre: "Témoin clé", desc: "Un gardien traumatisé vous a reconnu.", 
+            choix: [
+                {txt: "Acheter silence (60000€)", action:()=>{if(joueur.argent>=60000){joueur.argent-=60000; notify("Il vit aux Bahamas.");}else{allerEnPrison("Il a témoigné.");}}},
+                {txt: "Faire disparaître (Furtivité 10)", action:()=>{if(joueur.stats.furtivite>=10){joueur.moralite-=5; notify("Accident tragique...");}else{allerEnPrison("Corps retrouvé !");}}},
+                {txt: "Lavage de cerveau (Mental 9)", action:()=>{if(joueur.mental>=9){notify("Il croit s'être trompé.");}else{joueur.risquePrison+=40; notify("Il a couru au poste !");}}}
+            ] 
+        },
+        { 
+            titre: "Embuscade routière", desc: "Route bloquée par des flics banalisés.", 
+            choix: [
+                {txt: "Bélier (Force 9)", action:()=>{if(joueur.stats.force>=9){notify("Passage en force !");}else{allerEnPrison("Moteur calé.");}}},
+                {txt: "Esquive extrême (Furtivité 9)", action:()=>{if(joueur.stats.furtivite>=9){notify("Fondu dans la nuit.");}else{allerEnPrison("Pneus crevés.");}}},
+                {txt: "Abandonner (50000€)", action:()=>{if(joueur.argent>=50000){joueur.argent-=50000; joueur.heat+=20; notify("Fuite à pied.");}else{allerEnPrison("Rattrapé.");}}}
+            ] 
+        }
     ]
 };
 
@@ -95,7 +305,7 @@ let joueur = {
 
 let cibleActuelle = null;
 let indexCible = { faible: 0, modere: 0, eleve: 0 };
-let eventsRestantsAfaire = 0; // Compteur pour les événements post-braquage
+let eventsRestantsAfaire = 0; 
 
 // --- NAVIGATION ET UI ---
 function showScreen(screenId) {
@@ -151,7 +361,7 @@ function initJoueur(originType) {
     } else if(originType === 'Riche') {
         joueur.milieu = "Milieu Aisé";
         joueur.stats.intel += 2;
-        joueur.argent = 20000; // 20 000 € de départ
+        joueur.argent = 20000; 
         joueur.argentGagne += 20000;
     }
     showScreen('screen-ville');
@@ -171,9 +381,9 @@ function setVille(ville) {
 
 function genererStorytelling() {
     let histoires = {
-        "Paris": `Né dans les ${joueur.milieu}, vous débarquez à Paris. v0.0.7 opérationnel. Votre planque est prête.`,
-        "New York": `Arrivé à New York (${joueur.milieu}). v0.0.7 opérationnel. Prêt pour la Grosse Pomme.`,
-        "Los Angeles": `Sous le soleil de Los Angeles (${joueur.milieu}), v0.0.7 opérationnel. Le jeu commence.`
+        "Paris": `Né dans les ${joueur.milieu}, vous débarquez à Paris. Votre planque est prête.`,
+        "New York": `Arrivé à New York (${joueur.milieu}). Prêt pour la Grosse Pomme.`,
+        "Los Angeles": `Sous le soleil de Los Angeles (${joueur.milieu}). Le jeu commence.`
     };
     document.getElementById('story-text').innerText = histoires[joueur.ville];
 }
@@ -197,8 +407,7 @@ function calmerLeJeu() {
 
 // --- GESTION DES ÉVÉNEMENTS POST-BRAQUAGE ---
 function lancerSequenceEvenements() {
-    // Entre 1 et 3 événements
-    eventsRestantsAfaire = Math.floor(Math.random() * 3) + 1;
+    eventsRestantsAfaire = Math.floor(Math.random() * 3) + 1; // Entre 1 et 3 événements
     prochaineEtapeEvenement();
 }
 
@@ -210,7 +419,6 @@ function prochaineEtapeEvenement() {
     }
     eventsRestantsAfaire--;
 
-    // Choisir la catégorie en fonction du profil (Heat ou Surveillance)
     let cat = "simple";
     if(joueur.heat > 50 || joueur.niveauSurveillance > 1) {
         cat = Math.random() > 0.4 ? "complique" : "moyen";
@@ -305,7 +513,7 @@ function ouvrirRecrutement() {
         joueur.equipe.forEach((eq, index) => {
             html += `<div style="background:#0d1117; padding:10px; margin-bottom:10px; border:1px solid #30363d; border-radius:4px;">
                 <strong>${eq.nom}</strong> (Spé: ${eq.role})<br>
-                <button class="btn-action" style="padding:5px 10px; margin-top:5px; border-radius:4px;" onclick="virerRecrue(${index})">Virer</button>
+                <button class="btn-action" style="padding:5px 10px; margin-top:5px; border-radius:4px;" onclick="virerRecrue(${index})">Virer / Exécuter</button>
             </div>`;
         });
         html += `<hr style="border-color:#30363d">`;
@@ -372,7 +580,7 @@ function ameliorerArbre(stat) {
     }
 }
 
-// --- BRAQUAGES, CONDITIONS DE COMPÉTENCES ET STORYTELLING EN COURS ---
+// --- BRAQUAGES, CONDITIONS DE COMPÉTENCES ET STORYTELLING ---
 function estimerReussite(diff, typeStat) {
     let statVal = joueur.stats[typeStat];
     let bonusEq = joueur.equipe.reduce((acc, curr) => acc + (curr.role === typeStat ? curr.bonus : 0), 0);
@@ -383,7 +591,7 @@ function estimerReussite(diff, typeStat) {
     let proba = 50 + (score - diff) * 10 - malusMental;
     proba -= Math.floor(joueur.heat / 2); 
     
-    if(typeStat === 'furtivite' && statVal < 5) proba -= 25; // Risque grand à taux bas
+    if(typeStat === 'furtivite' && statVal < 5) proba -= 25;
     
     if(proba > 95) return 95;
     if(proba < 5) return 5;
@@ -432,12 +640,11 @@ function validerPrep() {
     showScreen('screen-action');
 }
 
-// Mini-scénario narratif pendant le braquage
 function lancerMiniScenarioAction(stat, estViolent) {
     let scnes = [
-        "Les caméras de surveillance pivotent. Le cœur bat la chamade dans la cage thoracique...",
+        "Les caméras de surveillance pivotent. Le cœur bat la chamade...",
         "Un vigile fait une ronde inattendue tout près de votre position exacte.",
-        "Le système central émet un signal d'alerte temporaire. Il faut improviser immédiatement."
+        "Le système central émet un signal d'alerte temporaire. Il faut improviser."
     ];
     let texteStory = scnes[Math.floor(Math.random() * scnes.length)];
 
@@ -472,7 +679,7 @@ function resoudreAction(stat, estViolent) {
     let mult = 1 + (joueur.buffs[stat] / 100);
     scoreFinal = scoreFinal * mult;
 
-    if(stat === 'furtivite' && joueur.stats.furtivite < 5) scoreFinal -= 3; // Malus furtivité basse
+    if(stat === 'furtivite' && joueur.stats.furtivite < 5) scoreFinal -= 3;
     if(joueur.heat > 50) scoreFinal -= 2;
 
     let blesseFlics = estViolent ? Math.floor(Math.random() * 3) : 0;
@@ -489,7 +696,6 @@ function resoudreAction(stat, estViolent) {
         joueur.argent += butinJoueur;
         joueur.argentGagne += butinJoueur;
         
-        // Gestion blanchisserie
         if(joueur.blanchisserie) {
             let partBlanchie = Math.floor(butinJoueur * 0.7);
             joueur.cashBlanchi += partBlanchie;
@@ -503,15 +709,12 @@ function resoudreAction(stat, estViolent) {
         indexCible[cibleActuelle.niveau]++; 
         afficherDebrief(true, butinJoueur, 0, blesseFlics, mortFlics, blesseCivils, 0, false);
     } else {
-        // ÉCHEC / ALERTE POLICE
-        // Risque de mort d'un allié ou du joueur si police prévenue
+        // ÉCHEC / POLICE
         if(Math.random() < 0.15 && joueur.equipe.length > 0) {
             mortAllie = 1;
-            joueur.equipe.pop(); // Un allié meurt
+            joueur.equipe.pop();
         }
-        if(Math.random() < 0.03) {
-            mortJoueur = true;
-        }
+        if(Math.random() < 0.03) mortJoueur = true;
 
         if(mortJoueur) {
             afficherEcranFin("Mort en Intervention", "La police a ouvert le feu. Vous n'avez pas survécu.");
@@ -539,7 +742,6 @@ function afficherDebrief(reussi, butin, mortAllie, blesseFlics, mortFlics, bless
     `;
     document.getElementById('debrief-content').innerHTML = html;
     
-    // Bouton de suite
     let btnSuite = document.getElementById('debrief-btn');
     if(arrete) {
         btnSuite.innerText = "Aller en case prison...";
@@ -548,7 +750,6 @@ function afficherDebrief(reussi, butin, mortAllie, blesseFlics, mortFlics, bless
         btnSuite.innerText = "Gérer les conséquences (Événements)";
         btnSuite.onclick = () => { lancerSequenceEvenements(); };
     }
-
     showScreen('screen-debrief');
 }
 
@@ -561,7 +762,6 @@ function allerEnPrison(raison) {
     
     joueur.peineActuelle = annees;
     
-    // Saisie proportionnelle : seule l'argent non blanchi subit la grosse saisie
     let cashNonBlanchi = Math.max(0, joueur.argent - joueur.cashBlanchi);
     let amendeBase = annees * 15000;
     
@@ -569,10 +769,8 @@ function allerEnPrison(raison) {
     joueur.argent -= montantSaisi;
     joueur.argentPerdu += montantSaisi;
 
-    // Si on tombe en dessous de 0, on gère le découvert
     let texteDecouvert = joueur.argent < 0 ? ` Vous êtes à DÉCOUVERT de ${Math.abs(joueur.argent).toLocaleString()} € !` : "";
-    
-    let texteArgent = `L'État a saisi ${montantSaisi.toLocaleString()} € sur vos fonds non blanchis.${texteDecouvert} Vos ${joueur.cashBlanchi.toLocaleString()} € blanchis sont restés intouchables.`;
+    let texteArgent = `L'État a saisi ${montantSaisi.toLocaleString()} € sur vos fonds non blanchis.${texteDecouvert} Vos ${joueur.cashBlanchi.toLocaleString()} € blanchis sont intouchables.`;
     
     document.getElementById('prison-text').innerText = `${raison} Verdict : ${annees} ans fermes. ${texteArgent}`;
     showScreen('screen-prison');
@@ -598,7 +796,7 @@ function purgerPeine() {
 function terminerJeu(raison) {
     if (raison === 'retraite') {
         let titre = joueur.argent < 100000 ? "Retraite Misérable" : (joueur.argent < 2000000 ? "Retraite Dorée" : "LÉGENDE VIVANTE");
-        let description = `Vous prenez votre retraite avec ${joueur.argent.toLocaleString()} € (Gagné total : ${joueur.argentGagne.toLocaleString()} € / Perdu : ${joueur.argentPerdu.toLocaleString()} €).`;
+        let description = `Retraite avec ${joueur.argent.toLocaleString()} € (Gagné total : ${joueur.argentGagne.toLocaleString()} € / Perdu : ${joueur.argentPerdu.toLocaleString()} €).`;
         afficherEcranFin(titre, description);
     }
 }
