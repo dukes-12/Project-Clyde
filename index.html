@@ -17,7 +17,7 @@
         <h1>HEIST: THE CHOICE</h1>
         <p>Bâtissez un empire, gérez votre tension et prenez votre retraite au sommet.</p>
         <button class="btn-choix btn-action" onclick="showScreen('screen-milieu')">Nouvelle Partie</button>
-        <div style="margin-top: 25px; font-size: 12px; color: #8b949e; letter-spacing: 1px;">v0.0.6</div>
+        <div style="margin-top: 25px; font-size: 12px; color: #8b949e; letter-spacing: 1px;">v0.0.7</div>
     </div>
 
     <!-- LE MILIEU SOCIAL -->
@@ -110,10 +110,17 @@
         <button class="btn-choix" onclick="showScreen('screen-hub')">Annuler</button>
     </div>
 
-    <!-- L'ACTION -->
+    <!-- L'ACTION (Choix de l'approche) -->
     <div id="screen-action" class="screen">
         <h2 id="action-title">Le Braquage</h2>
         <div id="action-choices"></div>
+    </div>
+
+    <!-- ÉCRAN DE DÉBRIEFING POST-BRAQUAGE -->
+    <div id="screen-debrief" class="screen">
+        <h2>Rapport d'Opération</h2>
+        <div id="debrief-content" style="background:#21262d; padding:20px; border-radius:8px; margin-bottom:20px; text-align:left;"></div>
+        <button id="debrief-btn" class="btn-choix btn-action">Continuer</button>
     </div>
 
     <!-- ÉCRAN DES ÉVÉNEMENTS ALÉATOIRES -->
@@ -139,6 +146,7 @@
 
 </div>
 
+<!-- C'est ici qu'on appelle ton fichier JS -->
 <script src="game.js"></script>
 
 </body>
