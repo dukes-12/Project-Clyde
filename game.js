@@ -384,35 +384,48 @@ function showScreen(screenId) {
 }
 
 function updateStats() {
-    let textRisque = joueur.enPrison ? `<span style="color:#8b949e;text-decoration:line-through;">EN TAULE</span>` : `${joueur.risquePrison} %`;
-    let texteSurveillance = joueur.niveauSurveillance > 0 ? `<div style="color:#da3633; grid-column: span 2; text-align:center; padding-top: 8px; margin-top: 4px; border-top: 1px solid #30363d;">👁️ Vous êtes fiché (Malus global : -${joueur.niveauSurveillance * 10}%)</div>` : "";
+    let textRisque = joueur.enPrison ? `<span style="color:#8b949e;text-decoration:line-through;">EN TAULE</span>` : `${joueur.risquePrison}%`;
+    let texteSurveillance = joueur.niveauSurveillance > 0 ? `<div style="color:#da3633; text-align:center; padding-top: 10px; margin-top: 5px; border-top: 1px solid #30363d;">👁️ Fiché (Malus : -${joueur.niveauSurveillance * 10}%)</div>` : "";
     
     document.getElementById('global-stats').innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; align-items: center;">
-            <div style="grid-column: span 2; display: flex; justify-content: space-between; color:#79c0ff; border-bottom: 1px solid #30363d; padding-bottom: 6px; margin-bottom: 2px;">
-                <span>👤 ${joueur.age} ans (Mois: ${joueur.mois})</span>
-                <span>💰 ${joueur.argent.toLocaleString()} €</span>
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
+            
+            <!-- En-tête : Âge et Argent -->
+            <div style="display: flex; justify-content: space-between; color:#79c0ff; border-bottom: 1px solid #30363d; padding-bottom: 8px;">
+                <span style="white-space: nowrap;">👤 ${joueur.age} ans (M: ${joueur.mois})</span>
+                <span style="white-space: nowrap;">💰 ${joueur.argent.toLocaleString()} €</span>
             </div>
             
-            <div>💪 Force : ${joueur.stats.force}</div>
-            <div>👑 Respect : ${joueur.respect}</div>
-            
-            <div>🧠 Intel : ${joueur.stats.intel}</div>
-            <div>💀 Crainte : ${joueur.crainte}</div>
-            
-            <div>🥷 Furtivité : ${joueur.stats.furtivite}</div>
-            <div>🧠 Mental : ${joueur.mental}/10</div>
-            
-            <div style="grid-column: span 2; border-top: 1px solid #30363d; padding-top: 6px; margin-top: 2px; display: flex; justify-content: space-between;">
-                <span>⚖️ Moralité : ${joueur.moralite}/10</span>
-                <span class="heat-text">🔥 Tension : ${joueur.heat}%</span>
+            <!-- Corps : Compétences et Réputation (2 colonnes) -->
+            <div style="display: flex; justify-content: space-between; gap: 10px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="white-space: nowrap;">💪 Force : ${joueur.stats.force}</span>
+                    <span style="white-space: nowrap;">🧠 Intel : ${joueur.stats.intel}</span>
+                    <span style="white-space: nowrap;">🥷 Furtivité : ${joueur.stats.furtivite}</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px; text-align: right;">
+                    <span style="white-space: nowrap;">👑 Respect : ${joueur.respect}</span>
+                    <span style="white-space: nowrap;">💀 Crainte : ${joueur.crainte}</span>
+                    <span style="white-space: nowrap;">🧠 Mental : ${joueur.mental}/10</span>
+                </div>
+            </div>
+
+            <!-- Pied : Jauges de danger et moralité -->
+            <div style="border-top: 1px solid #30363d; padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="white-space: nowrap;">⚖️ Moralité : ${joueur.moralite}/10</span>
+                    <span class="heat-text" style="white-space: nowrap;">🔥 Heat : ${joueur.heat}%</span>
+                </div>
+                <div class="danger-text" style="text-align: center; margin-top: 4px; font-weight: bold;">
+                    🚨 Risque Global : ${textRisque}
+                </div>
             </div>
             
-            <div class="danger-text" style="grid-column: span 2;">🚨 Risque Global : ${textRisque}</div>
             ${texteSurveillance}
         </div>
     `;
 }
+
 
 
 
