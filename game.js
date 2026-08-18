@@ -385,18 +385,37 @@ function showScreen(screenId) {
 
 function updateStats() {
     let textRisque = joueur.enPrison ? `<span style="color:#8b949e;text-decoration:line-through;">EN TAULE</span>` : `${joueur.risquePrison} %`;
-    let texteSurveillance = joueur.niveauSurveillance > 0 ? `<div style="color:#da3633; grid-column: span 2; text-align:center;">👁️ Vous êtes fiché (Malus global réussite : -${joueur.niveauSurveillance * 10}%)</div>` : "";
+    let texteSurveillance = joueur.niveauSurveillance > 0 ? `<div style="color:#da3633; text-align:center; padding-top: 8px; margin-top: 8px; border-top: 1px solid #30363d;">👁️ Vous êtes fiché (Malus global réussite : -${joueur.niveauSurveillance * 10}%)</div>` : "";
     
     document.getElementById('global-stats').innerHTML = `
-        <div>👤 ${joueur.age} ans (M: ${joueur.mois})</div>
-        <div>💰 ${joueur.argent.toLocaleString()} €</div>
-        <div>💪 ${joueur.stats.force} | 🧠 ${joueur.stats.intel} | 🥷 ${joueur.stats.furtivite}</div>
-        <div>👑 Respect: ${joueur.respect} | 💀 Crainte: ${joueur.crainte}</div>
-        <div>🧠 Mental: ${joueur.mental}/10 | ⚖️ Moral: ${joueur.moralite}</div>
-        <div class="danger-text">🚨 Risque : ${textRisque} | 🔥 Heat : ${joueur.heat}%</div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; justify-content: space-between; color:#79c0ff;">
+                <span>👤 Âge : ${joueur.age} ans (Mois: ${joueur.mois})</span>
+                <span>💰 Cash : ${joueur.argent.toLocaleString()} €</span>
+            </div>
+            
+            <hr style="border-color:#30363d; width:100%; margin: 4px 0;">
+            
+            <div>💪 Force : ${joueur.stats.force}</div>
+            <div>🧠 Intelligence : ${joueur.stats.intel}</div>
+            <div>🥷 Furtivité : ${joueur.stats.furtivite}</div>
+            
+            <hr style="border-color:#30363d; width:100%; margin: 4px 0;">
+            
+            <div>👑 Respect : ${joueur.respect}</div>
+            <div>💀 Crainte : ${joueur.crainte}</div>
+            <div>🧠 Mental : ${joueur.mental}/10</div>
+            <div>⚖️ Moralité : ${joueur.moralite}/10</div>
+            
+            <hr style="border-color:#30363d; width:100%; margin: 4px 0;">
+            
+            <div class="danger-text">🚨 Risque Global : ${textRisque}</div>
+            <div class="heat-text">🔥 Tension (Heat) : ${joueur.heat}%</div>
+        </div>
         ${texteSurveillance}
     `;
 }
+
 
 
 
@@ -471,12 +490,14 @@ function entrerDansLaPlanque() {
 function petitLarcin() {
     joueur.mois += 1;
     if(joueur.mois >= 12) { joueur.age++; joueur.mois -= 12; }
-    joueur.cptLarcin++; // Plus on en fait, plus le risque monte
+    joueur.cptLarcin++; 
     
     let butin = Math.floor(Math.random() * 1500) + 500;
-    let risqueFichage = joueur.cptLarcin * 15; // +15% de risque à chaque larcin consécutif
+    let risqueFichage = joueur.cptLarcin * 15; 
     
-    if (Math.random() * 100 < 90) { // 90% de réussite de base
+    updateStats(); // Mise à jour immédiate de l'âge/mois
+    
+    if (Math.random() * 100 < 90) { 
         joueur.argent += butin;
         joueur.argentGagne += butin;
         
@@ -485,12 +506,15 @@ function petitLarcin() {
         if (Math.random() * 100 < risqueFichage) {
             joueur.niveauSurveillance++;
             msg += `\n\nCependant, une caméra vous a grillé en pleine action. La police vous a mis dans ses registres ! (Surveillance +1).`;
-            joueur.cptLarcin = 0; // Le compteur retombe
+            joueur.cptLarcin = 0; 
         }
         
+        // Bloque les événements en chaîne pour juste afficher la carte résultat du larcin
+        eventsRestantsAfaire = 0; 
         afficherResultatEvenement(msg);
     } else {
         joueur.heat += 10;
+        eventsRestantsAfaire = 0;
         afficherResultatEvenement("Le larcin a foiré. La cible s'est défendue et vous avez dû fuir les mains vides. (Heat +10)");
     }
 }
@@ -500,14 +524,16 @@ function calmerLeJeu() {
     if(joueur.mois >= 12) { joueur.age++; joueur.mois -= 12; }
     joueur.heat = Math.max(0, joueur.heat - 30);
     joueur.mental = Math.min(10, joueur.mental + 1);
-    joueur.cptLarcin = 0; // Se reposer annule la frénésie des larcins
+    joueur.cptLarcin = 0; 
     
-    notify("Vous faites profil bas. La tension redescend.");
+    updateStats();
+    notify("Vous faites profil bas. Le temps passe...");
     
-    // Déclenche 1 à 2 événements aléatoires pour simuler les 6 mois qui passent
+    // Déclenche obligatoirement 1 ou 2 événements aléatoires
     eventsRestantsAfaire = Math.floor(Math.random() * 2) + 1;
     prochaineEtapeEvenement();
 }
+
 
 
 // --- GESTION DES ÉVÉNEMENTS POST-BRAQUAGE ---
