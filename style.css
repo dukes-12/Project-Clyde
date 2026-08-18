@@ -1,0 +1,64 @@
+body {
+    background-color: #0d1117; color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center; align-items: center; min-height: 90vh;
+}
+#game-container {
+    width: 100%; max-width: 750px;
+    background-color: #161b22;
+    padding: 30px; border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+    border: 1px solid #30363d; text-align: center;
+}
+.screen { display: none; }
+.active { display: block; }
+h1, h2, h3 { color: #ff7b72; margin-bottom: 15px; }
+
+.btn-choix {
+    background-color: #21262d; color: #c9d1d9;
+    border: 1px solid #30363d; padding: 15px; margin: 8px 0;
+    font-size: 15px; border-radius: 6px; cursor: pointer;
+    width: 100%; transition: 0.2s; font-weight: bold;
+}
+.btn-choix:hover:not(:disabled) { background-color: #30363d; border-color: #8b949e; }
+.btn-choix:disabled { opacity: 0.5; cursor: not-allowed; text-decoration: line-through; }
+
+.btn-action { background-color: #da3633; color: white; border: none; }
+.btn-action:hover { background-color: #b32d2a; }
+.btn-boutique { background-color: #d29922; color: #000; border: none; }
+.btn-boutique:hover { background-color: #a37113; }
+.btn-retraite { background-color: #238636; color: white; border: none; }
+.btn-retraite:hover { background-color: #2ea043; }
+.btn-profil { background-color: #79c0ff; color: #000; border: none; }
+.btn-profil:hover { background-color: #58a6ff; }
+
+.stats-bar {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    background: #0d1117; padding: 15px; border-radius: 8px;
+    margin-bottom: 20px; font-weight: bold; font-size: 14px;
+    border: 1px solid #30363d; text-align: left;
+}
+.danger-text { color: #ff7b72; }
+.heat-text { color: #d29922; }
+
+.shop-item {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #21262d; padding: 15px; margin: 10px 0;
+    border-radius: 6px; border: 1px solid #30363d; text-align: left;
+}
+.shop-info { flex: 1; }
+.shop-info h4 { margin: 0 0 5px 0; color: #79c0ff; }
+.shop-info p { margin: 0; font-size: 13px; color: #8b949e; }
+.btn-achat {
+    background: #238636; color: white; border: none;
+    padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;
+}
+.btn-achat:hover:not(:disabled) { background: #2ea043; }
+.btn-achat:disabled { background: #30363d; color: #8b949e; cursor: not-allowed; }
+
+.carte-profil { text-align: left; background: #0d1117; padding: 20px; border-radius: 8px; border: 1px solid #30363d; margin-bottom: 20px; }
+.carte-profil ul { list-style-type: none; padding: 0; }
+.carte-profil li { margin-bottom: 8px; border-bottom: 1px solid #21262d; padding-bottom: 5px; }
+
+#msg-arbre { display:none; background:#238636; color:white; padding:10px; border-radius:6px; margin-bottom:15px; }
