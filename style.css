@@ -64,16 +64,23 @@ h1, h2, h3 { color: #ff7b72; margin-bottom: 15px; }
 #msg-arbre { display:none; background:#238636; color:white; padding:10px; border-radius:6px; margin-bottom:15px; }
 /* --- OPTIMISATION MOBILE (v0.0.9) --- */
 .stats-bar {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    font-size: 13px; padding: 12px;
+    background: #0d1117; 
+    padding: 15px; 
+    border-radius: 8px;
+    margin-bottom: 20px; 
+    font-weight: bold; 
+    font-size: 13px;
+    border: 1px solid #30363d; 
+    text-align: left;
+    display: block; /* Supprime l'ancienne grille pour autoriser le retour à la ligne */
 }
 
 @media (max-width: 600px) {
     #game-container { padding: 15px; border-radius: 8px; }
     .btn-choix { font-size: 14px; padding: 12px; }
-    .stats-bar { font-size: 11px; gap: 5px; grid-template-columns: 1fr 1fr; }
     h1 { font-size: 22px; }
     h2 { font-size: 18px; }
     .shop-item { flex-direction: column; text-align: center; }
     .shop-item button { margin-top: 10px; width: 100%; }
 }
+
