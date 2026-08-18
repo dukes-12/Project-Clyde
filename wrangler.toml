@@ -1,0 +1,11 @@
+name = "project-clyde"
+compatibility_date = "2024-03-01"
+
+# La configuration pour empêcher Wrangler de planter sur les branches secondaires
+[env.test]
+name = "project-clyde-test"
+
+# Si tu as besoin d'ajouter d'autres branches de test dans le futur, 
+# il te suffira de dupliquer ce bloc en changeant le nom :
+# [env.dev]
+# name = "project-clyde-dev"
