@@ -188,6 +188,7 @@ h3 { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
     border: 1px solid var(--line);
     border-left: 3px solid var(--gold-dim);
     text-align: left;
+    overflow: hidden;
 }
 .danger-text { color: var(--rust-bright); }
 .heat-text { color: var(--gold); }
@@ -198,7 +199,9 @@ h3 { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
     color: var(--blue-bright, #8fb4d1);
     font-size: 15px;
     margin-bottom: 4px;
+    min-width: 0;
 }
+.stat-id-item { min-width: 0; }
 .stat-id-item strong { color: var(--paper); font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; }
 .stat-sub { font-size: 11px; color: var(--paper-dim); margin-left: 4px; }
 .stat-id-money { color: var(--gold); }
@@ -226,11 +229,11 @@ h3 { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
 .stat-row3 {
     display: flex;
     justify-content: space-between;
-    gap: 8px;
+    gap: 4px;
     margin-bottom: 2px;
 }
 .stat-cell3 {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
     flex: 1; min-width: 0;
     padding: 6px 0;
     border-bottom: 1px dotted var(--line);
@@ -517,4 +520,6 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 20px 0; }
     h2 { font-size: 17px; }
     .shop-item { flex-direction: column; text-align: center; }
     .shop-item button { margin-top: 10px; width: 100%; }
+    .stat-cell3 { font-size: 12px; }
+    .stats-bar { padding: 14px 14px; }
 }

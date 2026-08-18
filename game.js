@@ -378,7 +378,7 @@ function showScreen(screenId) {
     if(['screen-start', 'screen-milieu', 'screen-classe', 'screen-ville', 'screen-story', 'screen-end', 'screen-event', 'screen-debrief'].includes(screenId)) {
         statsBar.style.display = 'none';
     } else {
-        statsBar.style.display = 'grid';
+        statsBar.style.display = 'block';
         updateStats();
     }
     document.getElementById('msg-arbre').style.display = 'none'; 
