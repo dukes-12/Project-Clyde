@@ -384,45 +384,36 @@ function showScreen(screenId) {
 }
 
 function updateStats() {
-    let textRisque = joueur.enPrison ? `<span style="color:#8b949e;text-decoration:line-through;">EN TAULE</span>` : `${joueur.risquePrison}%`;
-    let texteSurveillance = joueur.niveauSurveillance > 0 ? `<div style="color:#da3633; text-align:center; padding-top: 10px; margin-top: 5px; border-top: 1px solid #30363d;">👁️ Fiché (Malus : -${joueur.niveauSurveillance * 10}%)</div>` : "";
-    
-    document.getElementById('global-stats').innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
-            
-            <!-- En-tête : Âge et Argent -->
-            <div style="display: flex; justify-content: space-between; color:#79c0ff; border-bottom: 1px solid #30363d; padding-bottom: 8px;">
-                <span style="white-space: nowrap;">👤 ${joueur.age} ans (M: ${joueur.mois})</span>
-                <span style="white-space: nowrap;">💰 ${joueur.argent.toLocaleString()} €</span>
-            </div>
-            
-            <!-- Corps : Compétences et Réputation (2 colonnes) -->
-            <div style="display: flex; justify-content: space-between; gap: 10px;">
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <span style="white-space: nowrap;">💪 Force : ${joueur.stats.force}</span>
-                    <span style="white-space: nowrap;">🧠 Intel : ${joueur.stats.intel}</span>
-                    <span style="white-space: nowrap;">🥷 Furtivité : ${joueur.stats.furtivite}</span>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 8px; text-align: right;">
-                    <span style="white-space: nowrap;">👑 Respect : ${joueur.respect}</span>
-                    <span style="white-space: nowrap;">💀 Crainte : ${joueur.crainte}</span>
-                    <span style="white-space: nowrap;">🧠 Mental : ${joueur.mental}/10</span>
-                </div>
-            </div>
+    let enTaule = joueur.enPrison;
+    let texteSurveillance = joueur.niveauSurveillance > 0
+        ? `<div class="stat-flag">👁️ Fiché — Malus : -${joueur.niveauSurveillance * 10}%</div>`
+        : "";
 
-            <!-- Pied : Jauges de danger et moralité -->
-            <div style="border-top: 1px solid #30363d; padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="white-space: nowrap;">⚖️ Moralité : ${joueur.moralite}/10</span>
-                    <span class="heat-text" style="white-space: nowrap;">🔥 Heat : ${joueur.heat}%</span>
-                </div>
-                <div class="danger-text" style="text-align: center; margin-top: 4px; font-weight: bold;">
-                    🚨 Risque Global : ${textRisque}
-                </div>
-            </div>
-            
-            ${texteSurveillance}
+    document.getElementById('global-stats').innerHTML = `
+        <div class="stat-id">
+            <span class="stat-id-item">👤 <strong>${joueur.age} ans</strong><span class="stat-sub">(mois ${joueur.mois})</span></span>
+            <span class="stat-id-item stat-id-money">💰 <strong>${joueur.argent.toLocaleString()} €</strong></span>
         </div>
+
+        <div class="stat-grid">
+            <div class="stat-cell"><span class="stat-label">💪 Force</span><span class="stat-value">${joueur.stats.force}</span></div>
+            <div class="stat-cell"><span class="stat-label">👑 Respect</span><span class="stat-value">${joueur.respect}</span></div>
+            <div class="stat-cell"><span class="stat-label">🧠 Intel</span><span class="stat-value">${joueur.stats.intel}</span></div>
+            <div class="stat-cell"><span class="stat-label">💀 Crainte</span><span class="stat-value">${joueur.crainte}</span></div>
+            <div class="stat-cell"><span class="stat-label">🥷 Furtivité</span><span class="stat-value">${joueur.stats.furtivite}</span></div>
+            <div class="stat-cell"><span class="stat-label">🧠 Mental</span><span class="stat-value">${joueur.mental}/10</span></div>
+        </div>
+
+        <div class="stat-gauges">
+            <div class="stat-gauge"><span class="stat-label">⚖️ Moralité</span><span class="stat-value">${joueur.moralite}/10</span></div>
+            <div class="stat-gauge"><span class="stat-label">🔥 Heat</span><span class="stat-value heat-text">${joueur.heat}%</span></div>
+        </div>
+
+        <div class="stat-risk ${enTaule ? 'stat-risk--jailed' : ''}">
+            🚨 Risque Global : ${enTaule ? 'EN TAULE' : joueur.risquePrison + '%'}
+        </div>
+
+        ${texteSurveillance}
     `;
 }
 
@@ -655,7 +646,7 @@ function ouvrirProfil() {
         <ul>
             <li><strong>Version :</strong> v0.0.7</li>
             <li><strong>Profil :</strong> Milieu ${joueur.milieu} | <strong>Classe :</strong> ${joueur.classe}</li>
-            <li><strong>Statut :</strong> <span style="color:#ff7b72">${getStatutCriminel()}</span> (${joueur.braquagesReussis} coups réussis)</li>
+            <li><strong>Statut :</strong> <span style="color:#c8564a">${getStatutCriminel()}</span> (${joueur.braquagesReussis} coups réussis)</li>
             <li><strong>Argent Gagné Total :</strong> ${joueur.argentGagne.toLocaleString()} €</li>
             <li><strong>Argent Perdu Total :</strong> ${joueur.argentPerdu.toLocaleString()} €</li>
             <li><strong>Cash Blanchi :</strong> ${joueur.cashBlanchi.toLocaleString()} €</li>
@@ -674,7 +665,7 @@ function ouvrirBoutique() {
     let types = [...new Set(catalogue.map(item => item.type))];
     
     types.forEach(type => {
-        html += `<h3 style="color:#d29922; border-bottom:1px solid #30363d; padding-bottom:5px;">${type}</h3>`;
+        html += `<h3 style="color:#bd9245; border-bottom:1px solid #2b323c; padding-bottom:5px;">${type}</h3>`;
         catalogue.filter(i => i.type === type).forEach(item => {
             let possede = joueur.possessions.includes(item.id);
             let asseyArgent = joueur.argent >= item.prix;
@@ -706,9 +697,9 @@ function acheterItem(id) {
 function ouvrirRecrutement() {
     let html = "";
     if(joueur.equipe.length > 0) {
-        html += `<h3 style="color:#79c0ff">Votre Équipe Actuelle</h3>`;
+        html += `<h3 style="color:#8fb4d1">Votre Équipe Actuelle</h3>`;
                 joueur.equipe.forEach((eq, index) => {
-            html += `<div style="background:#0d1117; padding:10px; margin-bottom:10px; border:1px solid #30363d; border-radius:4px;">
+            html += `<div style="background:#0a0c10; padding:10px; margin-bottom:10px; border:1px solid #2b323c; border-radius:4px;">
                 <strong>${eq.nom}</strong> (Spé: ${eq.role})<br>
                 <div style="display:flex; gap:10px; margin-top:8px;">
                     <button class="btn-choix" style="padding:8px; margin:0; flex:1;" onclick="virerRecrue(${index})">Virer</button>
@@ -716,16 +707,16 @@ function ouvrirRecrutement() {
                 </div>
             </div>`;
         });
-        html += `<hr style="border-color:#30363d">`;
+        html += `<hr style="border-color:#2b323c">`;
     }
 
-    html += `<h3 style="color:#2ea043">À Embaucher</h3>`;
+    html += `<h3 style="color:#4f9967">À Embaucher</h3>`;
     recruesDispo.forEach(r => {
         let dejaEquipe = joueur.equipe.find(e => e.id === r.id);
         if(!dejaEquipe) {
             let coutReel = Math.max(2000, r.cout - (joueur.respect * 500));
             let peutPayer = joueur.argent >= coutReel;
-            html += `<div style="background:#21262d; padding:10px; margin-bottom:10px; border:1px solid #30363d; border-radius:4px;">
+            html += `<div style="background:#1d232b; padding:10px; margin-bottom:10px; border:1px solid #2b323c; border-radius:4px;">
                 <strong>${r.nom}</strong> | Spé: ${r.role} (-${r.bonus} difficulté)<br>
                 <small>Prime : ${coutReel.toLocaleString()} €</small><br>
                 <button class="btn-choix" ${!peutPayer ? 'disabled' : ''} style="padding:8px; margin-top:5px" onclick="embaucher('${r.id}', ${coutReel})">Engager</button>
@@ -780,14 +771,14 @@ function ameliorerArbre(stat) {
         joueur.pointsCompetence -= 1;
         joueur.buffs[stat] += 10;
         msgBox.style.display = 'block';
-        msgBox.style.background = '#238636';
+        msgBox.style.background = '#3d7a52';
         msgBox.innerText = `Succès ! +${joueur.buffs[stat]}% de bonus en ${stat}.`;
         document.getElementById('pts-comp').innerText = joueur.pointsCompetence;
         updateStats();
         genererMissionsHub(); 
     } else {
         msgBox.style.display = 'block';
-        msgBox.style.background = '#da3633';
+        msgBox.style.background = '#a4453a';
         msgBox.innerText = "Pas de Points de Compétence (PC).";
     }
 }
@@ -820,13 +811,13 @@ function genererMissionsHub() {
 
     document.getElementById('hub-targets').innerHTML = `
         <button class="btn-choix" style="padding:10px;" onclick="preparerCasse('faible', ${cF.diff}, ${cF.butin}, '${cF.nom}', \`${cF.desc}\`)">
-            🟢 ${cF.nom}<br><span style="font-size:12px; color:#8b949e; font-style:italic;">Chance de réussite estimée : ~${getTx(cF.diff)}%</span>
+            🟢 ${cF.nom}<br><span style="font-size:12px; color:#8a8c7c; font-style:italic;">Chance de réussite estimée : ~${getTx(cF.diff)}%</span>
         </button>
         <button class="btn-choix" style="padding:10px;" onclick="preparerCasse('modere', ${cM.diff}, ${cM.butin}, '${cM.nom}', \`${cM.desc}\`)">
-            🟠 ${cM.nom}<br><span style="font-size:12px; color:#8b949e; font-style:italic;">Chance de réussite estimée : ~${getTx(cM.diff)}%</span>
+            🟠 ${cM.nom}<br><span style="font-size:12px; color:#8a8c7c; font-style:italic;">Chance de réussite estimée : ~${getTx(cM.diff)}%</span>
         </button>
         <button class="btn-choix" style="padding:10px;" onclick="preparerCasse('eleve', ${cE.diff}, ${cE.butin}, '${cE.nom}', \`${cE.desc}\`)">
-            🔴 ${cE.nom}<br><span style="font-size:12px; color:#8b949e; font-style:italic;">Chance de réussite estimée : ~${getTx(cE.diff)}%</span>
+            🔴 ${cE.nom}<br><span style="font-size:12px; color:#8a8c7c; font-style:italic;">Chance de réussite estimée : ~${getTx(cE.diff)}%</span>
         </button>
     `;
 }
@@ -884,7 +875,7 @@ function lancerMiniScenarioAction(stat) {
 
     document.getElementById('action-title').innerText = "Sur les lieux...";
     document.getElementById('action-choices').innerHTML = `
-        <p style="background:#21262d; padding:15px; border-radius:6px; text-align:left; border-left:4px solid #da3633; line-height:1.5;">${contexteCasse.texteAction}</p>
+        <p style="background:#1d232b; padding:15px; border-radius:6px; text-align:left; border-left:4px solid #a4453a; line-height:1.5;">${contexteCasse.texteAction}</p>
         <button class="btn-choix btn-action" onclick="resoudreAction('${stat}')">Exécuter le plan</button>
     `;
 }
@@ -951,12 +942,12 @@ function afficherDebrief(reussi, butin, mortAllie) {
         : "Le plan a totalement déraillé. Les forces de l'ordre vous ont pris en tenaille.";
 
     let html = `
-        <h3 style="color:${reussi ? '#2ea043' : '#da3633'}">${reussi ? 'Coup Réussi avec Succès' : 'Opération Compromise'}</h3>
-        <p style="font-style:italic; color:#8b949e;">${msgAmbiance}</p>
+        <h3 style="color:${reussi ? '#4f9967' : '#a4453a'}">${reussi ? 'Coup Réussi avec Succès' : 'Opération Compromise'}</h3>
+        <p style="font-style:italic; color:#8a8c7c;">${msgAmbiance}</p>
         <p><strong>Butin net empoché :</strong> ${butin.toLocaleString()} €</p>
-        <hr style="border-color:#30363d">
+        <hr style="border-color:#2b323c">
         <h4>Bilan Humain :</h4>
-        <ul style="color:#ff7b72;">
+        <ul style="color:#c8564a;">
             <li>Policiers blessés : ${contexteCasse.blesseFlics} | tués : ${contexteCasse.mortFlics}</li>
             <li>Civils blessés : ${contexteCasse.blesseCivils} | tués : ${contexteCasse.mortCivils}</li>
             <li>Alliés perdus : ${mortAllie}</li>
@@ -1026,9 +1017,9 @@ function terminerJeu(raison) {
 function afficherEcranFin(titre, description) {
     let div = document.getElementById('end-text');
     div.innerHTML = `
-        <h3 style="color:#ff7b72; margin-top:0;">${titre}</h3>
+        <h3 style="color:#c8564a; margin-top:0;">${titre}</h3>
         <p>${description}</p>
-        <hr style="border-color:#30363d; margin: 15px 0;">
+        <hr style="border-color:#2b323c; margin: 15px 0;">
         <ul style="list-style-type:none; padding:0; font-size: 14px;">
             <li><strong>Âge final :</strong> ${joueur.age} ans</li>
             <li><strong>Fortune actuelle :</strong> ${joueur.argent.toLocaleString()} €</li>

@@ -1,86 +1,389 @@
+/* ============================================================
+   HEIST: THE CHOICE — thème "dossier de police"
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+    --void: #0a0c10;
+    --panel: #15191f;
+    --panel-raised: #1d232b;
+    --paper: #e8e2cf;
+    --paper-dim: #8a8c7c;
+    --gold: #bd9245;
+    --gold-dim: #7c6634;
+    --rust: #a4453a;
+    --rust-bright: #c8564a;
+    --ok: #3d7a52;
+    --ok-bright: #4f9967;
+    --blue: #5c86a8;
+    --blue-bright: #8fb4d1;
+    --line: #2b323c;
+}
+
+* { box-sizing: border-box; }
+
 body {
-    background-color: #0d1117; color: #c9d1d9;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background-color: var(--void);
+    background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     margin: 0; padding: 20px;
     display: flex; justify-content: center; align-items: center; min-height: 90vh;
 }
+
 #game-container {
+    position: relative;
     width: 100%; max-width: 750px;
-    background-color: #161b22;
-    padding: 30px; border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.8);
-    border: 1px solid #30363d; text-align: center;
+    background-color: var(--panel);
+    padding: 34px 30px 30px;
+    border-radius: 3px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px var(--line);
+    border-top: 3px solid var(--gold-dim);
+    text-align: center;
 }
+
+/* Languette "DOSSIER" en haut du dossier */
+#game-container::before {
+    content: "DOSSIER N° 0417 — CONFIDENTIEL";
+    position: absolute;
+    top: -13px; left: 24px;
+    background: var(--gold-dim);
+    color: var(--void);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 3px 10px;
+    border-radius: 2px;
+}
+
 .screen { display: none; }
 .active { display: block; }
-h1, h2, h3 { color: #ff7b72; margin-bottom: 15px; }
 
+h1, h2, h3 {
+    font-family: 'Oswald', sans-serif;
+    color: var(--paper);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 14px;
+    font-weight: 600;
+}
+
+h1 {
+    display: inline-block;
+    font-size: 30px;
+    color: var(--rust-bright);
+    border: 2px solid var(--rust);
+    padding: 10px 22px;
+    transform: rotate(-1.2deg);
+    letter-spacing: 3px;
+    box-shadow: inset 0 0 0 3px rgba(164,69,58,0.15);
+}
+
+h2 {
+    font-size: 20px;
+    border-bottom: 2px solid var(--gold-dim);
+    padding-bottom: 8px;
+    display: block;
+}
+
+h3 { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
+
+#screen-start p {
+    color: var(--paper-dim);
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 18px auto 26px;
+}
+
+/* --- Boutons : onglets de dossier --- */
 .btn-choix {
-    background-color: #21262d; color: #c9d1d9;
-    border: 1px solid #30363d; padding: 15px; margin: 8px 0;
-    font-size: 15px; border-radius: 6px; cursor: pointer;
-    width: 100%; transition: 0.2s; font-weight: bold;
+    position: relative;
+    background-color: var(--panel-raised);
+    color: var(--paper);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold-dim);
+    padding: 14px 16px 14px 18px;
+    margin: 8px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 2px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: transform 0.12s ease, border-color 0.15s, background-color 0.15s;
 }
-.btn-choix:hover:not(:disabled) { background-color: #30363d; border-color: #8b949e; }
-.btn-choix:disabled { opacity: 0.5; cursor: not-allowed; text-decoration: line-through; }
+.btn-choix:hover:not(:disabled) {
+    background-color: #232a34;
+    border-left-color: var(--gold);
+}
+.btn-choix:active:not(:disabled) {
+    transform: scale(0.98) translateY(1px);
+}
+.btn-choix:disabled {
+    opacity: 0.4; cursor: not-allowed; text-decoration: line-through;
+    border-left-color: var(--line);
+}
+.btn-choix:focus-visible {
+    outline: 2px solid var(--gold); outline-offset: 2px;
+}
 
-.btn-action { background-color: #da3633; color: white; border: none; }
-.btn-action:hover { background-color: #b32d2a; }
-.btn-boutique { background-color: #d29922; color: #000; border: none; }
-.btn-boutique:hover { background-color: #a37113; }
-.btn-retraite { background-color: #238636; color: white; border: none; }
-.btn-retraite:hover { background-color: #2ea043; }
-.btn-profil { background-color: #79c0ff; color: #000; border: none; }
-.btn-profil:hover { background-color: #58a6ff; }
+/* Bouton principal / action (rouge tampon) */
+.btn-action {
+    background-color: var(--rust);
+    color: var(--paper);
+    border: 1px solid var(--rust-bright);
+    border-left: 4px solid var(--rust-bright);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+}
+.btn-action:hover:not(:disabled) { background-color: var(--rust-bright); }
 
+/* Marché noir (or, ticket) */
+.btn-boutique {
+    background-color: var(--gold);
+    color: #1a1305;
+    border: 1px dashed #4a3a17;
+    border-left: 4px solid #4a3a17;
+}
+.btn-boutique:hover:not(:disabled) { background-color: #d1a758; }
+
+/* Se ranger / validation (vert, approuvé) */
+.btn-retraite {
+    background-color: var(--ok);
+    color: var(--paper);
+    border: 1px solid var(--ok-bright);
+    border-left: 4px solid var(--ok-bright);
+    text-transform: uppercase;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 1px;
+}
+.btn-retraite:hover:not(:disabled) { background-color: var(--ok-bright); }
+
+/* Profil (bleu, fiche) */
+.btn-profil {
+    background-color: var(--blue);
+    color: #0a1520;
+    border: 1px solid #7ba1c2;
+    border-left: 4px solid #7ba1c2;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.btn-profil:hover:not(:disabled) { background-color: #729cc0; }
+
+/* --- Bandeau stats (rap sheet) --- */
 .stats-bar {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    background: #0d1117; padding: 15px; border-radius: 8px;
-    margin-bottom: 20px; font-weight: bold; font-size: 14px;
-    border: 1px solid #30363d; text-align: left;
+    background: var(--void);
+    padding: 16px 18px;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold-dim);
+    text-align: left;
 }
-.danger-text { color: #ff7b72; }
-.heat-text { color: #d29922; }
+.danger-text { color: var(--rust-bright); }
+.heat-text { color: var(--gold); }
 
+/* --- Identité : âge / argent --- */
+.stat-id {
+    display: flex; justify-content: space-between; align-items: baseline;
+    color: var(--blue-bright, #8fb4d1);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px; margin-bottom: 12px;
+    font-size: 15px;
+}
+.stat-id-item strong { color: var(--paper); font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; }
+.stat-sub { font-size: 11px; color: var(--paper-dim); margin-left: 4px; }
+.stat-id-money { color: var(--gold); }
+
+/* --- Grille des 6 statistiques --- */
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 18px;
+    margin-bottom: 12px;
+}
+.stat-cell {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dotted var(--line);
+    font-size: 13px;
+}
+.stat-label { color: var(--paper-dim); white-space: nowrap; }
+.stat-value { color: var(--paper); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* --- Jauges moralité / heat --- */
+.stat-gauges {
+    display: flex; justify-content: space-between; gap: 16px;
+    border-top: 1px solid var(--line);
+    padding-top: 10px; margin-bottom: 8px;
+    font-size: 13px;
+}
+.stat-gauge { display: flex; align-items: center; gap: 6px; }
+.stat-gauge .stat-label { color: var(--paper-dim); }
+.stat-gauge .stat-value { font-weight: 700; }
+
+/* --- Risque global : bandeau d'alerte --- */
+.stat-risk {
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    color: var(--rust-bright);
+    background: rgba(164, 69, 58, 0.1);
+    border: 1px solid rgba(164, 69, 58, 0.3);
+    border-radius: 2px;
+    padding: 6px;
+}
+.stat-risk--jailed {
+    color: var(--paper-dim);
+    background: rgba(255,255,255,0.03);
+    border-color: var(--line);
+    text-decoration: line-through;
+}
+
+.stat-flag {
+    color: var(--rust-bright);
+    text-align: center; font-size: 12px; font-weight: 700;
+    padding-top: 8px; margin-top: 8px;
+    border-top: 1px solid var(--line);
+}
+
+/* --- Boutique --- */
 .shop-item {
     display: flex; justify-content: space-between; align-items: center;
-    background: #21262d; padding: 15px; margin: 10px 0;
-    border-radius: 6px; border: 1px solid #30363d; text-align: left;
+    background: var(--panel-raised); padding: 15px; margin: 10px 0;
+    border-radius: 2px; border: 1px solid var(--line);
+    border-left: 3px dashed var(--gold-dim);
+    text-align: left;
 }
 .shop-info { flex: 1; }
-.shop-info h4 { margin: 0 0 5px 0; color: #79c0ff; }
-.shop-info p { margin: 0; font-size: 13px; color: #8b949e; }
-.btn-achat {
-    background: #238636; color: white; border: none;
-    padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;
+.shop-info h4 {
+    margin: 0 0 5px 0; color: var(--blue);
+    font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; text-transform: uppercase;
+    font-size: 14px;
 }
-.btn-achat:hover:not(:disabled) { background: #2ea043; }
-.btn-achat:disabled { background: #30363d; color: #8b949e; cursor: not-allowed; }
+.shop-info p { margin: 0; font-size: 12px; color: var(--paper-dim); }
+.btn-achat {
+    background: var(--ok); color: var(--paper); border: none;
+    padding: 10px 15px; border-radius: 2px; cursor: pointer;
+    font-family: 'Oswald', sans-serif; font-weight: 600; letter-spacing: 0.5px;
+    text-transform: uppercase; font-size: 12px;
+    transition: background-color 0.15s, transform 0.12s;
+}
+.btn-achat:hover:not(:disabled) { background: var(--ok-bright); }
+.btn-achat:active:not(:disabled) { transform: scale(0.96); }
+.btn-achat:disabled { background: var(--line); color: var(--paper-dim); cursor: not-allowed; }
+.btn-achat:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
-.carte-profil { text-align: left; background: #0d1117; padding: 20px; border-radius: 8px; border: 1px solid #30363d; margin-bottom: 20px; }
-.carte-profil ul { list-style-type: none; padding: 0; }
-.carte-profil li { margin-bottom: 8px; border-bottom: 1px solid #21262d; padding-bottom: 5px; }
+/* --- Sous-titres génériques (h4 injectés en JS) --- */
+h4 {
+    font-family: 'Oswald', sans-serif;
+    color: var(--paper);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
+    margin: 16px 0 8px;
+}
 
-#msg-arbre { display:none; background:#238636; color:white; padding:10px; border-radius:6px; margin-bottom:15px; }
-/* --- OPTIMISATION MOBILE (v0.0.9) --- */
-.stats-bar {
-    background: #0d1117; 
-    padding: 15px; 
-    border-radius: 8px;
-    margin-bottom: 20px; 
-    font-weight: bold; 
+/* --- Boîtes de texte narratif générées en JS (débrief, fin, prison, event) --- */
+#debrief-content, #end-text, #event-desc, #prep-desc {
+    font-size: 14px; line-height: 1.55;
+}
+#debrief-content ul, #end-text ul {
+    list-style: none; padding: 0; margin: 8px 0 0;
+}
+#debrief-content ul li, #end-text ul li {
+    padding: 4px 0 4px 14px;
+    border-left: 2px solid var(--line);
+    margin-bottom: 2px;
     font-size: 13px;
-    border: 1px solid #30363d; 
+}
+#debrief-content hr, #end-text hr { margin: 14px 0; }
+
+/* --- Écran Prison : bande "incarcération" --- */
+#screen-prison h2 {
+    color: var(--rust-bright);
+    border-bottom-color: var(--rust);
+}
+#screen-prison::before { content: none; }
+#screen-prison #prison-text {
+    background: var(--void);
+    border: 1px dashed var(--rust);
+    border-left: 3px solid var(--rust);
+    padding: 16px;
+    border-radius: 2px;
     text-align: left;
-    display: block; /* Supprime l'ancienne grille pour autoriser le retour à la ligne */
+    line-height: 1.55;
+    font-size: 14px;
+}
+
+/* --- Écran Événement : tag "urgent" --- */
+#screen-event h2::before {
+    content: "URGENT";
+    display: inline-block;
+    background: var(--gold);
+    color: #1a1305;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-right: 10px;
+    vertical-align: middle;
+    transform: translateY(-2px);
+}
+
+/* --- Écran de fin : bilan final encadré --- */
+#screen-end h2 { border-bottom-color: var(--gold); }
+
+/* --- Fiche profil : "papier ligné" --- */
+.carte-profil {
+    text-align: left;
+    background: var(--void);
+    background-image: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(189,146,69,0.07) 28px);
+    padding: 20px;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    margin-bottom: 20px;
+}
+.carte-profil ul { list-style-type: none; padding: 0; }
+.carte-profil li {
+    margin-bottom: 8px; border-bottom: 1px solid var(--line); padding-bottom: 5px;
+    font-size: 13px;
+}
+
+#msg-arbre {
+    display: none; background: var(--ok); color: var(--paper);
+    padding: 10px; border-radius: 2px; margin-bottom: 15px;
+    font-weight: 600; font-size: 13px;
+}
+
+#hub-notification { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+
+hr { border: none; border-top: 1px dashed var(--line); }
+
+/* Badge version */
+#screen-start > div[style*="8b949e"] {
+    color: var(--paper-dim) !important;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 @media (max-width: 600px) {
-    #game-container { padding: 15px; border-radius: 8px; }
-    .btn-choix { font-size: 14px; padding: 12px; }
-    h1 { font-size: 22px; }
-    h2 { font-size: 18px; }
+    #game-container { padding: 26px 18px 20px; }
+    #game-container::before { font-size: 8.5px; left: 14px; padding: 3px 8px; }
+    .btn-choix { font-size: 13px; padding: 12px 14px 12px 16px; }
+    h1 { font-size: 22px; padding: 8px 14px; letter-spacing: 2px; }
+    h2 { font-size: 17px; }
     .shop-item { flex-direction: column; text-align: center; }
     .shop-item button { margin-top: 10px; width: 100%; }
 }
-
