@@ -17,7 +17,7 @@
         <h1>HEIST: THE CHOICE</h1>
         <p>Bâtissez un empire, gérez votre tension et prenez votre retraite au sommet.</p>
         <button class="btn-choix btn-action" onclick="showScreen('screen-milieu')">Nouvelle Partie</button>
-        <div style="margin-top: 25px; font-size: 12px; color: #8b949e; letter-spacing: 1px;">v0.0.11</div>
+        <div class="version-tag">v0.0.11</div>
     </div>
 
     <!-- LE MILIEU SOCIAL -->
@@ -47,29 +47,30 @@
 
     <!-- STORYTELLING -->
     <div id="screen-story" class="screen">
-        <h2 style="color:#d29922;">Premiers Pas dans la Pègre</h2>
-        <p id="story-text" style="margin: 25px 0; line-height: 1.6; text-align: left; background:#21262d; padding:20px; border-radius:8px; border-left: 4px solid #d29922;"></p>
+        <h2>Premiers Pas dans la Pègre</h2>
+        <p id="story-text" class="content-box"></p>
         <button class="btn-choix btn-action" onclick="entrerDansLaPlanque()">Prendre possession de la planque</button>
     </div>
 
     <!-- LE HUB -->
     <div id="screen-hub" class="screen">
         <h2>La Planque (<span id="hub-ville-nom"></span>)</h2>
-        <div id="hub-notification" style="color:#79c0ff; margin-bottom:15px; min-height: 20px;"></div>
+        <div id="hub-notification" class="hub-notif"></div>
         
-        <div style="display:flex; flex-wrap: wrap; gap:10px; margin-bottom: 20px;">
+        <div style="display:flex; flex-wrap: wrap; gap:10px; margin-bottom: 10px;">
             <button class="btn-choix btn-profil" style="width: 100%;" onclick="ouvrirProfil()">👤 Ouvrir le Dossier Profil</button>
             <button class="btn-choix btn-boutique" style="width: 48%;" onclick="ouvrirBoutique()">🛒 Marché Noir</button>
             <button class="btn-choix btn-action" style="width: 48%;" onclick="ouvrirRecrutement()">👥 Recrutement</button>
             <button class="btn-choix btn-boutique" style="width: 48%;" onclick="ouvrirArbre()">🧠 Compétences</button>
             <button class="btn-choix btn-retraite" style="width: 48%;" onclick="terminerJeu('retraite')">🌴 Se Ranger</button>
+            <button class="btn-choix" style="width: 100%;" onclick="ouvrirJournal()">📓 Carnet de Bord</button>
         </div>
 
-        <h3 style="margin-top: 30px;">Cibles Disponibles</h3>
-        <p style="font-size: 12px; color: #8b949e; margin-top: -10px;">Le [XX %] indique vos chances globales de succès selon vos meilleures stats.</p>
+        <h3 style="margin-top: 20px;">Cibles Disponibles</h3>
+        <p class="hint-text">Le [XX %] indique vos chances globales de succès selon vos meilleures stats.</p>
         <div id="hub-targets"></div>
         
-        <hr style="border-color: #30363d; margin: 20px 0;">
+        <hr>
         <div style="display:flex; flex-wrap: wrap; gap:10px;">
             <button class="btn-choix" style="width: 100%;" onclick="petitLarcin()">🤏 Petit larcin (Rapide, faible butin, risque de fichage si abus)</button>
             <button class="btn-choix" style="width: 48%;" onclick="calmerLeJeu()">☕ Calmer le jeu (6 mois)</button>
@@ -88,15 +89,15 @@
     <!-- LA BOUTIQUE -->
     <div id="screen-boutique" class="screen">
         <h2>Le Marché Noir</h2>
-        <div id="boutique-liste" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div>
+        <div id="boutique-liste" class="scroll-list"></div>
         <button class="btn-choix" onclick="showScreen('screen-hub')">Retourner à la planque</button>
     </div>
 
     <!-- LE RECRUTEMENT -->
     <div id="screen-recrutement" class="screen">
         <h2>Le Bar des Truands</h2>
-        <p>Ils prennent une prime et 15% du butin chacun. Ils augmentent vos chances.</p>
-        <div id="liste-recrues" style="text-align: left; margin-bottom: 20px;"></div>
+        <p>Ils prennent une prime et un pourcentage du butin chacun. Ils augmentent vos chances.</p>
+        <div id="liste-recrues" class="scroll-list" style="text-align: left;"></div>
         <button class="btn-choix" onclick="showScreen('screen-hub')">Retour</button>
     </div>
 
@@ -104,11 +105,13 @@
     <div id="screen-arbre" class="screen">
         <h2>Planque - Entraînement</h2>
         <div id="msg-arbre"></div>
-        <p>Points de Compétence (PC) : <span id="pts-comp" style="color:#ff7b72; font-weight:bold;"></span></p>
-        <div style="text-align:left; background:#21262d; padding:15px; border-radius:6px; margin-bottom:15px;">
+        <p>Points de Compétence (PC) : <span id="pts-comp" class="pc-count"></span></p>
+        <div class="content-box" style="text-align:left;">
             <button class="btn-choix btn-action" onclick="ameliorerArbre('force')">Musculation & Tir (+10% réussite Force) - Coût: 1 PC</button>
             <button class="btn-choix btn-action" onclick="ameliorerArbre('intel')">Laboratoire Cyber (+10% réussite Intel) - Coût: 1 PC</button>
             <button class="btn-choix btn-action" onclick="ameliorerArbre('furtivite')">Parkour & Ombres (+10% réussite Furtivité) - Coût: 1 PC</button>
+            <button class="btn-choix btn-action" onclick="ameliorerArbre('sangfroid')">Sang-Froid (-10% Tension gagnée en casse) - Coût: 1 PC</button>
+            <button class="btn-choix btn-action" onclick="ameliorerArbre('contacts')">Réseau de Contacts (-10% coût de recrutement) - Coût: 1 PC</button>
         </div>
         <button class="btn-choix" onclick="showScreen('screen-hub')">Retour</button>
     </div>
@@ -118,11 +121,13 @@
         <h2>Préparation du Casse</h2>
         <p id="prep-desc"></p>
         <p><em>Butin estimé : <span id="prep-butin"></span> €</em></p>
+        <div id="prep-reperage-info"></div>
+        <button class="btn-choix" id="btn-reperer" onclick="reperageCasse()">🔍 Repérer les lieux (+1 mois, meilleures chances)</button>
         <button class="btn-choix btn-action" onclick="validerPrep()">Lancer l'opération</button>
         <button class="btn-choix" onclick="showScreen('screen-hub')">Annuler</button>
     </div>
 
-    <!-- L'ACTION (Choix de l'approche) -->
+    <!-- L'ACTION (Choix de l'approche / exfiltration) -->
     <div id="screen-action" class="screen">
         <h2 id="action-title">Le Braquage</h2>
         <div id="action-choices"></div>
@@ -131,20 +136,20 @@
     <!-- ÉCRAN DE DÉBRIEFING POST-BRAQUAGE -->
     <div id="screen-debrief" class="screen">
         <h2>Rapport d'Opération</h2>
-        <div id="debrief-content" style="background:#21262d; padding:20px; border-radius:8px; margin-bottom:20px; text-align:left;"></div>
+        <div id="debrief-content" class="content-box"></div>
         <button id="debrief-btn" class="btn-choix btn-action">Continuer</button>
     </div>
 
     <!-- ÉCRAN DES ÉVÉNEMENTS ALÉATOIRES -->
     <div id="screen-event" class="screen">
-        <h2 id="event-title" style="color:#d29922;">Événement Inattendu</h2>
-        <p id="event-desc" style="margin-bottom: 25px; line-height: 1.5; text-align: left; background:#21262d; padding:15px; border-radius:6px;"></p>
+        <h2 id="event-title">Événement Inattendu</h2>
+        <p id="event-desc" class="content-box"></p>
         <div id="event-choices"></div>
     </div>
     <!-- ÉCRAN RÉSULTAT ÉVÉNEMENT -->
     <div id="screen-event-result" class="screen">
-        <h2 style="color:#79c0ff;">Conséquence</h2>
-        <p id="event-result-text" style="background:#21262d; padding:15px; border-radius:6px; margin-bottom:20px; text-align:left;"></p>
+        <h2 style="color:var(--blue-bright);">Conséquence</h2>
+        <p id="event-result-text" class="content-box"></p>
         <button class="btn-choix btn-action" id="btn-event-next">Continuer</button>
     </div>
     <!-- LA PRISON -->
@@ -154,10 +159,24 @@
         <button class="btn-choix" onclick="purgerPeine()">Purger sa peine</button>
     </div>
 
+    <!-- CARNET DE BORD -->
+    <div id="screen-journal" class="screen">
+        <h2>Carnet de Bord</h2>
+        <div id="journal-liste" class="scroll-list" style="text-align:left;"></div>
+        <button class="btn-choix" onclick="showScreen('screen-hub')">Retour à la planque</button>
+    </div>
+
+    <!-- CONSÉQUENCE (renvoi/exécution d'une recrue, etc.) -->
+    <div id="screen-consequence" class="screen">
+        <h2 id="consequence-title">Conséquences</h2>
+        <p id="consequence-text" class="content-box"></p>
+        <button class="btn-choix btn-action" id="btn-consequence-next">Continuer</button>
+    </div>
+
     <!-- ÉCRAN DE FIN -->
     <div id="screen-end" class="screen">
         <h2>Bilan de Carrière</h2>
-        <div id="end-text" style="background:#21262d; padding:20px; border-radius:8px; margin-bottom:20px; line-height: 1.6; text-align: left;"></div>
+        <div id="end-text" class="content-box"></div>
         <button class="btn-choix btn-action" onclick="location.reload()">Recommencer une partie</button>
     </div>
 

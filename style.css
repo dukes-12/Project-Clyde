@@ -204,6 +204,16 @@ h3 { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
 .stat-sub { font-size: 11px; color: var(--paper-dim); margin-left: 4px; }
 .stat-id-money { color: var(--gold); }
 
+.stat-id-secondary {
+    justify-content: flex-end;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--paper-dim);
+}
+.stat-id-secondary strong { color: var(--blue-bright); font-family: 'Oswald', sans-serif; }
+
 /* --- Grille des 6 statistiques --- */
 .stat-grid {
     display: grid;
@@ -368,15 +378,75 @@ h4 {
     font-weight: 600; font-size: 13px;
 }
 
-#hub-notification { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+.hub-notif { color: var(--blue-bright); margin-bottom: 15px; min-height: 20px; font-size: 13px; }
 
-hr { border: none; border-top: 1px dashed var(--line); }
+hr { border: none; border-top: 1px dashed var(--line); margin: 20px 0; }
 
-/* Badge version */
-#screen-start > div[style*="8b949e"] {
-    color: var(--paper-dim) !important;
-    font-family: 'JetBrains Mono', monospace;
+.version-tag { margin-top: 25px; font-size: 11px; color: var(--paper-dim); letter-spacing: 1px; }
+
+.hint-text { font-size: 12px; color: var(--paper-dim); margin-top: -6px; }
+
+.pc-count { color: var(--rust-bright); font-weight: bold; }
+
+/* --- Boîte de contenu générique (narration, débriefing, événements, fin) --- */
+.content-box {
+    background: var(--panel-raised);
+    padding: 18px;
+    border-radius: 2px;
+    border-left: 4px solid var(--gold-dim);
+    text-align: left;
+    line-height: 1.6;
+    margin-bottom: 16px;
 }
+
+.scroll-list { margin-bottom: 20px; }
+
+/* --- Coupure de presse (débriefing) --- */
+.press-clip {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-top: 1px dashed var(--line);
+    border-bottom: 1px dashed var(--line);
+    font-size: 12px;
+    font-style: italic;
+    color: var(--paper-dim);
+    transform: rotate(-0.3deg);
+}
+.press-clip strong { color: var(--gold); font-style: normal; }
+
+/* --- Carnet de bord --- */
+.journal-entry { border-bottom: 1px dotted var(--line); padding: 10px 0; }
+.journal-entry:last-child { border-bottom: none; }
+.journal-date {
+    font-size: 11px; color: var(--gold); text-transform: uppercase;
+    letter-spacing: 0.5px; font-weight: 700;
+}
+.journal-entry p { margin: 4px 0 0; font-size: 13px; line-height: 1.5; }
+
+/* --- Fiche recrue + jauge de loyauté --- */
+.recrue-card {
+    background: var(--panel-raised);
+    padding: 12px; margin-bottom: 10px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 2px;
+    text-align: left;
+}
+.loyalty-bar {
+    height: 5px; background: var(--void); border-radius: 3px;
+    margin: 8px 0 4px; overflow: hidden;
+}
+.loyalty-fill { height: 100%; border-radius: 3px; transition: width 0.2s; }
+.loyalty-fill.loyalty-high { background: var(--ok-bright); }
+.loyalty-fill.loyalty-mid { background: var(--gold); }
+.loyalty-fill.loyalty-low { background: var(--rust); }
+.loyalty-fill.loyalty-critical { background: var(--rust-bright); }
+.loyalty-label { font-size: 11px; font-weight: 700; letter-spacing: 0.3px; }
+.loyalty-label.loyalty-high { color: var(--ok-bright); }
+.loyalty-label.loyalty-mid { color: var(--gold); }
+.loyalty-label.loyalty-low { color: var(--rust); }
+.loyalty-label.loyalty-critical { color: var(--rust-bright); animation: pulse-critical 1.6s infinite; }
+@keyframes pulse-critical { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
 @media (max-width: 600px) {
     #game-container { padding: 26px 18px 20px; }

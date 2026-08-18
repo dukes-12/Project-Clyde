@@ -18,9 +18,11 @@ const monde = {
 };
 
 const recruesDispo = [
-    { id: 'r1', nom: 'Gueule d\'Ange', role: 'furtivite', bonus: 2, cout: 5000, moralite: 5, affection: 50 },
-    { id: 'r2', nom: 'Le Bulldozer', role: 'force', bonus: 3, cout: 8000, moralite: 3, affection: 50 },
-    { id: 'r3', nom: 'Neo', role: 'intel', bonus: 2, cout: 6000, moralite: 6, affection: 50 }
+    { id: 'r1', nom: 'Gueule d\'Ange', role: 'furtivite', bonus: 2, cout: 5000, moralite: 5, affection: 50, desc: "Ancien cambrioleur solitaire, silencieux comme une ombre. Ne pardonne pas les coups violents." },
+    { id: 'r2', nom: 'Le Bulldozer', role: 'force', bonus: 3, cout: 8000, moralite: 3, affection: 50, desc: "Ex-videur reconverti dans le crime. Loyal tant que l'argent coule et que l'action ne manque pas." },
+    { id: 'r3', nom: 'Neo', role: 'intel', bonus: 2, cout: 6000, moralite: 6, affection: 50, desc: "Hacker prodige, parano sur les bords. Déteste être mis de côté sur les décisions techniques." },
+    { id: 'r4', nom: 'Le Chauffeur', role: 'chauffeur', bonus: 2, cout: 7000, moralite: 5, affection: 50, desc: "Ancien pilote de rallye clandestin. Change la donne à chaque exfiltration motorisée." },
+    { id: 'r5', nom: 'La Négociatrice', role: 'negociateur', bonus: 1, cout: 9000, moralite: 7, affection: 50, desc: "Ex-avocate d'affaires. Obtient de meilleurs prix auprès des receleurs pour toute l'équipe." }
 ];
 
 const catalogue = [
@@ -349,8 +351,9 @@ let joueur = {
     respect: 0,
     crainte: 0,
     stats: { force: 3, intel: 3, furtivite: 3 },
-    buffs: { force: 0, intel: 0, furtivite: 0 },
-    pointsCompetence: 0, possessions: [], equipe: []
+    buffs: { force: 0, intel: 0, furtivite: 0, sangfroid: 0, contacts: 0 },
+    pointsCompetence: 0, possessions: [], equipe: [],
+    journal: []
 };
 
 
@@ -381,17 +384,20 @@ function updateStats() {
 
     document.getElementById('global-stats').innerHTML = `
         <div class="stat-id">
-            <span class="stat-id-item">👤 <strong>${joueur.age} ans</strong><span class="stat-sub">(mois ${joueur.mois})</span></span>
+            <span class="stat-id-item">${getAvatarEmoji()} <strong>${joueur.age} ans</strong><span class="stat-sub">(mois ${joueur.mois})</span></span>
             <span class="stat-id-item stat-id-money">💰 <strong>${joueur.argent.toLocaleString()} €</strong></span>
+        </div>
+        <div class="stat-id stat-id-secondary">
+            <span class="stat-id-item">🧼 Blanchi <strong>${joueur.cashBlanchi.toLocaleString()} €</strong></span>
         </div>
 
         <div class="stat-grid">
-            <div class="stat-cell"><span class="stat-label">💪 Force</span><span class="stat-value">${joueur.stats.force}</span></div>
+            <div class="stat-cell"><span class="stat-label" title="Force">💪</span><span class="stat-value">${joueur.stats.force}</span></div>
             <div class="stat-cell"><span class="stat-label">👑 Respect</span><span class="stat-value">${joueur.respect}</span></div>
-            <div class="stat-cell"><span class="stat-label">🧠 Intel</span><span class="stat-value">${joueur.stats.intel}</span></div>
+            <div class="stat-cell"><span class="stat-label" title="Intelligence">🧠</span><span class="stat-value">${joueur.stats.intel}</span></div>
             <div class="stat-cell"><span class="stat-label">💀 Crainte</span><span class="stat-value">${joueur.crainte}</span></div>
-            <div class="stat-cell"><span class="stat-label">🥷 Furtivité</span><span class="stat-value">${joueur.stats.furtivite}</span></div>
-            <div class="stat-cell"><span class="stat-label">🧠 Mental</span><span class="stat-value">${joueur.mental}/10</span></div>
+            <div class="stat-cell"><span class="stat-label" title="Furtivité">🥷</span><span class="stat-value">${joueur.stats.furtivite}</span></div>
+            <div class="stat-cell"><span class="stat-label">💭 Mental</span><span class="stat-value">${joueur.mental}/10</span></div>
         </div>
 
         <div class="stat-gauges">
@@ -414,6 +420,66 @@ function updateStats() {
 
 function notify(msg) {
     document.getElementById('hub-notification').innerText = msg;
+}
+
+// --- CARNET DE BORD ---
+function ajouterJournal(texte) {
+    joueur.journal.unshift({ age: joueur.age, mois: joueur.mois, ville: joueur.ville || "—", texte: texte });
+    if (joueur.journal.length > 40) joueur.journal.pop();
+}
+
+function ouvrirJournal() {
+    let html = "";
+    if (joueur.journal.length === 0) {
+        html = `<p style="color:var(--paper-dim); font-style:italic;">Aucune entrée pour le moment. Vos faits d'armes s'écriront ici au fil de la partie.</p>`;
+    } else {
+        joueur.journal.forEach(e => {
+            html += `<div class="journal-entry">
+                <span class="journal-date">An ${e.age} · mois ${e.mois} · ${e.ville}</span>
+                <p>${e.texte}</p>
+            </div>`;
+        });
+    }
+    document.getElementById('journal-liste').innerHTML = html;
+    showScreen('screen-journal');
+}
+
+// --- AVATAR TEXTUEL (classe + véhicule) ---
+function getAvatarEmoji() {
+    let base = joueur.classe === 'Fantôme' ? '🥷' : (joueur.classe === 'Hacker' ? '🧠' : (joueur.classe === 'Gros Bras' ? '💪' : '👤'));
+    let vehic = joueur.vehicule === 'Moto' ? '🏍️' : (joueur.vehicule === 'Fourgon' ? '🚐' : '');
+    return vehic ? `${base}${vehic}` : base;
+}
+
+// --- PRESSE LOCALE ---
+function nomJournal() {
+    return joueur.ville === 'Paris' ? "Le Réverbère" : (joueur.ville === 'New York' ? "NY Daily Post" : (joueur.ville === 'Los Angeles' ? "LA Chronicle" : "La Gazette"));
+}
+
+function genererManchette(ctx) {
+    let manchettes;
+    if (ctx.reussi && ctx.niveau === 'eleve') {
+        manchettes = [
+            `« Casse du siècle » : un butin colossal dérobé en plein ${joueur.ville}, la préfecture est sur les dents.`,
+            `Un vol d'une ampleur inédite secoue ${joueur.ville} — les enquêteurs évoquent « un réseau parfaitement organisé ».`
+        ];
+    } else if (ctx.reussi && ctx.violent) {
+        manchettes = [
+            `Braquage violent à ${joueur.ville} : des blessés parmi les forces de l'ordre, la traque s'intensifie.`,
+            `Panique à ${joueur.ville} : des coups de feu ont éclaté durant un vol à main armée.`
+        ];
+    } else if (ctx.reussi) {
+        manchettes = [
+            `Un commerce de ${joueur.ville} braqué dans la nuit, aucune piste sérieuse pour l'instant.`,
+            `Nouveau vol signalé à ${joueur.ville}. La police appelle les habitants à rester vigilants.`
+        ];
+    } else {
+        manchettes = [
+            `Braquage manqué à ${joueur.ville} : un suspect activement recherché, l'enquête se poursuit.`,
+            `Alerte déjouée à ${joueur.ville} : la vigilance d'un commerçant a mis en échec une tentative de vol.`
+        ];
+    }
+    return { journal: nomJournal(), texte: manchettes[Math.floor(Math.random() * manchettes.length)] };
 }
 
 function getStatutCriminel() {
@@ -596,6 +662,7 @@ function allerEnPrison(raison) {
     let texteArgent = `L'État a saisi ${montantSaisi.toLocaleString()} € sur vos fonds non blanchis.${texteDecouvert} Vos ${joueur.cashBlanchi.toLocaleString()} € blanchis sont intouchables.`;
     
     document.getElementById('prison-text').innerText = `${raison} Verdict : ${annees} ans fermes.\n\n${texteArgent}`;
+    ajouterJournal(`Arrêté (${raison}) — ${annees} ans fermes.`);
     
     // Modifier le bouton de la prison pour lancer les événements au lieu de sortir direct
     let btn = document.querySelector('#screen-prison button');
@@ -621,6 +688,7 @@ function purgerPeine() {
     if (joueur.age >= 65) {
         afficherEcranFin("Mort en Cellule", `Vous vous éteignez en prison à l'âge de ${joueur.age} ans.`);
     } else {
+        ajouterJournal(`Libéré après avoir purgé sa peine. Désormais fiché par les autorités.`);
         notify(`Libéré. Attention : vous êtes désormais fiché. Vos prochains casses subiront un malus.`);
         genererMissionsHub();
         showScreen('screen-hub');
@@ -635,7 +703,8 @@ function ouvrirProfil() {
     document.getElementById('contenu-profil').innerHTML = `
         <ul>
             <li><strong>Version :</strong> v0.0.7</li>
-            <li><strong>Profil :</strong> Milieu ${joueur.milieu} | <strong>Classe :</strong> ${joueur.classe}</li>
+            <li><strong>Profil :</strong> ${joueur.milieu} | <strong>Classe :</strong> ${joueur.classe}</li>
+            <li><strong>Avatar :</strong> ${getAvatarEmoji()}</li>
             <li><strong>Statut :</strong> <span style="color:#c8564a">${getStatutCriminel()}</span> (${joueur.braquagesReussis} coups réussis)</li>
             <li><strong>Argent Gagné Total :</strong> ${joueur.argentGagne.toLocaleString()} €</li>
             <li><strong>Argent Perdu Total :</strong> ${joueur.argentPerdu.toLocaleString()} €</li>
@@ -684,16 +753,27 @@ function acheterItem(id) {
     }
 }
 
+function libelleLoyaute(affection) {
+    if (affection >= 75) return { txt: "Dévoué", classe: "loyalty-high" };
+    if (affection >= 40) return { txt: "Fiable", classe: "loyalty-mid" };
+    if (affection >= 16) return { txt: "Douteux", classe: "loyalty-low" };
+    return { txt: "Prêt à trahir", classe: "loyalty-critical" };
+}
+
 function ouvrirRecrutement() {
     let html = "";
     if(joueur.equipe.length > 0) {
         html += `<h3 style="color:#8fb4d1">Votre Équipe Actuelle</h3>`;
-                joueur.equipe.forEach((eq, index) => {
-            html += `<div style="background:#0a0c10; padding:10px; margin-bottom:10px; border:1px solid #2b323c; border-radius:4px;">
-                <strong>${eq.nom}</strong> (Spé: ${eq.role})<br>
+        joueur.equipe.forEach((eq, index) => {
+            if (eq.affection === undefined) eq.affection = 50;
+            let loy = libelleLoyaute(eq.affection);
+            html += `<div class="recrue-card">
+                <strong>${eq.nom}</strong> <span style="color:var(--paper-dim); font-size:12px;">(Spé : ${eq.role})</span>
+                <div class="loyalty-bar"><div class="loyalty-fill ${loy.classe}" style="width:${eq.affection}%;"></div></div>
+                <span class="loyalty-label ${loy.classe}">${loy.txt} — ${eq.affection}%</span>
                 <div style="display:flex; gap:10px; margin-top:8px;">
                     <button class="btn-choix" style="padding:8px; margin:0; flex:1;" onclick="virerRecrue(${index})">Virer</button>
-                    <button class="btn-action" style="padding:8px; border-radius:6px; border:none; cursor:pointer; flex:1; font-weight:bold;" onclick="executerRecrue(${index})">Exécuter</button>
+                    <button class="btn-action" style="padding:8px; border-radius:2px; border:none; cursor:pointer; flex:1; font-weight:bold;" onclick="executerRecrue(${index})">Exécuter</button>
                 </div>
             </div>`;
         });
@@ -705,9 +785,11 @@ function ouvrirRecrutement() {
         let dejaEquipe = joueur.equipe.find(e => e.id === r.id);
         if(!dejaEquipe) {
             let coutReel = Math.max(2000, r.cout - (joueur.respect * 500));
+            coutReel = Math.floor(coutReel * (1 - (joueur.buffs.contacts || 0) / 100));
             let peutPayer = joueur.argent >= coutReel;
-            html += `<div style="background:#1d232b; padding:10px; margin-bottom:10px; border:1px solid #2b323c; border-radius:4px;">
-                <strong>${r.nom}</strong> | Spé: ${r.role} (-${r.bonus} difficulté)<br>
+            html += `<div class="recrue-card">
+                <strong>${r.nom}</strong> <span style="color:var(--paper-dim); font-size:12px;">| Spé : ${r.role} (-${r.bonus} difficulté)</span>
+                <p style="font-size:12px; color:var(--paper-dim); margin:6px 0;">${r.desc || ""}</p>
                 <small>Prime : ${coutReel.toLocaleString()} €</small><br>
                 <button class="btn-choix" ${!peutPayer ? 'disabled' : ''} style="padding:8px; margin-top:5px" onclick="embaucher('${r.id}', ${coutReel})">Engager</button>
             </div>`;
@@ -722,20 +804,42 @@ function embaucher(id, cout) {
     if(joueur.argent >= cout) {
         joueur.argent -= cout;
         joueur.argentPerdu += cout;
-        joueur.equipe.push({ ...r });
+        joueur.equipe.push({ ...r, affection: 50 });
+        ajouterJournal(`${r.nom} rejoint l'équipe (Spé : ${r.role}).`);
         updateStats();
         ouvrirRecrutement();
         genererMissionsHub(); 
     }
 }
 
+function afficherConsequence(titre, msg, retourFn) {
+    document.getElementById('consequence-title').innerText = titre;
+    document.getElementById('consequence-text').innerText = msg;
+    let btn = document.getElementById('btn-consequence-next');
+    btn.onclick = retourFn;
+    showScreen('screen-consequence');
+}
+
 function virerRecrue(index) {
     let r = joueur.equipe.splice(index, 1)[0];
     joueur.moralite = Math.max(0, joueur.moralite - 1);
-    notify(`${r.nom} a été renvoyé de l'équipe.`);
+
+    let phrases = [`${r.nom} quitte l'équipe et disparaît dans la nature.`];
+    let rancunier = (r.affection !== undefined && r.affection < 35);
+    if (rancunier && Math.random() < 0.4) {
+        joueur.heat += 15;
+        phrases.push(`Rancunier d'avoir été lâché après tout ce temps, il a vendu quelques détails sur vos habitudes à qui voulait l'entendre (Tension +15%).`);
+    } else if (!rancunier) {
+        joueur.respect += 1;
+        phrases.push(`Il garde un souvenir correct de votre collaboration et parle de vous en bien dans le milieu (Respect +1).`);
+    } else {
+        phrases.push(`Il s'en va en silence, sans faire de vagues.`);
+    }
+
+    ajouterJournal(`${r.nom} a été renvoyé de l'équipe.`);
     updateStats();
-    ouvrirRecrutement();
     genererMissionsHub();
+    afficherConsequence("Renvoi de l'équipe", phrases.join(" "), () => { ouvrirRecrutement(); });
 }
 
 function executerRecrue(index) {
@@ -743,10 +847,23 @@ function executerRecrue(index) {
     joueur.moralite = Math.max(0, joueur.moralite - 5);
     joueur.crainte += 5;
     joueur.respect = Math.max(0, joueur.respect - 2);
-    notify(`Vous avez abattu ${r.nom} froidement. L'équipe est terrifiée.`);
+    joueur.equipe.forEach(m => { m.affection = Math.max(0, (m.affection ?? 50) - 15); });
+
+    let phrases = [`Vous avez abattu ${r.nom} froidement.`];
+    if (joueur.equipe.length > 0) {
+        phrases.push(`Le reste de l'équipe assiste à la scène, terrifié — leur confiance en vous s'effondre (Loyauté -15 pour chacun).`);
+    }
+    if (Math.random() < 0.3) {
+        joueur.risquePrison += 15;
+        phrases.push(`Le corps est retrouvé quelques jours plus tard, relançant une enquête sur vos activités (Risque +15%).`);
+    } else {
+        phrases.push(`Le corps ne sera jamais retrouvé.`);
+    }
+
+    ajouterJournal(`${r.nom} a été exécuté froidement par vos soins.`);
     updateStats();
-    ouvrirRecrutement();
     genererMissionsHub();
+    afficherConsequence("Exécution", phrases.join(" "), () => { ouvrirRecrutement(); });
 }
 
 
@@ -755,6 +872,12 @@ function ouvrirArbre() {
     showScreen('screen-arbre');
 }
 
+const libellesCompetence = {
+    force: "Force", intel: "Intelligence", furtivite: "Furtivité",
+    sangfroid: "Sang-Froid (réduit la Tension gagnée en casse)",
+    contacts: "Réseau de Contacts (réduit le coût de recrutement)"
+};
+
 function ameliorerArbre(stat) {
     let msgBox = document.getElementById('msg-arbre');
     if (joueur.pointsCompetence > 0) {
@@ -762,7 +885,7 @@ function ameliorerArbre(stat) {
         joueur.buffs[stat] += 10;
         msgBox.style.display = 'block';
         msgBox.style.background = '#3d7a52';
-        msgBox.innerText = `Succès ! +${joueur.buffs[stat]}% de bonus en ${stat}.`;
+        msgBox.innerText = `Succès ! ${libellesCompetence[stat] || stat} : +${joueur.buffs[stat]}% de bonus.`;
         document.getElementById('pts-comp').innerText = joueur.pointsCompetence;
         updateStats();
         genererMissionsHub(); 
@@ -815,10 +938,42 @@ function genererMissionsHub() {
 let contexteCasse = { blesseFlics: 0, mortFlics: 0, blesseCivils: 0, mortCivils: 0, flicsPresents: false, texteAction: "" };
 
 function preparerCasse(niveau, diff, butin, nom, desc) {
-    cibleActuelle = { niveau: niveau, nom: nom, diff: diff, butin: butin, desc: desc };
-    document.getElementById('prep-desc').innerText = `Repérage : ${desc}`;
+    cibleActuelle = { niveau: niveau, nom: nom, diff: diff, butin: butin, desc: desc, repere: false };
+    document.getElementById('prep-desc').innerText = `Premier coup d'œil : ${desc}`;
     document.getElementById('prep-butin').innerText = butin.toLocaleString();
+    document.getElementById('prep-reperage-info').innerHTML = "";
+    let btnRep = document.getElementById('btn-reperer');
+    btnRep.disabled = false;
+    btnRep.innerText = "🔍 Repérer les lieux (+1 mois, meilleures chances)";
     showScreen('screen-prep');
+}
+
+function reperageCasse() {
+    if (!cibleActuelle || cibleActuelle.repere) return;
+    joueur.mois += 1;
+    if (joueur.mois >= 12) { joueur.age++; joueur.mois -= 12; }
+    cibleActuelle.repere = true;
+    updateStats();
+
+    let indice = cibleActuelle.diff >= 9
+        ? "Une présence armée nombreuse est à prévoir : la force frontale sera risquée."
+        : cibleActuelle.diff >= 6
+            ? "La sécurité est correcte mais pas irréprochable : une approche technique ou furtive peut payer."
+            : "Peu de résistance attendue, toutes les approches se valent à peu près.";
+
+    let alerte = "";
+    if (Math.random() < 0.15) {
+        joueur.heat += 5;
+        alerte = ` Un passant vous a peut-être remarqué en train d'observer les lieux (Tension +5%).`;
+        updateStats();
+    }
+
+    document.getElementById('prep-reperage-info').innerHTML =
+        `<p style="color:var(--gold); font-size:13px; text-align:left; margin-top:10px;">🔍 <strong>Repérage effectué</strong> — la difficulté du coup est réduite. ${indice}${alerte}</p>`;
+
+    let btnRep = document.getElementById('btn-reperer');
+    btnRep.disabled = true;
+    btnRep.innerText = "✅ Lieux repérés";
 }
 
 function validerPrep() {
@@ -881,6 +1036,7 @@ function resoudreAction(stat) {
     let difficulte = cibleActuelle.diff;
     if (joueur.originType === 'Défavorisé') difficulte += 1;
     if (joueur.originType === 'Riche') difficulte -= 1;
+    if (cibleActuelle.repere) difficulte -= 2;
     joueur.equipe.forEach(r => { if(r.role === stat) difficulte -= r.bonus; });
 
     let jet = Math.floor(Math.random() * 10) + 1;
@@ -892,7 +1048,14 @@ function resoudreAction(stat) {
 
     let reussi = (scoreFinal >= difficulte + 4);
     let mortAllie = 0;
+    contexteCasse.nomAllieMort = null;
     
+    // Ajustement de la loyauté de l'équipe selon le style d'approche
+    joueur.equipe.forEach(r => {
+        if (r.affection === undefined) r.affection = 50;
+        r.affection = Math.max(0, Math.min(100, r.affection + (estViolent ? -5 : (reussi ? 3 : -2))));
+    });
+
     // Conséquences selon le contexte généré
     if(contexteCasse.flicsPresents || !reussi) {
         if(estViolent || !reussi) {
@@ -901,52 +1064,133 @@ function resoudreAction(stat) {
             contexteCasse.blesseCivils += Math.floor(Math.random() * 2);
         }
         if(!reussi && Math.random() < 0.15 && joueur.equipe.length > 0) {
-            mortAllie = 1; joueur.equipe.pop();
+            let idx = Math.floor(Math.random() * joueur.equipe.length);
+            let mort = joueur.equipe.splice(idx, 1)[0];
+            mortAllie = 1; contexteCasse.nomAllieMort = mort.nom;
         }
         if(!reussi && Math.random() < 0.03) {
             afficherEcranFin("Mort en Intervention", "La police a ouvert le feu. Vous n'avez pas survécu."); return;
         }
     }
 
+    let butinJoueur = 0;
     if (reussi) {
-        let partEquipe = cibleActuelle.butin * (0.15 * joueur.equipe.length);
-        let butinJoueur = Math.floor(cibleActuelle.butin - partEquipe);
+        let coutParMembre = joueur.equipe.some(r => r.role === 'negociateur') ? 0.10 : 0.15;
+        let partEquipe = cibleActuelle.butin * (coutParMembre * joueur.equipe.length);
+        butinJoueur = Math.floor(cibleActuelle.butin - partEquipe);
         
         joueur.argent += butinJoueur; joueur.argentGagne += butinJoueur;
         if(joueur.blanchisserie) { joueur.cashBlanchi += Math.floor(butinJoueur * 0.7); }
 
         joueur.pointsCompetence += 1; joueur.braquagesReussis += 1;
-        joueur.heat += 20; 
+        let gainHeat = 20 - Math.floor(20 * (joueur.buffs.sangfroid / 100));
+        joueur.heat += Math.max(5, gainHeat); 
         if (stat === 'force') joueur.risquePrison += 20;
         indexCible[cibleActuelle.niveau]++; 
-        
-        afficherDebrief(true, butinJoueur, mortAllie);
+    }
+
+    if (verifierTrahisonEquipe()) return;
+
+    lancerExfiltration(reussi, butinJoueur, mortAllie, estViolent);
+}
+
+function verifierTrahisonEquipe() {
+    let traitre = joueur.equipe.find(r => r.affection !== undefined && r.affection <= 15);
+    if (traitre && Math.random() < 0.12) {
+        afficherEcranFin("Trahi par les Siens", `${traitre.nom} en avait assez d'être maltraité et de toucher les miettes. Un coup de feu dans le dos pendant l'opération, et c'est terminé pour vous.`);
+        return true;
+    }
+    return false;
+}
+
+// --- PHASE D'EXFILTRATION ---
+function lancerExfiltration(reussi, butin, mortAllie, estViolent) {
+    contexteCasse.reussiVol = reussi;
+    contexteCasse.butinObtenu = butin;
+    contexteCasse.mortAllieVol = mortAllie;
+    contexteCasse.violent = estViolent || contexteCasse.mortFlics > 0;
+
+    document.getElementById('action-title').innerText = reussi ? "Exfiltration" : "Repli en catastrophe";
+    let intro = reussi
+        ? "Le butin en main, il faut maintenant sortir du secteur avant que le quartier ne soit bouclé."
+        : "Le coup a capoté. Il faut fuir avant l'arrivée en masse des renforts.";
+
+    let bonusChauffeur = joueur.equipe.some(r => r.role === 'chauffeur') && joueur.vehicule !== 'Aucun';
+
+    document.getElementById('action-choices').innerHTML = `
+        <p style="background:var(--panel-raised); padding:15px; border-radius:2px; text-align:left; border-left:4px solid var(--rust); line-height:1.5;">${intro}</p>
+        <button class="btn-choix" onclick="resoudreExfiltration('discrete')">🥷 Fuite discrète (couloirs, égouts)</button>
+        <button class="btn-choix" onclick="resoudreExfiltration('vehicule')">🚗 Foncer vers le véhicule${bonusChauffeur ? ' (Chauffeur en renfort)' : ''}</button>
+        <button class="btn-choix" onclick="resoudreExfiltration('force')">💪 Forcer le passage</button>
+    `;
+    showScreen('screen-action');
+}
+
+function resoudreExfiltration(mode) {
+    let reussi = contexteCasse.reussiVol;
+    let butin = contexteCasse.butinObtenu;
+    let mortAllie = contexteCasse.mortAllieVol;
+
+    let bonusChauffeur = joueur.equipe.some(r => r.role === 'chauffeur') ? 3 : 0;
+    let scoreBase = mode === 'discrete' ? joueur.stats.furtivite
+        : mode === 'vehicule' ? joueur.stats.force + (joueur.vehicule !== 'Aucun' ? 3 : 0) + bonusChauffeur
+        : joueur.stats.force;
+
+    let jet = Math.floor(Math.random() * 10) + 1;
+    let exfilReussie = (scoreBase + jet) >= 11;
+
+    let msgExfil;
+    if (exfilReussie) {
+        joueur.heat += (mode === 'force') ? 15 : 5;
+        msgExfil = mode === 'discrete' ? "Vous vous fondez dans la ville sans laisser de trace."
+            : mode === 'vehicule' ? "Le moteur rugit, vous distancez les premières sirènes."
+            : "Vous forcez le passage sans ménagement, mais vous êtes dehors.";
+        afficherDebrief(reussi, butin, mortAllie, msgExfil, false);
     } else {
-        afficherDebrief(false, 0, mortAllie);
+        joueur.heat += 30; joueur.risquePrison += 20;
+        msgExfil = "La fuite tourne mal : une patrouille vous prend en chasse dans les rues adjacentes.";
+        if (Math.random() < 0.35) {
+            afficherDebrief(reussi, butin, mortAllie, msgExfil, true);
+        } else {
+            afficherDebrief(reussi, butin, mortAllie, msgExfil, false);
+        }
     }
 }
 
-function afficherDebrief(reussi, butin, mortAllie) {
+function afficherDebrief(reussi, butin, mortAllie, msgExfil, arreteEnFuite) {
     let msgAmbiance = reussi 
         ? (cibleActuelle.niveau === 'faible' ? "Le braquage s'est déroulé sans accroc majeur, de l'argent de poche facile." : "Un coup magistral qui fera la une des journaux demain.")
         : "Le plan a totalement déraillé. Les forces de l'ordre vous ont pris en tenaille.";
 
+    let manchette = genererManchette({ reussi: reussi, niveau: cibleActuelle.niveau, violent: contexteCasse.violent });
+
     let html = `
         <h3 style="color:${reussi ? '#4f9967' : '#a4453a'}">${reussi ? 'Coup Réussi avec Succès' : 'Opération Compromise'}</h3>
         <p style="font-style:italic; color:#8a8c7c;">${msgAmbiance}</p>
+        ${msgExfil ? `<p style="font-style:italic; color:#8fb4d1;">${msgExfil}</p>` : ""}
         <p><strong>Butin net empoché :</strong> ${butin.toLocaleString()} €</p>
         <hr style="border-color:#2b323c">
         <h4>Bilan Humain :</h4>
         <ul style="color:#c8564a;">
             <li>Policiers blessés : ${contexteCasse.blesseFlics} | tués : ${contexteCasse.mortFlics}</li>
             <li>Civils blessés : ${contexteCasse.blesseCivils} | tués : ${contexteCasse.mortCivils}</li>
-            <li>Alliés perdus : ${mortAllie}</li>
+            <li>Alliés perdus : ${mortAllie}${contexteCasse.nomAllieMort ? ` (${contexteCasse.nomAllieMort})` : ""}</li>
         </ul>
+        <div class="press-clip"><strong>${manchette.journal}</strong> — ${manchette.texte}</div>
     `;
     document.getElementById('debrief-content').innerHTML = html;
+
+    ajouterJournal(
+        reussi
+            ? `${cibleActuelle.nom} braqué avec succès (${butin.toLocaleString()} €).${arreteEnFuite ? " Rattrapé en pleine fuite juste après." : ""}`
+            : `Coup raté sur ${cibleActuelle.nom}.${arreteEnFuite ? " Arrêté sur place." : ""}`
+    );
     
     let btnSuite = document.getElementById('debrief-btn');
-    if(!reussi) {
+    if (arreteEnFuite) {
+        btnSuite.innerText = "Aller en case prison...";
+        btnSuite.onclick = () => { allerEnPrison(reussi ? "Rattrapé en pleine fuite, butin saisi en partie." : "Arrêté sur les lieux."); };
+    } else if(!reussi) {
         btnSuite.innerText = "Aller en case prison...";
         btnSuite.onclick = () => { allerEnPrison("Arrêté sur les lieux."); };
     } else {
@@ -956,50 +1200,32 @@ function afficherDebrief(reussi, butin, mortAllie) {
     showScreen('screen-debrief');
 }
 
-// --- PRISON ET FIN DE JEU ---
-function allerEnPrison(raison) {
-    joueur.enPrison = true;
-    let annees = Math.floor(Math.random() * 4) + 2 + Math.floor(joueur.risquePrison / 15);
-    if (joueur.originType === 'Riche') annees = Math.max(1, annees - 2);
-    if(joueur.crainte > 10) { annees += 2; joueur.mental = Math.max(1, joueur.mental - 3); }
-    
-    joueur.peineActuelle = annees;
-    
-    let cashNonBlanchi = Math.max(0, joueur.argent - joueur.cashBlanchi);
-    let amendeBase = annees * 15000;
-    
-    let montantSaisi = Math.min(cashNonBlanchi, amendeBase);
-    joueur.argent -= montantSaisi;
-    joueur.argentPerdu += montantSaisi;
-
-    let texteDecouvert = joueur.argent < 0 ? ` Vous êtes à DÉCOUVERT de ${Math.abs(joueur.argent).toLocaleString()} € !` : "";
-    let texteArgent = `L'État a saisi ${montantSaisi.toLocaleString()} € sur vos fonds non blanchis.${texteDecouvert} Vos ${joueur.cashBlanchi.toLocaleString()} € blanchis sont intouchables.`;
-    
-    document.getElementById('prison-text').innerText = `${raison} Verdict : ${annees} ans fermes. ${texteArgent}`;
-    showScreen('screen-prison');
-}
-
-function purgerPeine() {
-    joueur.age += joueur.peineActuelle;
-    joueur.risquePrison = 0; 
-    joueur.heat = 0; 
-    joueur.enPrison = false;
-    joueur.niveauSurveillance += 1; 
-    joueur.mental = Math.min(10, joueur.mental + 2); 
-
-    if (joueur.age >= 65) {
-        afficherEcranFin("Mort en Cellule", `Vous vous éteignez en prison à l'âge de ${joueur.age} ans.`);
-    } else {
-        notify(`Libéré après ${joueur.peineActuelle} ans.`);
-        genererMissionsHub();
-        showScreen('screen-hub');
-    }
-}
-
+// --- FIN DE JEU (FINS ALTERNATIVES) ---
 function terminerJeu(raison) {
     if (raison === 'retraite') {
-        let titre = joueur.argent < 100000 ? "Retraite Misérable" : (joueur.argent < 2000000 ? "Retraite Dorée" : "LÉGENDE VIVANTE");
-        let description = `Retraite avec ${joueur.argent.toLocaleString()} € (Gagné total : ${joueur.argentGagne.toLocaleString()} € / Perdu : ${joueur.argentPerdu.toLocaleString()} €).`;
+        let titre, description;
+        let bilan = `(Gagné total : ${joueur.argentGagne.toLocaleString()} € / Perdu : ${joueur.argentPerdu.toLocaleString()} €).`;
+
+        if (joueur.moralite <= 2 && joueur.crainte >= 15) {
+            titre = "Le Boucher du Milieu";
+            description = `Vous vous retirez craint de tous et aimé de personne, avec ${joueur.argent.toLocaleString()} € et un sillage de sang derrière vous. ${bilan}`;
+        } else if (joueur.respect >= 25 && joueur.argent >= 500000) {
+            titre = "Parrain de la Pègre";
+            description = `Vous ne vous retirez pas vraiment : vous régnez désormais sur le milieu depuis l'ombre, avec ${joueur.argent.toLocaleString()} € et un réseau de loyautés à toute épreuve. ${bilan}`;
+        } else if (joueur.moralite >= 8 && joueur.argent >= 200000) {
+            titre = "Rédemption";
+            description = `Vous quittez le milieu la conscience presque tranquille, avec ${joueur.argent.toLocaleString()} € et une vie loin des projecteurs qui vous attend. ${bilan}`;
+        } else if (joueur.argent < 100000) {
+            titre = "Retraite Misérable";
+            description = `Retraite avec seulement ${joueur.argent.toLocaleString()} €, une carrière qui n'aura pas payé. ${bilan}`;
+        } else if (joueur.argent < 2000000) {
+            titre = "Retraite Dorée";
+            description = `Retraite confortable avec ${joueur.argent.toLocaleString()} € en poche. ${bilan}`;
+        } else {
+            titre = "LÉGENDE VIVANTE";
+            description = `Retraite avec ${joueur.argent.toLocaleString()} € — votre nom restera gravé dans le milieu. ${bilan}`;
+        }
+        ajouterJournal(`Fin de carrière : ${titre}.`);
         afficherEcranFin(titre, description);
     }
 }
