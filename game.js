@@ -385,36 +385,35 @@ function showScreen(screenId) {
 
 function updateStats() {
     let textRisque = joueur.enPrison ? `<span style="color:#8b949e;text-decoration:line-through;">EN TAULE</span>` : `${joueur.risquePrison} %`;
-    let texteSurveillance = joueur.niveauSurveillance > 0 ? `<div style="color:#da3633; text-align:center; padding-top: 8px; margin-top: 8px; border-top: 1px solid #30363d;">👁️ Vous êtes fiché (Malus global réussite : -${joueur.niveauSurveillance * 10}%)</div>` : "";
+    let texteSurveillance = joueur.niveauSurveillance > 0 ? `<div style="color:#da3633; grid-column: span 2; text-align:center; padding-top: 8px; margin-top: 4px; border-top: 1px solid #30363d;">👁️ Vous êtes fiché (Malus global : -${joueur.niveauSurveillance * 10}%)</div>` : "";
     
     document.getElementById('global-stats').innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-            <div style="display: flex; justify-content: space-between; color:#79c0ff;">
-                <span>👤 Âge : ${joueur.age} ans (Mois: ${joueur.mois})</span>
-                <span>💰 Cash : ${joueur.argent.toLocaleString()} €</span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; align-items: center;">
+            <div style="grid-column: span 2; display: flex; justify-content: space-between; color:#79c0ff; border-bottom: 1px solid #30363d; padding-bottom: 6px; margin-bottom: 2px;">
+                <span>👤 ${joueur.age} ans (Mois: ${joueur.mois})</span>
+                <span>💰 ${joueur.argent.toLocaleString()} €</span>
             </div>
             
-            <hr style="border-color:#30363d; width:100%; margin: 4px 0;">
-            
             <div>💪 Force : ${joueur.stats.force}</div>
-            <div>🧠 Intelligence : ${joueur.stats.intel}</div>
-            <div>🥷 Furtivité : ${joueur.stats.furtivite}</div>
-            
-            <hr style="border-color:#30363d; width:100%; margin: 4px 0;">
-            
             <div>👑 Respect : ${joueur.respect}</div>
+            
+            <div>🧠 Intel : ${joueur.stats.intel}</div>
             <div>💀 Crainte : ${joueur.crainte}</div>
+            
+            <div>🥷 Furtivité : ${joueur.stats.furtivite}</div>
             <div>🧠 Mental : ${joueur.mental}/10</div>
-            <div>⚖️ Moralité : ${joueur.moralite}/10</div>
             
-            <hr style="border-color:#30363d; width:100%; margin: 4px 0;">
+            <div style="grid-column: span 2; border-top: 1px solid #30363d; padding-top: 6px; margin-top: 2px; display: flex; justify-content: space-between;">
+                <span>⚖️ Moralité : ${joueur.moralite}/10</span>
+                <span class="heat-text">🔥 Tension : ${joueur.heat}%</span>
+            </div>
             
-            <div class="danger-text">🚨 Risque Global : ${textRisque}</div>
-            <div class="heat-text">🔥 Tension (Heat) : ${joueur.heat}%</div>
+            <div class="danger-text" style="grid-column: span 2;">🚨 Risque Global : ${textRisque}</div>
+            ${texteSurveillance}
         </div>
-        ${texteSurveillance}
     `;
 }
+
 
 
 
