@@ -3,19 +3,24 @@ const monde = {
     "Paris": {
         faible: [{ nom: "Tabac-Presse", diff: 4, butin: 8000, desc: "La boutique est mal éclairée. Trois clients patientent, le gérant écoute la radio, distrait." }, { nom: "Pharmacie de garde", diff: 5, butin: 10000, desc: "Seule la croix verte éclaire la rue. Le pharmacien est seul, somnolant derrière le comptoir." }, { nom: "Boutique de vêtements", diff: 5, butin: 12000, desc: "Caisse pleine après les soldes. Un seul vigile fatigué à l'entrée." }],
         modere: [{ nom: "Bijouterie Vendôme", diff: 7, butin: 130000, desc: "L'endroit est luxueux. 4 clients fortunés essaient des parures, gardés par deux vigiles armés." }, { nom: "Fourgon de fonds", diff: 8, butin: 162000, desc: "Le fourgon est à l'arrêt devant une banque. Deux convoyeurs lourdement armés font le transfert." }, { nom: "Banque d'Affaires", diff: 8, butin: 195000, desc: "Accès restreint, coffres-forts individuels. Caméras à chaque angle." }],
-        eleve: [{ nom: "Musée du Louvre", diff: 10, butin: 2275000, desc: "Une forteresse culturelle. Rondes de nuit constantes, lasers croisés et vitrines blindées." }, { nom: "Vente aux enchères", diff: 11, butin: 2925000, desc: "Le tout-Paris est là. Sécurité maximale, caméras biométriques et police en civil dans la salle." }, { nom: "Palais de l'Élysée (Réserves)", diff: 12, butin: 3900000, desc: "Cible suicidaire. Garde républicaine, sécurité d'État, mais des œuvres inestimables en sous-sol." }]
+        eleve: [{ nom: "Musée du Louvre", diff: 10, butin: 2275000, desc: "Une forteresse culturelle. Rondes de nuit constantes, lasers croisés et vitrines blindées." }, { nom: "Vente aux enchères", diff: 11, butin: 2925000, desc: "Le tout-Paris est là. Sécurité maximale, caméras biométriques et police en civil dans la salle." }, { nom: "Palais de l'Élysée (Réserves)", diff: 12, butin: 3900000, desc: "Cible suicidaire. Garde républicaine, sécurité d'État, mais des œuvres inestimables en sous-sol." }],
+        legendaire: [{ nom: "Coffre-Fort de la Banque de France", diff: 17, butin: 9750000, desc: "Le sous-sol le plus gardé du pays. Lingots d'or, réserves d'État, et une sécurité pensée pour être infranchissable." }]
     },
     "New York": {
         faible: [{ nom: "Prêteur sur gages", diff: 5, butin: 13000, desc: "Boutique crasseuse dans le Bronx. Le patron garde un fusil à pompe sous le comptoir." }, { nom: "Supérette", diff: 5, butin: 12000, desc: "Un caissier fatigué et quelques ivrognes traînent dans les rayons." }, { nom: "Dépôt de quartier", diff: 6, butin: 14000, desc: "Petite réserve de matériel électronique. Grilles métalliques simples." }],
         modere: [{ nom: "Fourgon Blindé", diff: 8, butin: 228000, desc: "Pris dans les embouteillages de Manhattan. Les convoyeurs sont sur les nerfs." }, { nom: "Boutique de luxe", diff: 7, butin: 195000, desc: "Sur la 5ème Avenue. Vigiles en costard, portes magnétiques et clientèle snob." }, { nom: "Bijoutier de Brooklyn", diff: 7, butin: 182000, desc: "Diamants bruts fraîchement arrivés. La mafia locale surveille de loin." }],
-        eleve: [{ nom: "Réserve Fédérale", diff: 11, butin: 4550000, desc: "La cible ultime. Gardes d'élite, coffre-fort de 10 tonnes et caméras à reconnaissance faciale." }, { nom: "Banque de Manhattan", diff: 10, butin: 3575000, desc: "Un hall gigantesque grouillant de monde. Le SWAT n'est jamais loin dans ce quartier." }, { nom: "Bourse de Wall Street", diff: 12, butin: 5200000, desc: "Salles de serveurs ultra-sécurisées. Objectif : détournement de fonds à haute fréquence." }]
+        eleve: [{ nom: "Réserve Fédérale", diff: 11, butin: 4550000, desc: "La cible ultime. Gardes d'élite, coffre-fort de 10 tonnes et caméras à reconnaissance faciale." }, { nom: "Banque de Manhattan", diff: 10, butin: 3575000, desc: "Un hall gigantesque grouillant de monde. Le SWAT n'est jamais loin dans ce quartier." }, { nom: "Bourse de Wall Street", diff: 12, butin: 5200000, desc: "Salles de serveurs ultra-sécurisées. Objectif : détournement de fonds à haute fréquence." }],
+        legendaire: [{ nom: "Chambre Forte de la Réserve Fédérale (Sous-sol)", diff: 18, butin: 11700000, desc: "Le mythe absolu de tout braqueur. Des tonnes de lingots sous Manhattan, protégées comme un secret d'État." }]
     },
     "Los Angeles": {
         faible: [{ nom: "Dispensaire local", diff: 4, butin: 12000, desc: "Forte odeur d'herbe. Le vigile regarde son téléphone, la caisse est pleine d'argent liquide." }, { nom: "Station service", diff: 4, butin: 9000, desc: "Isolée sur une route désertique. Un seul employé s'ennuie derrière une vitre pare-balles." }, { nom: "Motel miteux", diff: 4, butin: 10000, desc: "Le coffre de la réception contient les paiements au noir de la semaine." }],
         modere: [{ nom: "Manoir a Beverly Hills", diff: 6, butin: 98000, desc: "Les propriétaires sont à une fête. Il reste le personnel de maison et des chiens de garde." }, { nom: "Joaillier VIP", diff: 7, butin: 130000, desc: "Un salon privé sur rendez-vous. Verre blindé et alarmes reliées directement au poste local." }, { nom: "Banque de Vinewood", diff: 7, butin: 143000, desc: "Petite succursale pour acteurs de seconde zone. Sécurité moyenne mais active." }],
-        eleve: [{ nom: "Casino Clandestin", diff: 9, butin: 1820000, desc: "Géré par la mafia. Les gardes ont la gâchette facile et l'argent coule à flots." }, { nom: "Reserve de Lingots", diff: 10, butin: 2275000, desc: "Un entrepôt banalisé lourdement gardé par des mercenaires privés." }, { nom: "Studio de Cinéma (Coffre)", diff: 10, butin: 1950000, desc: "Cachette secrète contenant les salaires non déclarés. Milice privée sur place." }]
+        eleve: [{ nom: "Casino Clandestin", diff: 9, butin: 1820000, desc: "Géré par la mafia. Les gardes ont la gâchette facile et l'argent coule à flots." }, { nom: "Reserve de Lingots", diff: 10, butin: 2275000, desc: "Un entrepôt banalisé lourdement gardé par des mercenaires privés." }, { nom: "Studio de Cinéma (Coffre)", diff: 10, butin: 1950000, desc: "Cachette secrète contenant les salaires non déclarés. Milice privée sur place." }],
+        legendaire: [{ nom: "Voûte du Studio Central (Archives Secrètes)", diff: 16, butin: 8580000, desc: "Sous les studios, une voûte que même les producteurs ignorent. Argent noir accumulé sur des décennies." }]
     }
 };
+
+const SEUIL_BRAQUAGES_LEGENDAIRE = 15;
 
 const recruesDispo = [
     { id: 'r1', nom: 'Gueule d\'Ange', role: 'furtivite', bonus: 2, cout: 5000, moralite: 5, desc: "Ancien cambrioleur solitaire, silencieux comme une ombre. Ne pardonne pas les coups violents.", histoire: "De son vrai nom Kevin Lacroix. Ancien enfant de chœur devenu cambrioleur solitaire après avoir été mis à la rue par sa propre famille à 17 ans. Son surnom vient de son visage juvénile qui ne laisse jamais deviner ce qu'il a en tête. Discret, méthodique, il déteste par-dessus tout l'improvisation et la violence gratuite." },
@@ -33,11 +38,11 @@ const recruesDispo = [
 const TAILLE_MAX_EQUIPE = 5;
 
 const catalogue = [
-    { id: 'f_intel', type: 'Formation', nom: "Cours de Hacking", desc: "+3 Intelligence", prix: 15000, effet: () => joueur.stats.intel += 3 },
-    { id: 'f_force', type: 'Formation', nom: "Entraînement Militaire", desc: "+3 Force", prix: 15000, effet: () => joueur.stats.force += 3 },
-    { id: 'f_furt', type: 'Formation', nom: "Stage de Parkour", desc: "+3 Furtivité", prix: 15000, effet: () => joueur.stats.furtivite += 3 },
-    { id: 'm_drone', type: 'Matériel', nom: "Mini-Drone", desc: "+1 Furtivité permanent", prix: 50000, effet: () => joueur.stats.furtivite += 1 },
-    { id: 'm_c4', type: 'Matériel', nom: "Pain de C4", desc: "+1 Force permanent", prix: 50000, effet: () => joueur.stats.force += 1 },
+    { id: 'f_intel', type: 'Formation', nom: "Cours de Hacking", desc: "+3 Intelligence", prix: 15000, statBrut: true, effet: () => joueur.stats.intel += 3 },
+    { id: 'f_force', type: 'Formation', nom: "Entraînement Militaire", desc: "+3 Force", prix: 15000, statBrut: true, effet: () => joueur.stats.force += 3 },
+    { id: 'f_furt', type: 'Formation', nom: "Stage de Parkour", desc: "+3 Furtivité", prix: 15000, statBrut: true, effet: () => joueur.stats.furtivite += 3 },
+    { id: 'm_drone', type: 'Matériel', nom: "Mini-Drone", desc: "+1 Furtivité permanent", prix: 50000, statBrut: true, effet: () => joueur.stats.furtivite += 1 },
+    { id: 'm_c4', type: 'Matériel', nom: "Pain de C4", desc: "+1 Force permanent", prix: 50000, statBrut: true, effet: () => joueur.stats.force += 1 },
     { id: 'a_9mm', type: 'Armement', nom: "Pistolet 9mm", desc: "-3 de difficulté sur toute approche Frontale", prix: 40000, effet: () => joueur.bonusArmeForce = (joueur.bonusArmeForce || 0) + 3 },
     { id: 'a_silencieux', type: 'Armement', nom: "Kit Silencieux", desc: "-2 de difficulté en Frontale, sans faire de bruit (aucune Tension supplémentaire)", prix: 55000, effet: () => joueur.bonusArmeForce = (joueur.bonusArmeForce || 0) + 2 },
     { id: 'a_fusil', type: 'Armement', nom: "Fusil à Pompe Scié", desc: "-5 de difficulté en Frontale, mais une arme aussi voyante fait immédiatement monter la Tension (+10%)", prix: 90000, effet: () => { joueur.bonusArmeForce = (joueur.bonusArmeForce || 0) + 5; joueur.heat = Math.min(100, joueur.heat + 10); } },
@@ -48,7 +53,7 @@ const catalogue = [
     { id: 'v_moto', type: 'Véhicules', nom: "Moto Cross Rodée", desc: "Facilite les fuites", prix: 35000, effet: () => joueur.vehicule = "Moto" },
     { id: 'v_camion', type: 'Véhicules', nom: "Fourgon Blindé Volé", desc: "Protection et espace", prix: 120000, effet: () => joueur.vehicule = "Fourgon" },
     { id: 'i_planque', type: 'Immobilier', nom: "Planque Sécurisée", desc: "Baisse le risque de 30%", prix: 150000, effet: () => joueur.risquePrison = Math.max(0, joueur.risquePrison - 30) },
-    { id: 'i_blanchisseur', type: 'Économie', nom: "Réseau de Blanchisserie", desc: "Crée du Cash Blanchi (Insaisissable)", prix: 100000, effet: () => joueur.blanchisserie = true }
+    { id: 'i_blanchisseur', type: 'Économie', nom: "Réseau de Blanchisserie", desc: "Blanchit 70% de chaque butin (Cash insaisissable), plafonné à 300 000 € par an de jeu", prix: 100000, effet: () => joueur.blanchisserie = true }
 ];
 
 const banqueEvenements = {
@@ -369,13 +374,15 @@ let joueur = {
     competences: { forceT2: false, forceT3: false, intelT2: false, intelT3: false, furtiviteT2: false, furtiviteT3: false, disciplineT2: false },
     pointsCompetence: 0, possessions: [], equipe: [],
     recruesMortes: [], recruesVirees: {},
+    statItemsAchetes: 0,
+    blanchiPeriodeDebut: 0, blanchiPeriodeMontant: 0,
     eventsVus: {},
     journal: []
 };
 
 
 let cibleActuelle = null;
-let indexCible = { faible: 0, modere: 0, eleve: 0 };
+let indexCible = { faible: 0, modere: 0, eleve: 0, legendaire: 0 };
 let eventsRestantsAfaire = 0; 
 
 // --- NAVIGATION ET UI ---
@@ -399,9 +406,12 @@ function updateStats() {
     document.getElementById('global-stats').innerHTML = `
         <div class="stat-id">
             <span class="stat-id-item"><strong>${joueur.age} ans</strong><span class="stat-sub">(mois ${joueur.mois})</span></span>
-            <span class="stat-id-item stat-id-money">💰 <strong>${joueur.argent.toLocaleString()} €</strong> <span class="stat-id-blanchi">🧼 ${joueur.cashBlanchi.toLocaleString()} €</span></span>
         </div>
         <div class="stat-subline">${joueur.classe || '—'} · ${getStatutCriminel()}</div>
+        <div class="stat-id stat-id-money-row">
+            <span class="stat-id-item stat-id-money">💰 <strong>${joueur.argent.toLocaleString()} €</strong></span>
+            <span class="stat-id-item stat-id-blanchi">🧼 <strong>${joueur.cashBlanchi.toLocaleString()} €</strong></span>
+        </div>
 
         <div class="stat-row3">
             <div class="stat-cell3"><span class="stat-label" title="Force">💪</span><span class="stat-value">${joueur.stats.force}</span></div>
@@ -772,6 +782,13 @@ function ouvrirBoutique() {
     showScreen('screen-boutique');
 }
 
+function prixReelItem(item) {
+    if (item.statBrut) {
+        return Math.round(item.prix * (1 + 0.4 * (joueur.statItemsAchetes || 0)));
+    }
+    return item.prix;
+}
+
 function rafraichirBoutique() {
     let html = "";
     let types = [...new Set(catalogue.map(item => item.type))];
@@ -790,12 +807,16 @@ function rafraichirBoutique() {
         html += `<h3 style="color:#bd9245; border-bottom:1px solid #2b323c; padding-bottom:5px; margin-top:14px;">${iconesCategoriesBoutique[categorieBoutiqueActive] || ''} ${categorieBoutiqueActive}</h3>`;
         catalogue.filter(i => i.type === categorieBoutiqueActive).forEach(item => {
             let possede = joueur.possessions.includes(item.id);
-            let asseyArgent = joueur.argent >= item.prix;
-            let btn = possede ? "Acquis" : (asseyArgent ? `Acheter (${item.prix.toLocaleString()} €)` : "Fonds insuffisants");
+            let prixReel = prixReelItem(item);
+            let asseyArgent = joueur.argent >= prixReel;
+            let btn = possede ? "Acquis" : (asseyArgent ? `Acheter (${prixReel.toLocaleString()} €)` : "Fonds insuffisants");
             let disabled = (possede || !asseyArgent) ? "disabled" : "";
+            let noteInflation = (item.statBrut && (joueur.statItemsAchetes || 0) > 0 && !possede)
+                ? `<p style="font-size:11px; color:var(--rust-bright); margin:4px 0 0;">⚠️ Prix majoré : chaque formation/matériel augmente le coût du suivant.</p>`
+                : "";
 
             html += `<div class="shop-item">
-                <div class="shop-info"><h4>${item.nom}</h4><p>${item.desc}</p></div>
+                <div class="shop-info"><h4>${item.nom}</h4><p>${item.desc}</p>${noteInflation}</div>
                 <button class="btn-achat" ${disabled} onclick="acheterItem('${item.id}')">${btn}</button>
             </div>`;
         });
@@ -815,11 +836,13 @@ function ouvrirBoutiqueCategories() {
 
 function acheterItem(id) {
     let item = catalogue.find(i => i.id === id);
-    if (joueur.argent >= item.prix && !joueur.possessions.includes(id)) {
-        joueur.argent -= item.prix;
-        joueur.argentPerdu += item.prix;
+    let prixReel = prixReelItem(item);
+    if (joueur.argent >= prixReel && !joueur.possessions.includes(id)) {
+        joueur.argent -= prixReel;
+        joueur.argentPerdu += prixReel;
         joueur.possessions.push(id);
         item.effet(); 
+        if (item.statBrut) joueur.statItemsAchetes = (joueur.statItemsAchetes || 0) + 1;
         updateStats();
         rafraichirBoutique(); 
     }
@@ -1111,7 +1134,8 @@ function acheterPerk(id, cout) {
 // --- BRAQUAGES, CONDITIONS DE COMPÉTENCES ET STORYTELLING ---
 function estimerReussite(diff, typeStat) {
     let statVal = joueur.stats[typeStat];
-    let bonusEq = joueur.equipe.reduce((acc, curr) => acc + (curr.role === typeStat ? curr.bonus : 0), 0);
+    let recruesRole = joueur.equipe.filter(r => r.role === typeStat).sort((a, b) => b.bonus - a.bonus);
+    let bonusEq = recruesRole.reduce((acc, r, i) => acc + r.bonus * Math.pow(0.5, i), 0);
     
     let score = statVal + bonusEq;
     let malusMental = (10 - joueur.mental) * 2;
@@ -1134,6 +1158,15 @@ function genererMissionsHub() {
 
     let getTx = (diff) => Math.max(estimerReussite(diff, 'furtivite'), estimerReussite(diff, 'intel'), estimerReussite(diff, 'force'));
 
+    let blocLegendaire = "";
+    if (joueur.braquagesReussis >= SEUIL_BRAQUAGES_LEGENDAIRE && v.legendaire && v.legendaire.length > 0) {
+        let cL = v.legendaire[Math.min(indexCible.legendaire || 0, v.legendaire.length - 1)];
+        blocLegendaire = `
+        <button class="btn-choix btn-legendaire" style="padding:10px;" onclick="preparerCasse('legendaire', ${cL.diff}, ${cL.butin}, '${cL.nom}', \`${cL.desc}\`)">
+            🟣 ${cL.nom} <span class="tag-legendaire">LÉGENDAIRE</span><br><span style="font-size:12px; color:#8a8c7c; font-style:italic;">Chance de réussite estimée : ~${getTx(cL.diff)}%</span>
+        </button>`;
+    }
+
     document.getElementById('hub-targets').innerHTML = `
         <button class="btn-choix" style="padding:10px;" onclick="preparerCasse('faible', ${cF.diff}, ${cF.butin}, '${cF.nom}', \`${cF.desc}\`)">
             🟢 ${cF.nom}<br><span style="font-size:12px; color:#8a8c7c; font-style:italic;">Chance de réussite estimée : ~${getTx(cF.diff)}%</span>
@@ -1144,6 +1177,8 @@ function genererMissionsHub() {
         <button class="btn-choix" style="padding:10px;" onclick="preparerCasse('eleve', ${cE.diff}, ${cE.butin}, '${cE.nom}', \`${cE.desc}\`)">
             🔴 ${cE.nom}<br><span style="font-size:12px; color:#8a8c7c; font-style:italic;">Chance de réussite estimée : ~${getTx(cE.diff)}%</span>
         </button>
+        ${blocLegendaire}
+        ${!blocLegendaire ? `<p class="hint-text" style="margin-top:8px;">🟣 Une cible légendaire se débloquera après ${SEUIL_BRAQUAGES_LEGENDAIRE} casses réussis (${joueur.braquagesReussis}/${SEUIL_BRAQUAGES_LEGENDAIRE}).</p>` : ""}
     `;
 }
 
@@ -1189,12 +1224,24 @@ function reperageCasse() {
 
 function validerPrep() {
     document.getElementById('action-title').innerText = cibleActuelle.nom;
+
+    // Frais d'entretien : chaque recrue coûte un petit forfait à chaque opération lancée,
+    // qu'elle réussisse ou non — une escouade nombreuse a un vrai coût d'opportunité.
+    let fraisEntretien = joueur.equipe.length * 800;
+    let noteFrais = "";
+    if (fraisEntretien > 0) {
+        joueur.argent -= fraisEntretien;
+        joueur.argentPerdu += fraisEntretien;
+        updateStats();
+        noteFrais = `<p class="hint-text" style="margin-bottom:10px;">💸 Frais d'entretien de l'équipe (${joueur.equipe.length} recrue${joueur.equipe.length > 1 ? 's' : ''}) : -${fraisEntretien.toLocaleString()} €</p>`;
+    }
     
     let reqHacking = cibleActuelle.niveau === 'faible' ? 5 : (cibleActuelle.niveau === 'modere' ? 10 : 15);
     let disabledIntel = joueur.stats.intel < reqHacking ? `disabled` : ``;
     let texteIntel = joueur.stats.intel < reqHacking ? `🧠 Approche Cyber (Requis : ${reqHacking} Intel)` : `🧠 Approche Cyber`;
 
     document.getElementById('action-choices').innerHTML = `
+        ${noteFrais}
         <button class="btn-choix" onclick="lancerMiniScenarioAction('furtivite')">🥷 Approche Fantôme</button>
         <button class="btn-choix" ${disabledIntel} onclick="lancerMiniScenarioAction('intel')">${texteIntel}</button>
         <button class="btn-choix" onclick="lancerMiniScenarioAction('force')">💪 Approche Frontale</button>
@@ -1251,7 +1298,16 @@ function resoudreAction(stat) {
     if (joueur.originType === 'Riche') difficulte -= 1;
     if (cibleActuelle.repere) difficulte -= 2;
     if (stat === 'force') difficulte -= (joueur.bonusArmeForce || 0);
-    joueur.equipe.forEach(r => { if(r.role === stat) difficulte -= r.bonus; });
+
+    // Recrues du bon rôle : rendements décroissants (la meilleure compte à 100%, la suivante à 50%, etc.)
+    // pour éviter qu'empiler des recrues du même rôle ne rende un casse quasi garanti.
+    let recruesRole = joueur.equipe.filter(r => r.role === stat).sort((a, b) => b.bonus - a.bonus);
+    recruesRole.forEach((r, i) => { difficulte -= r.bonus * Math.pow(0.5, i); });
+
+    // Plancher : quels que soient les bonus cumulés (équipe, armes, repérage), la difficulté
+    // ne peut jamais descendre sous 45% de la difficulté d'origine de la cible.
+    let plancherDifficulte = Math.max(1, Math.ceil(cibleActuelle.diff * 0.45));
+    difficulte = Math.max(plancherDifficulte, Math.round(difficulte));
 
     let jet = Math.floor(Math.random() * 10) + 1;
     let immuniteTension = (stat === 'intel' && joueur.competences.intelT3);
@@ -1278,15 +1334,18 @@ function resoudreAction(stat) {
             if(Math.random() > 0.7) contexteCasse.mortFlics = 1;
             contexteCasse.blesseCivils += (estViolent && joueur.competences.forceT2) ? 0 : Math.floor(Math.random() * 2);
         }
-        let chanceMortAllie = joueur.competences.forceT3 ? 0.075 : 0.15;
-        if(!reussi && Math.random() < chanceMortAllie && joueur.equipe.length > 0 && !(joueur.giletPareBalles && Math.random() < 0.5)) {
+        // Poigne de Fer et Gilet pare-balles offrent chacun une protection de 50% : elles ne se cumulent
+        // pas (avoir les deux n'est pas plus sûr qu'en avoir une seule), pour éviter la quasi-immunité.
+        let facteurProtection = (joueur.competences.forceT3 || joueur.giletPareBalles) ? 0.5 : 1;
+        let chanceMortAllie = 0.15 * facteurProtection;
+        if(!reussi && Math.random() < chanceMortAllie && joueur.equipe.length > 0) {
             let idx = Math.floor(Math.random() * joueur.equipe.length);
             let mort = joueur.equipe.splice(idx, 1)[0];
             mortAllie = 1; contexteCasse.nomAllieMort = mort.nom;
             joueur.recruesMortes.push(mort.id);
         }
-        let chanceMortJoueur = joueur.competences.forceT3 ? 0.015 : 0.03;
-        if(!reussi && Math.random() < chanceMortJoueur && !joueur.giletPareBalles) {
+        let chanceMortJoueur = 0.03 * facteurProtection;
+        if(!reussi && Math.random() < chanceMortJoueur) {
             afficherEcranFin("Mort en Intervention", "La police a ouvert le feu. Vous n'avez pas survécu."); return;
         }
     }
@@ -1311,7 +1370,18 @@ function resoudreAction(stat) {
         butinJoueur = Math.floor(butinReel - partEquipe);
         
         joueur.argent += butinJoueur; joueur.argentGagne += butinJoueur;
-        if(joueur.blanchisserie) { joueur.cashBlanchi += Math.floor(butinJoueur * 0.7); }
+        if(joueur.blanchisserie) {
+            let moisTotal = joueur.age * 12 + joueur.mois;
+            if (moisTotal - joueur.blanchiPeriodeDebut >= 12) {
+                joueur.blanchiPeriodeDebut = moisTotal;
+                joueur.blanchiPeriodeMontant = 0;
+            }
+            let plafondAnnuel = 300000;
+            let restant = Math.max(0, plafondAnnuel - joueur.blanchiPeriodeMontant);
+            let montantBlanchi = Math.min(Math.floor(butinJoueur * 0.7), restant);
+            joueur.cashBlanchi += montantBlanchi;
+            joueur.blanchiPeriodeMontant += montantBlanchi;
+        }
 
         joueur.pointsCompetence += 1; joueur.braquagesReussis += 1;
         let gainHeat = 20 - Math.floor(20 * (joueur.buffs.sangfroid / 100));

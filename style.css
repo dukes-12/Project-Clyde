@@ -2,23 +2,23 @@
    HEIST: THE CHOICE — thème "dossier de police"
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Special+Elite&display=swap');
 
 :root {
     --void: #0a0c10;
     --panel: #15191f;
     --panel-raised: #1d232b;
-    --paper: #e8e2cf;
-    --paper-dim: #8a8c7c;
-    --gold: #bd9245;
+    --paper: #ece7d8;
+    --paper-dim: #9a9c8c;
+    --gold: #c49a4e;
     --gold-dim: #7c6634;
     --rust: #a4453a;
-    --rust-bright: #c8564a;
+    --rust-bright: #d1685a;
     --ok: #3d7a52;
-    --ok-bright: #4f9967;
+    --ok-bright: #58ac74;
     --blue: #5c86a8;
-    --blue-bright: #8fb4d1;
-    --line: #2b323c;
+    --blue-bright: #9dc1de;
+    --line: #333c48;
 }
 
 * { box-sizing: border-box; }
@@ -28,7 +28,9 @@ body {
     background-image:
         repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
     color: var(--paper);
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
     margin: 0; padding: 20px;
     display: flex; justify-content: center; align-items: center; min-height: 90vh;
 }
@@ -51,10 +53,7 @@ body {
     top: -13px; left: 24px;
     background: var(--gold-dim);
     color: var(--void);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
+    font-family: 'Special Elite', monospace;
     padding: 3px 10px;
     border-radius: 2px;
 }
@@ -107,7 +106,7 @@ h3 { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
     border-left: 4px solid var(--gold-dim);
     padding: 14px 16px 14px 18px;
     margin: 8px 0;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'IBM Plex Sans', sans-serif;
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.3px;
@@ -204,22 +203,19 @@ h3 { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
 .stat-id-item { min-width: 0; }
 .stat-id-item strong { color: var(--paper); font-family: 'Oswald', sans-serif; letter-spacing: 0.5px; }
 .stat-sub { font-size: 11px; color: var(--paper-dim); margin-left: 4px; }
-.stat-id-money { color: var(--gold); white-space: nowrap; }
+.stat-id-money { color: var(--gold); white-space: nowrap; font-size: 14px; }
 .stat-id-blanchi {
     color: var(--blue-bright);
-    font-size: 11px;
-    font-weight: 400;
-    margin-left: 6px;
+    font-size: 13px;
     white-space: nowrap;
 }
+.stat-id-money-row { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 
 .stat-subline {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--paper-dim);
     text-align: left;
     margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--line);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -287,14 +283,15 @@ h3 { font-size: 15px; color: var(--gold); letter-spacing: 2px; }
 }
 .cat-count {
     font-size: 11px; color: var(--paper-dim); font-weight: 400;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'IBM Plex Sans', sans-serif;
 }
 .shop-item {
     display: flex; justify-content: space-between; align-items: center;
-    background: var(--panel-raised); padding: 15px; margin: 10px 0;
-    border-radius: 2px; border: 1px solid var(--line);
-    border-left: 3px dashed var(--gold-dim);
+    background: var(--panel-raised); padding: 16px; margin: 10px 0;
+    border-radius: 3px; border: 1px solid var(--line);
+    border-left: 3px solid var(--gold-dim);
     text-align: left;
+    line-height: 1.5;
 }
 .shop-info { flex: 1; }
 .shop-info h4 {
@@ -363,7 +360,7 @@ h4 {
     display: inline-block;
     background: var(--gold);
     color: #1a1305;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'IBM Plex Sans', sans-serif;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -407,6 +404,18 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 20px 0; }
 
 .hint-text { font-size: 12px; color: var(--paper-dim); margin-top: -6px; }
 
+.btn-legendaire {
+    border-left-color: #9d6fc9 !important;
+    background: linear-gradient(90deg, var(--panel-raised), #241a30);
+}
+.btn-legendaire:hover:not(:disabled) { border-left-color: #c49aeb !important; }
+.tag-legendaire {
+    background: #9d6fc9; color: #1a1024;
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 9px; font-weight: 700;
+    letter-spacing: 1px; padding: 2px 6px; border-radius: 2px;
+    vertical-align: middle; margin-left: 4px;
+}
+
 .pc-count { color: var(--rust-bright); font-weight: bold; }
 
 /* --- Boîte de contenu générique (narration, débriefing, événements, fin) --- */
@@ -447,12 +456,14 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 20px 0; }
 /* --- Fiche recrue + jauge de loyauté --- */
 .recrue-card {
     background: var(--panel-raised);
-    padding: 12px; margin-bottom: 10px;
+    padding: 14px 16px; margin-bottom: 12px;
     border: 1px solid var(--line);
     border-left: 3px solid var(--gold-dim);
-    border-radius: 2px;
+    border-radius: 3px;
     text-align: left;
+    line-height: 1.5;
 }
+.recrue-card strong { font-size: 15px; }
 .badge-renvoi {
     background: rgba(164, 69, 58, 0.12);
     border: 1px dashed var(--rust);
@@ -495,7 +506,7 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 20px 0; }
 }
 .arbre-palier {
     font-size: 11px; color: var(--paper-dim); text-transform: none;
-    letter-spacing: 0; font-family: 'JetBrains Mono', monospace; font-weight: 400;
+    letter-spacing: 0; font-family: 'IBM Plex Sans', sans-serif; font-weight: 400;
 }
 .arbre-sub { font-size: 12px; color: var(--paper-dim); margin: 10px 0 4px; }
 .perk-btn {
