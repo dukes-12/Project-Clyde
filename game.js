@@ -1644,22 +1644,28 @@ function resoudreExfiltration(mode) {
         if ((scoreBase + jet2) >= 11) exfilReussie = true;
     }
 
-    let msgExfil, arreteEnFuite = false;
+    let msgExfil;
     if (exfilReussie) {
         joueur.heat += (mode === 'force') ? 15 : 5;
         msgExfil = mode === 'discrete' ? "Vous vous fondez dans la ville sans laisser de trace."
             : mode === 'vehicule' ? "Le moteur rugit, vous distancez les premières sirènes."
             : "Vous forcez le passage sans ménagement, mais vous êtes dehors.";
     } else {
-        joueur.heat += 30; ajouterRisque(3);
-        msgExfil = "La fuite tourne mal : une patrouille vous prend en chasse dans les rues adjacentes.";
-        arreteEnFuite = (Math.random() < 0.35);
+        // Pénalité modérée seulement : la scène de chasse qui suit offre une vraie chance de s'en sortir,
+        // le sort ne se joue pas entièrement sur ce seul jet.
+        joueur.heat += 15; ajouterRisque(2);
+        let cause = contexteCasse.flicsPresents
+            ? "Un policier resté en faction a donné l'alerte dès votre sortie."
+            : contexteCasse.estViolent
+                ? "Les coups de feu ont résonné dans tout le quartier : quelqu'un a appelé la police."
+                : "Un passant, intrigué par votre sortie précipitée, a composé le numéro d'urgence depuis le trottoir d'en face.";
+        msgExfil = `${cause} Une patrouille toute proche vous prend en chasse.`;
     }
 
-    afficherRapportExfiltration(reussi, butin, mortAllie, exfilReussie, msgExfil, arreteEnFuite);
+    afficherRapportExfiltration(reussi, butin, mortAllie, exfilReussie, msgExfil);
 }
 
-function afficherRapportExfiltration(reussi, butin, mortAllie, exfilReussie, msgExfil, arreteEnFuite) {
+function afficherRapportExfiltration(reussi, butin, mortAllie, exfilReussie, msgExfil) {
     document.getElementById('debrief-titre').innerText = "Rapport d'Exfiltration";
     document.getElementById('debrief-content').innerHTML = `
         <div class="stamp-reveal ${exfilReussie ? 'stamp-ok' : 'stamp-echec'}">${exfilReussie ? '✅ Réussie' : '❌ Compromise'}</div>
@@ -1668,16 +1674,49 @@ function afficherRapportExfiltration(reussi, butin, mortAllie, exfilReussie, msg
     let btn = document.getElementById('debrief-btn');
     btn.innerText = "Continuer";
 
-    // Phase 2 : un trajet retour tendu ne se joue que si la situation le justifie déjà
-    // (patrouille aux trousses, ou Tension déjà élevée) — pas de lourdeur inutile sur un petit casse tranquille.
-    let besoinTrajetRetour = !arreteEnFuite && (joueur.heat > 50 || contexteCasse.flicsPresents);
-
-    if (besoinTrajetRetour) {
-        btn.onclick = () => { lancerTrajetRetour(reussi, butin, mortAllie); };
+    if (!exfilReussie) {
+        // Compromise ne veut pas dire prison automatique : une vraie porte de sortie s'ouvre.
+        btn.onclick = () => { lancerPriseEnChasse(reussi, butin, mortAllie); };
     } else {
-        btn.onclick = () => { afficherDebrief(reussi, butin, mortAllie, "", arreteEnFuite); };
+        // Phase 2 (Trajet Retour) : ne se joue que si la situation le justifie déjà.
+        let besoinTrajetRetour = joueur.heat > 50 || contexteCasse.flicsPresents;
+        if (besoinTrajetRetour) {
+            btn.onclick = () => { lancerTrajetRetour(reussi, butin, mortAllie); };
+        } else {
+            btn.onclick = () => { afficherDebrief(reussi, butin, mortAllie, "", false, true); };
+        }
     }
     showScreen('screen-debrief');
+}
+
+function lancerPriseEnChasse(reussi, butin, mortAllie) {
+    document.getElementById('action-title').innerText = "Prise en Chasse";
+    document.getElementById('action-choices').innerHTML = `
+        <p style="background:var(--panel-raised); padding:15px; border-radius:2px; text-align:left; border-left:4px solid var(--rust); line-height:1.5;">Les gyrophares se rapprochent dans le rétroviseur. Il faut décider vite.</p>
+        <button class="btn-choix" onclick="resoudrePriseEnChasse('force', ${butin}, ${reussi}, ${mortAllie})">💪 Forcer un barrage improvisé<br><span style="font-size:12px; color:#8a8c7c; font-style:italic;">Chance d'y échapper : ~${Math.max(0, Math.min(100, joueur.stats.force * 10))}%</span></button>
+        <button class="btn-choix" onclick="resoudrePriseEnChasse('furtivite', ${butin}, ${reussi}, ${mortAllie})">🥷 Semer la patrouille dans les ruelles<br><span style="font-size:12px; color:#8a8c7c; font-style:italic;">Chance d'y échapper : ~${Math.max(0, Math.min(100, joueur.stats.furtivite * 10))}%</span></button>
+        <button class="btn-choix" onclick="resoudrePriseEnChasse('intel', ${butin}, ${reussi}, ${mortAllie})">🧠 Brouiller votre trace numérique<br><span style="font-size:12px; color:#8a8c7c; font-style:italic;">Chance d'y échapper : ~${Math.max(0, Math.min(100, joueur.stats.intel * 10))}%</span></button>
+    `;
+    showScreen('screen-action');
+}
+
+function resoudrePriseEnChasse(stat, butin, reussi, mortAllie) {
+    let score = joueur.stats[stat];
+    let jet = Math.floor(Math.random() * 10) + 1;
+    let echappe = (score + jet) >= 10; // Seuil légèrement plus clément : c'est une vraie deuxième chance.
+
+    let msg;
+    if (echappe) {
+        joueur.heat += 10;
+        msg = stat === 'force' ? "Vous forcez un barrage improvisé et disparaissez dans la circulation."
+            : stat === 'furtivite' ? "Vous semez la patrouille dans un dédale de ruelles."
+            : "Vous brouillez votre trace numérique, la patrouille perd votre piste.";
+        afficherDebrief(reussi, butin, mortAllie, msg, false, false);
+    } else {
+        joueur.heat += 20; ajouterRisque(5);
+        msg = "La patrouille vous rattrape avant que vous ayez pu semer la filature.";
+        afficherDebrief(reussi, butin, mortAllie, msg, true, false);
+    }
 }
 
 function estimerTrajetRetour() {
@@ -1697,17 +1736,20 @@ function lancerTrajetRetour(reussi, butin, mortAllie) {
 
 function resoudreTrajetRetour(mode, butinInitial, reussi, mortAllie) {
     let butin = butinInitial;
-    let msgTrajet, arreteEnFuite = false;
+    let msgTrajet;
 
     if (mode === 'semer') {
         let jet = Math.floor(Math.random() * 10) + 1;
         let ok = (joueur.stats.furtivite + jet) >= 11;
         if (ok) {
             msgTrajet = "Vous multipliez les détours dans la circulation et perdez la filature sans rien sacrifier.";
+            afficherDebrief(reussi, butin, mortAllie, msgTrajet, false, false);
         } else {
             joueur.heat += 15; ajouterRisque(3);
             msgTrajet = "Impossible de semer la voiture : elle vous colle jusqu'à quelques rues de la planque.";
-            arreteEnFuite = (Math.random() < 0.25);
+            // Là aussi, une dernière porte de sortie plutôt qu'un couperet.
+            lancerPriseEnChasse(reussi, butin, mortAllie);
+            return;
         }
     } else if (mode === 'planquer') {
         let perte = Math.floor(butinInitial * 0.15);
@@ -1716,6 +1758,7 @@ function resoudreTrajetRetour(mode, butinInitial, reussi, mortAllie) {
         joueur.argentPerdu += perte;
         joueur.heat = Math.max(0, joueur.heat - 10);
         msgTrajet = "Vous planquez une partie du butin dans une consigne de fortune avant de rentrer presque les mains vides.";
+        afficherDebrief(reussi, butin, mortAllie, msgTrajet, false, false);
     } else {
         let perte = Math.floor(butinInitial * 0.30);
         butin = butinInitial - perte;
@@ -1724,10 +1767,10 @@ function resoudreTrajetRetour(mode, butinInitial, reussi, mortAllie) {
         joueur.heat = Math.max(0, joueur.heat - 20);
         joueur.risquePrison = Math.max(0, joueur.risquePrison - 10);
         msgTrajet = "Vous balancez une bonne partie du butin par la fenêtre pour semer le poids et filer sans encombre.";
+        afficherDebrief(reussi, butin, mortAllie, msgTrajet, false, false);
     }
 
     updateStats();
-    afficherDebrief(reussi, butin, mortAllie, msgTrajet, arreteEnFuite);
 }
 
 function calculerBilanHumain(mortAllie) {
@@ -1758,14 +1801,30 @@ function calculerBilanHumain(mortAllie) {
     return `<ul style="color:#c8564a; list-style:none; padding:0;">${lignes.map(l => `<li>${l.txt}</li>`).join('')}</ul>${effet}`;
 }
 
-function afficherDebrief(reussi, butin, mortAllie, msgExfil, arreteEnFuite) {
+function afficherDebrief(reussi, butin, mortAllie, msgExfil, arreteEnFuite, exfiltrationPropre) {
     let manchette = genererManchette({ reussi: reussi, niveau: cibleActuelle.niveau, violent: contexteCasse.violent });
     let bilanHumainHtml = calculerBilanHumain(mortAllie);
 
+    // Palier de résultat : Parfait (rare) > Réussi (avec complications surmontées) > Rattrapé après coup > Échec.
+    let palier, coloTitre, texteButin;
+    if (!reussi) {
+        palier = "❌ Opération Compromise"; coloTitre = '#a4453a';
+        texteButin = null;
+    } else if (arreteEnFuite) {
+        palier = "⚠️ Butin Empoché... Puis Rattrapé"; coloTitre = '#c98a2c';
+        texteButin = `<strong>Butin récupéré sur place :</strong> ${butin.toLocaleString()} € — mais l'arrestation qui suit risque d'en coûter une partie.`;
+    } else if (exfiltrationPropre) {
+        palier = "🌟 Coup Parfait"; coloTitre = '#c49a4e';
+        texteButin = `<strong>Butin net empoché :</strong> ${butin.toLocaleString()} €`;
+    } else {
+        palier = "✅ Coup Réussi (Sortie Compliquée)"; coloTitre = '#4f9967';
+        texteButin = `<strong>Butin net empoché :</strong> ${butin.toLocaleString()} €`;
+    }
+
     document.getElementById('debrief-titre').innerText = "Bilan de l'Opération";
     let html = `
-        <h3 style="color:${reussi ? '#4f9967' : '#a4453a'}">${reussi ? 'Coup Réussi avec Succès' : 'Opération Compromise'}</h3>
-        <p><strong>Butin net empoché :</strong> ${butin.toLocaleString()} €</p>
+        <h3 style="color:${coloTitre}">${palier}</h3>
+        ${texteButin ? `<p>${texteButin}</p>` : ""}
         ${contexteCasse.noteButin ? `<p style="font-style:italic; color:var(--gold); font-size:13px;">${contexteCasse.noteButin}</p>` : ""}
         ${msgExfil ? `<p style="font-style:italic; color:#8fb4d1; font-size:13px;">${msgExfil}</p>` : ""}
         <hr style="border-color:#2b323c">
@@ -1777,14 +1836,14 @@ function afficherDebrief(reussi, butin, mortAllie, msgExfil, arreteEnFuite) {
 
     ajouterJournal(
         reussi
-            ? `${cibleActuelle.nom} braqué avec succès (${butin.toLocaleString()} €).${arreteEnFuite ? " Rattrapé en pleine fuite juste après." : ""}`
-            : `Coup raté sur ${cibleActuelle.nom}.${arreteEnFuite ? " Arrêté sur place." : ""}`
+            ? `${cibleActuelle.nom} braqué avec succès (${butin.toLocaleString()} €).${arreteEnFuite ? " Rattrapé en pleine fuite juste après." : (exfiltrationPropre ? " Coup parfait." : "")}`
+            : `Coup raté sur ${cibleActuelle.nom}.`
     );
     
     let btnSuite = document.getElementById('debrief-btn');
     if (arreteEnFuite) {
         btnSuite.innerText = "Aller en case prison...";
-        btnSuite.onclick = () => { allerEnPrison(reussi ? "Rattrapé en pleine fuite, butin saisi en partie." : "Arrêté sur les lieux."); };
+        btnSuite.onclick = () => { allerEnPrison("Rattrapé après une course-poursuite, butin saisi en partie."); };
     } else if(!reussi) {
         btnSuite.innerText = "Aller en case prison...";
         btnSuite.onclick = () => { allerEnPrison("Arrêté sur les lieux."); };
