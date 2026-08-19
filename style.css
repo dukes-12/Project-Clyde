@@ -432,6 +432,41 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 20px 0; }
 .scroll-list { margin-bottom: 20px; }
 
 /* --- Coupure de presse (débriefing) --- */
+/* --- Révélation façon tampon (rapport de braquage/exfiltration) --- */
+.stamp-reveal {
+    display: block;
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 22px 14px;
+    border: 3px solid;
+    border-radius: 3px;
+    margin-bottom: 16px;
+    transform: rotate(-1deg);
+    animation: stamp-in 0.35s ease-out;
+}
+.stamp-reveal.stamp-ok { color: var(--ok-bright); border-color: var(--ok-bright); background: rgba(88,172,116,0.08); }
+.stamp-reveal.stamp-echec { color: var(--rust-bright); border-color: var(--rust-bright); background: rgba(164,69,58,0.08); }
+.stamp-reveal.stamp-long { font-size: 19px; letter-spacing: 1px; white-space: nowrap; }
+@keyframes stamp-in {
+    0% { opacity: 0; transform: scale(1.5) rotate(-1deg); }
+    60% { opacity: 1; transform: scale(0.95) rotate(-1deg); }
+    100% { opacity: 1; transform: scale(1) rotate(-1deg); }
+}
+.stage-souslabel {
+    text-align: center; font-size: 12px; color: var(--paper-dim);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;
+}
+.bilan-ligne {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 6px 0; border-bottom: 1px dotted var(--line); font-size: 13px;
+}
+.bilan-effet { font-size: 11px; font-style: italic; }
+.bilan-effet.bon { color: var(--ok-bright); }
+.bilan-effet.mauvais { color: var(--rust-bright); }
+
 .press-clip {
     margin-top: 14px;
     padding: 10px 12px;
