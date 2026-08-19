@@ -62,7 +62,7 @@
             <button class="btn-choix btn-boutique" style="width: 48%;" onclick="ouvrirBoutique()">🛒 Marché Noir</button>
             <button class="btn-choix btn-action" style="width: 48%;" onclick="ouvrirRecrutement()">👥 Recrutement</button>
             <button class="btn-choix btn-boutique" style="width: 48%;" onclick="ouvrirArbre()">🧠 Compétences</button>
-            <button class="btn-choix btn-retraite" style="width: 48%;" onclick="terminerJeu('retraite')">🌴 Se Ranger</button>
+            <button class="btn-choix btn-retraite" style="width: 48%;" onclick="demanderConfirmation('Se ranger', 'Êtes-vous certain(e) de vouloir vous ranger ? Cette décision est définitive et met fin à la partie.', () => terminerJeu('retraite'))">🌴 Se Ranger</button>
             <button class="btn-choix" style="width: 100%;" onclick="ouvrirJournal()">📓 Carnet de Bord</button>
         </div>
 
@@ -172,6 +172,14 @@
         <h2 id="consequence-title">Conséquences</h2>
         <p id="consequence-text" class="content-box"></p>
         <button class="btn-choix btn-action" id="btn-consequence-next">Continuer</button>
+    </div>
+
+    <!-- CONFIRMATION GÉNÉRIQUE -->
+    <div id="screen-confirm" class="screen">
+        <h2 id="confirm-title">Confirmation</h2>
+        <p id="confirm-text" class="content-box"></p>
+        <button class="btn-choix btn-action" id="btn-confirm-oui">Confirmer</button>
+        <button class="btn-choix" id="btn-confirm-non">Annuler</button>
     </div>
 
     <!-- ÉCRAN DE FIN -->
